@@ -1,0 +1,531 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		634BF7E32DB09C20007BD17F /* STState.m in Sources */ = {isa = PBXBuildFile; fileRef = 634BF7E22DB09C20007BD17F /* STState.m */; };
+		634BF7E42DB09C20007BD17F /* STState.m in Sources */ = {isa = PBXBuildFile; fileRef = 634BF7E22DB09C20007BD17F /* STState.m */; };
+		634BF7EB2DB9E811007BD17F /* NSDate+MyNow.m in Sources */ = {isa = PBXBuildFile; fileRef = 634BF7EA2DB9E811007BD17F /* NSDate+MyNow.m */; };
+		634BF7EC2DB9E811007BD17F /* NSDate+MyNow.m in Sources */ = {isa = PBXBuildFile; fileRef = 634BF7EA2DB9E811007BD17F /* NSDate+MyNow.m */; };
+		63A2077A2D8BE04A0019A763 /* STCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A207792D8BE04A0019A763 /* STCalendarView.m */; };
+		63A207802D8BE0F10019A763 /* STCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A2077F2D8BE0F10019A763 /* STCalendar.m */; };
+		63A207862D8BE5AB0019A763 /* moon.dae in Resources */ = {isa = PBXBuildFile; fileRef = 63A207852D8BE5AB0019A763 /* moon.dae */; };
+		63A207882D8BEA100019A763 /* moon.scn in Resources */ = {isa = PBXBuildFile; fileRef = 63A207872D8BEA100019A763 /* moon.scn */; };
+		63A2078C2D8BED810019A763 /* MoonScene.scn in Resources */ = {isa = PBXBuildFile; fileRef = 63A2078B2D8BED810019A763 /* MoonScene.scn */; };
+		63A207AC2D8D15CA0019A763 /* moon.dae in Resources */ = {isa = PBXBuildFile; fileRef = 63A207852D8BE5AB0019A763 /* moon.dae */; };
+		63A207AD2D8D15CA0019A763 /* moon.scn in Resources */ = {isa = PBXBuildFile; fileRef = 63A207872D8BEA100019A763 /* moon.scn */; };
+		63A207AE2D8D15CA0019A763 /* MoonScene.scn in Resources */ = {isa = PBXBuildFile; fileRef = 63A2078B2D8BED810019A763 /* MoonScene.scn */; };
+		63A207B32D8D15DE0019A763 /* STCalendar.h in Sources */ = {isa = PBXBuildFile; fileRef = 63A2077E2D8BE0F10019A763 /* STCalendar.h */; };
+		63A207B42D8D15DE0019A763 /* STCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A2077F2D8BE0F10019A763 /* STCalendar.m */; };
+		63A207B52D8D15DE0019A763 /* STCalendarView.h in Sources */ = {isa = PBXBuildFile; fileRef = 63A207782D8BE04A0019A763 /* STCalendarView.h */; };
+		63A207B62D8D15DE0019A763 /* STCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A207792D8BE04A0019A763 /* STCalendarView.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		634BF7E22DB09C20007BD17F /* STState.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STState.m; sourceTree = "<group>"; };
+		634BF7E52DB09C30007BD17F /* STState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STState.h; sourceTree = "<group>"; };
+		634BF7E72DB1ED97007BD17F /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		634BF7E92DB9E811007BD17F /* NSDate+MyNow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSDate+MyNow.h"; sourceTree = "<group>"; };
+		634BF7EA2DB9E811007BD17F /* NSDate+MyNow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSDate+MyNow.m"; sourceTree = "<group>"; };
+		63A207642D8BDF360019A763 /* Sabbatic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sabbatic.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		63A207782D8BE04A0019A763 /* STCalendarView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STCalendarView.h; sourceTree = "<group>"; };
+		63A207792D8BE04A0019A763 /* STCalendarView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STCalendarView.m; sourceTree = "<group>"; };
+		63A2077E2D8BE0F10019A763 /* STCalendar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STCalendar.h; sourceTree = "<group>"; };
+		63A2077F2D8BE0F10019A763 /* STCalendar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STCalendar.m; sourceTree = "<group>"; };
+		63A207852D8BE5AB0019A763 /* moon.dae */ = {isa = PBXFileReference; lastKnownFileType = text.xml.dae; path = moon.dae; sourceTree = "<group>"; };
+		63A207872D8BEA100019A763 /* moon.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = moon.scn; sourceTree = "<group>"; };
+		63A2078B2D8BED810019A763 /* MoonScene.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = MoonScene.scn; sourceTree = "<group>"; };
+		63A207912D8D13D40019A763 /* Sabbatic-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sabbatic-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		63A207A72D8D13D60019A763 /* Exceptions for "Sabbatic-ios" folder in "Sabbatic-ios" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 63A207902D8D13D40019A763 /* Sabbatic-ios */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		63A207662D8BDF360019A763 /* Sabbatic */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Sabbatic;
+			sourceTree = "<group>";
+		};
+		63A207922D8D13D40019A763 /* Sabbatic-ios */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				63A207A72D8D13D60019A763 /* Exceptions for "Sabbatic-ios" folder in "Sabbatic-ios" target */,
+			);
+			path = "Sabbatic-ios";
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		63A207612D8BDF360019A763 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		63A2078E2D8D13D40019A763 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		634BF7E62DB1ED97007BD17F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				634BF7E72DB1ED97007BD17F /* UserNotifications.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		63A2075B2D8BDF360019A763 = {
+			isa = PBXGroup;
+			children = (
+				634BF7E52DB09C30007BD17F /* STState.h */,
+				634BF7E22DB09C20007BD17F /* STState.m */,
+				63A207852D8BE5AB0019A763 /* moon.dae */,
+				63A207872D8BEA100019A763 /* moon.scn */,
+				63A2078B2D8BED810019A763 /* MoonScene.scn */,
+				63A2077E2D8BE0F10019A763 /* STCalendar.h */,
+				63A2077F2D8BE0F10019A763 /* STCalendar.m */,
+				63A207782D8BE04A0019A763 /* STCalendarView.h */,
+				63A207792D8BE04A0019A763 /* STCalendarView.m */,
+				634BF7E92DB9E811007BD17F /* NSDate+MyNow.h */,
+				634BF7EA2DB9E811007BD17F /* NSDate+MyNow.m */,
+				63A207662D8BDF360019A763 /* Sabbatic */,
+				63A207922D8D13D40019A763 /* Sabbatic-ios */,
+				634BF7E62DB1ED97007BD17F /* Frameworks */,
+				63A207652D8BDF360019A763 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		63A207652D8BDF360019A763 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				63A207642D8BDF360019A763 /* Sabbatic.app */,
+				63A207912D8D13D40019A763 /* Sabbatic-ios.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		63A207632D8BDF360019A763 /* Sabbatic */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 63A207742D8BDF370019A763 /* Build configuration list for PBXNativeTarget "Sabbatic" */;
+			buildPhases = (
+				63A207602D8BDF360019A763 /* Sources */,
+				63A207612D8BDF360019A763 /* Frameworks */,
+				63A207622D8BDF360019A763 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				63A207662D8BDF360019A763 /* Sabbatic */,
+			);
+			name = Sabbatic;
+			packageProductDependencies = (
+			);
+			productName = Sabbatic;
+			productReference = 63A207642D8BDF360019A763 /* Sabbatic.app */;
+			productType = "com.apple.product-type.application";
+		};
+		63A207902D8D13D40019A763 /* Sabbatic-ios */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 63A207A82D8D13D60019A763 /* Build configuration list for PBXNativeTarget "Sabbatic-ios" */;
+			buildPhases = (
+				63A2078D2D8D13D40019A763 /* Sources */,
+				63A2078E2D8D13D40019A763 /* Frameworks */,
+				63A2078F2D8D13D40019A763 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				63A207922D8D13D40019A763 /* Sabbatic-ios */,
+			);
+			name = "Sabbatic-ios";
+			packageProductDependencies = (
+			);
+			productName = "Sabbatic-ios";
+			productReference = 63A207912D8D13D40019A763 /* Sabbatic-ios.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		63A2075C2D8BDF360019A763 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					63A207632D8BDF360019A763 = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					63A207902D8D13D40019A763 = {
+						CreatedOnToolsVersion = 16.2;
+					};
+				};
+			};
+			buildConfigurationList = 63A2075F2D8BDF360019A763 /* Build configuration list for PBXProject "Sabbatic" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 63A2075B2D8BDF360019A763;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 63A207652D8BDF360019A763 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				63A207632D8BDF360019A763 /* Sabbatic */,
+				63A207902D8D13D40019A763 /* Sabbatic-ios */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		63A207622D8BDF360019A763 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				63A2078C2D8BED810019A763 /* MoonScene.scn in Resources */,
+				63A207862D8BE5AB0019A763 /* moon.dae in Resources */,
+				63A207882D8BEA100019A763 /* moon.scn in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		63A2078F2D8D13D40019A763 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				63A207AC2D8D15CA0019A763 /* moon.dae in Resources */,
+				63A207AD2D8D15CA0019A763 /* moon.scn in Resources */,
+				63A207AE2D8D15CA0019A763 /* MoonScene.scn in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		63A207602D8BDF360019A763 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				634BF7E32DB09C20007BD17F /* STState.m in Sources */,
+				63A207802D8BE0F10019A763 /* STCalendar.m in Sources */,
+				634BF7EB2DB9E811007BD17F /* NSDate+MyNow.m in Sources */,
+				63A2077A2D8BE04A0019A763 /* STCalendarView.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		63A2078D2D8D13D40019A763 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				63A207B32D8D15DE0019A763 /* STCalendar.h in Sources */,
+				63A207B42D8D15DE0019A763 /* STCalendar.m in Sources */,
+				634BF7EC2DB9E811007BD17F /* NSDate+MyNow.m in Sources */,
+				634BF7E42DB09C20007BD17F /* STState.m in Sources */,
+				63A207B52D8D15DE0019A763 /* STCalendarView.h in Sources */,
+				63A207B62D8D15DE0019A763 /* STCalendarView.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		63A207722D8BDF370019A763 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		63A207732D8BDF370019A763 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		63A207752D8BDF370019A763 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Sabbatic/Sabbatic.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.combobulated.Sabbatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Debug;
+		};
+		63A207762D8BDF370019A763 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Sabbatic/Sabbatic.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainNibFile = MainMenu;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.combobulated.Sabbatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
+		63A207A92D8D13D60019A763 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B7CLPV6KGB;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Sabbatic-ios/Info.plist";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.combobulated.Sabbatic-ios";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		63A207AA2D8D13D60019A763 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B7CLPV6KGB;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Sabbatic-ios/Info.plist";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.combobulated.Sabbatic-ios";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		63A2075F2D8BDF360019A763 /* Build configuration list for PBXProject "Sabbatic" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				63A207722D8BDF370019A763 /* Debug */,
+				63A207732D8BDF370019A763 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		63A207742D8BDF370019A763 /* Build configuration list for PBXNativeTarget "Sabbatic" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				63A207752D8BDF370019A763 /* Debug */,
+				63A207762D8BDF370019A763 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		63A207A82D8D13D60019A763 /* Build configuration list for PBXNativeTarget "Sabbatic-ios" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				63A207A92D8D13D60019A763 /* Debug */,
+				63A207AA2D8D13D60019A763 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 63A2075C2D8BDF360019A763 /* Project object */;
+}
