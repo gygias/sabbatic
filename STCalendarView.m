@@ -31,6 +31,17 @@ CGRect gMyInitRect;
 
 @implementation STCalendarView
 
+- (void)_initMyNowStuff
+{    
+#define MyNow
+#ifdef MyNow
+    NSDate *lastConjunction = [[STState state] lastConjunction];
+    NSDate *lastNewMoonDay = [STCalendar newMoonDayForConjunction:lastConjunction];
+    NSDate *fiveTil = [STCalendar date:lastNewMoonDay byAddingDays:7 hours:23 minutes:59 seconds:55];
+    [NSDate setMyNow:fiveTil];
+#endif
+}
+
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
 - (id)initWithFrame:(NSRect)frameRect
 {
@@ -48,13 +59,8 @@ CGRect gMyInitRect;
                 [self setNeedsDisplay:YES];
             }];
         }
-#define MyNow
-#ifdef MyNow
-        NSDate *lastConjunction = [[STState state] lastConjunction];
-        NSDate *lastNewMoonDay = [STCalendar newMoonDayForConjunction:lastConjunction];
-        NSDate *fiveTil = [STCalendar date:lastNewMoonDay byAddingDays:7 hours:23 minutes:59 seconds:55];
-        [NSDate setMyNow:fiveTil];
-#endif
+        
+        [self _initMyNowStuff];
     }
     return self;
 }
@@ -70,6 +76,8 @@ CGRect gMyInitRect;
             NSLog(@"NSSystemClockDidChangeNotification!");
             [self setNeedsDisplay];
         }];
+        
+        [self _initMyNowStuff];
     }
     return self;
 }
@@ -145,6 +153,7 @@ CGRect gMyInitRect;
     NSDictionary *smallAttributes = @{ NSForegroundColorAttributeName : [STCalendarViewColorClass grayColor],
                                        NSFontAttributeName : [STCalendarViewFontClass systemFontOfSize:STCalendarViewLocalGregorianFontSize] };
     CGSize textSize = [@"foo" sizeWithAttributes:textAttributes];
+    CGFloat singleDigitDateXOffset = [@"0" sizeWithAttributes:textAttributes].width / 2;
     //CGSize smallSize = [@"foo" sizeWithAttributes:smallAttributes];
     
     // draw lunation #
@@ -181,6 +190,7 @@ CGRect gMyInitRect;
 #else
             int day = 7 * ( i - 1 ) + j + 2;
 #endif
+            
             NSDate *thisDate = [STCalendar date:lastNewMoonDay byAddingDays:day - 1 hours:0 minutes:0 seconds:0];
             if ( [STCalendar isDateInToday:thisDate] ) {
                 [self _drawTodayCircleAtPoint:CGPointMake(columnX + columnXOffset, ldY)  withLineWidth:lineWidth textAttributes:textAttributes context:context];
@@ -190,6 +200,8 @@ CGRect gMyInitRect;
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
             yOffset = 1;
 #endif
+            if ( day < 10 )
+                columnXOffset += singleDigitDateXOffset;
             [[NSString stringWithFormat:@"%d",day] drawAtPoint:CGPointMake(columnX + columnXOffset + lineWidth,ldY + yOffset) withAttributes:textAttributes];
             NSString *gregorianMonthDay = [STCalendar localGregorianDayOfTheMonthFromDate:thisDate];
             [gregorianMonthDay drawAtPoint:CGPointMake(columnX + columnXOffset,gdY) withAttributes:smallAttributes];
@@ -218,6 +230,7 @@ CGRect gMyInitRect;
     if ( [STCalendar isDateInToday:lastNewMoonDay] ) {
         [self _drawTodayCircleAtPoint:CGPointMake(oneX + lineWidth, ldY) withLineWidth:lineWidth textAttributes:textAttributes context:context];
     }
+    oneX += singleDigitDateXOffset;
     [@"1" drawAtPoint:CGPointMake(oneX,ldY) withAttributes:textAttributes];
     NSString *gregorianMonthDay = [STCalendar localGregorianDayOfTheMonthFromDate:lastNewMoonDay];
     [gregorianMonthDay drawAtPoint:CGPointMake(oneX,gdY) withAttributes:smallAttributes];
