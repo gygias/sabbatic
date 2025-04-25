@@ -14,8 +14,8 @@
             filePath = "STState.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "509"
-            endingLineNumber = "509"
+            startingLineNumber = "532"
+            endingLineNumber = "532"
             landmarkName = "-_fetchInfoFromUSNavy:"
             landmarkType = "7">
          </BreakpointContent>

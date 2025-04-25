@@ -33,6 +33,24 @@ static STState *sState = nil;
     return sState;
 }
 
+- (double)currentMoonFracillum:(BOOL *)waning
+{
+    NSString *dateString = [self _yearMonthDayStringWithDate:[NSDate myNow]];
+    NSDictionary *dict = [self _usnoOnedayForDateString:dateString location:[self _effectiveLocation]];
+    
+    NSString *phase = dict[@"properties"][@"data"][@"curphase"];
+    NSString *fracillum = dict[@"properties"][@"data"][@"fracillum"];
+    
+    if ( waning )
+        *waning = [phase rangeOfString:@"Waning" options:NSCaseInsensitiveSearch].location != NSNotFound;
+    
+    if ( [phase hasSuffix:@"%"] )
+        phase = [phase substringToIndex:[phase length] - 1];
+    
+    return [fracillum doubleValue] / 100.;
+}
+
+
 - (NSDate *)lastConjunction
 {
     __block NSDate *last = nil;
@@ -437,29 +455,8 @@ static STState *sState = nil;
 #warning detect significant location change (or user tz change) and discard all preferences
 - (NSDate *)_fetchSunsetTimeOnDate:(NSDate *)date
 {
-    CLLocation *location = [self _effectiveLocation];
     NSString *dateString = [self _yearMonthDayStringWithDate:date];
-    
-    NSString *key = [NSString stringWithFormat:@"com.combobulated.Sabbatic.usno.oneday.%@",dateString];
-    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:key];
-    
-    if ( ! dict ) {
-        dict = [self _fetchInfoFromUSNavy:[NSString stringWithFormat:@"https://aa.usno.navy.mil/api/rstt/oneday?date=%@&coords=%0.2f,%0.2f",dateString,location.coordinate.latitude,location.coordinate.longitude]];
-        if ( ! dict ) {
-            NSLog(@"very bad: failed to fetch sunset on %@ from usno!",dateString);
-            return nil;
-        } else
-            NSLog(@"fetched sunset on %@ from usno",dateString);
-        
-        NSDictionary *sanitized = [self _sanitizedJSON:dict];
-        NSLog(@"SANITIZED JSON: %@",sanitized);
-        [[NSUserDefaults standardUserDefaults] setObject:sanitized forKey:key];
-    } else {
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            NSLog(@"loaded usno sunset for %@ from preferences",dateString);
-        });
-    }
+    NSDictionary *dict = [self _usnoOnedayForDateString:dateString location:[self _effectiveLocation]];
     
     for ( NSDictionary *sunEvent in dict[@"properties"][@"data"][@"sundata"] ) {
         if ( [sunEvent[@"phen"] isEqualToString:@"Set"] ) {
@@ -469,6 +466,32 @@ static STState *sState = nil;
     }
     
     return nil;
+}
+
+- (NSDictionary *)_usnoOnedayForDateString:(NSString *)dateString location:(CLLocation *)location
+{
+    NSString *key = [NSString stringWithFormat:@"com.combobulated.Sabbatic.usno.oneday.%@",dateString];
+    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+    
+    if ( ! dict ) {
+        dict = [self _fetchInfoFromUSNavy:[NSString stringWithFormat:@"https://aa.usno.navy.mil/api/rstt/oneday?date=%@&coords=%0.2f,%0.2f",dateString,location.coordinate.latitude,location.coordinate.longitude]];
+        if ( ! dict ) {
+            NSLog(@"very bad: failed to fetch oneday on %@ from usno!",dateString);
+            return nil;
+        } else
+            NSLog(@"fetched oneday on %@ from usno",dateString);
+        
+        NSDictionary *sanitized = [self _sanitizedJSON:dict];
+        NSLog(@"SANITIZED JSON: %@",sanitized);
+        [[NSUserDefaults standardUserDefaults] setObject:sanitized forKey:key];
+    } else {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            NSLog(@"loaded usno oneday for %@ from preferences",dateString);
+        });
+    }
+    
+    return dict;
 }
 
 - (NSString *)_yearMonthDayStringWithDate:(NSDate *)date

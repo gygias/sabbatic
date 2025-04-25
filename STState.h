@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (id)state;
 
+- (double)currentMoonFracillum:(BOOL *)waning;
+
 - (NSDate *)lastConjunction;
 - (NSDate *)nextConjunction;
 - (NSDate *)lastNewMoonStart; // sunset on previous solar day

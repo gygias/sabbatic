@@ -10,20 +10,7 @@
 #import "STState.h"
 #import "STCalendar.h"
 #import "NSDate+MyNow.h"
-
-#ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
-#define STCalendarViewRect NSRect
-#define STCalendarViewContext [NSGraphicsContext currentContext].CGContext
-#define STCalendarViewColorClass NSColor
-#define STCalendarViewFontClass NSFont
-#define STCalendarViewLocalGregorianFontSize 8
-#else
-#define STCalendarViewRect CGRect
-#define STCalendarViewContext UIGraphicsGetCurrentContext()
-#define STCalendarViewColorClass UIColor
-#define STCalendarViewFontClass UIFont
-#define STCalendarViewLocalGregorianFontSize 7
-#endif
+#import "STDefines.h"
 
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
 CGRect gMyInitRect;
@@ -33,7 +20,7 @@ CGRect gMyInitRect;
 
 - (void)_initMyNowStuff
 {    
-#define MyNow
+//#define MyNow
 #ifdef MyNow
     NSDate *lastConjunction = [[STState state] lastConjunction];
     NSDate *lastNewMoonDay = [STCalendar newMoonDayForConjunction:lastConjunction];
@@ -83,7 +70,17 @@ CGRect gMyInitRect;
 }
 #endif
 
-- (void)drawRect:(STCalendarViewRect)dirtyRect {
+- (NSInteger)_fontSizeForViewWidth:(CGFloat)width
+{
+    return 10 + ( width / STFontSizeScalar );
+}
+
+- (NSInteger)_smallFontSizeForViewWidth:(CGFloat)width
+{
+    return STLocalGregorianFontSize + ( width / STFontSizeScalar );
+}
+
+- (void)drawRect:(STRect)dirtyRect {
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
     [super drawRect:dirtyRect];
     if ( ! CGRectEqualToRect(dirtyRect, gMyInitRect) ) {
@@ -96,7 +93,7 @@ CGRect gMyInitRect;
     CGFloat dayWidth = dirtyRect.size.width / 7;
     CGFloat dayHeight = dayWidth;
     
-    CGContextRef context = STCalendarViewContext;
+    CGContextRef context = STContext;
     
     CGFloat lineWidth = 1;
     CGContextSetLineWidth(context, lineWidth);
@@ -104,9 +101,9 @@ CGRect gMyInitRect;
     // draw calendar frame
     CGRect monthRect = CGRectMake(dirtyRect.origin.x,dirtyRect.origin.y,dirtyRect.size.width,dirtyRect.size.height);
     CGContextAddRect(context, monthRect);
-    CGContextSetFillColorWithColor(context, [STCalendarViewColorClass blackColor].CGColor);
+    CGContextSetFillColorWithColor(context, [STColorClass blackColor].CGColor);
     CGContextFillPath(context);
-    CGContextSetStrokeColorWithColor(context, [STCalendarViewColorClass redColor].CGColor);
+    CGContextSetStrokeColorWithColor(context, [STColorClass redColor].CGColor);
     CGContextStrokePath(context);
     
     for ( int i = 0; i < 8; i++ ) {
@@ -149,9 +146,10 @@ CGRect gMyInitRect;
     // draw day numbers
     NSDate *lastConjunction = [[STState state] lastConjunction];
     NSDate *lastNewMoonDay = [STCalendar newMoonDayForConjunction:lastConjunction];
-    NSDictionary *textAttributes = @{ NSForegroundColorAttributeName : [STCalendarViewColorClass redColor] };
-    NSDictionary *smallAttributes = @{ NSForegroundColorAttributeName : [STCalendarViewColorClass grayColor],
-                                       NSFontAttributeName : [STCalendarViewFontClass systemFontOfSize:STCalendarViewLocalGregorianFontSize] };
+    NSDictionary *textAttributes = @{ NSForegroundColorAttributeName : [STColorClass redColor],
+                                      NSFontAttributeName : [STFontClass systemFontOfSize:[self _fontSizeForViewWidth:dirtyRect.size.width]] };
+    NSDictionary *smallAttributes = @{ NSForegroundColorAttributeName : [STColorClass lightGrayColor],
+                                       NSFontAttributeName : [STFontClass systemFontOfSize:[self _smallFontSizeForViewWidth:dirtyRect.size.width]] };
     CGSize textSize = [@"foo" sizeWithAttributes:textAttributes];
     CGFloat singleDigitDateXOffset = [@"0" sizeWithAttributes:textAttributes].width / 2;
     //CGSize smallSize = [@"foo" sizeWithAttributes:smallAttributes];
@@ -197,9 +195,9 @@ CGRect gMyInitRect;
             }
             
             CGFloat yOffset = 0;
-#ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
+//#ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
             yOffset = 1;
-#endif
+//#endif
             if ( day < 10 )
                 columnXOffset += singleDigitDateXOffset;
             [[NSString stringWithFormat:@"%d",day] drawAtPoint:CGPointMake(columnX + columnXOffset + lineWidth,ldY + yOffset) withAttributes:textAttributes];
@@ -249,7 +247,7 @@ CGRect gMyInitRect;
 #endif
     
     CGContextSetLineWidth(context,1);
-    CGContextSetFillColorWithColor(context, [STCalendarViewColorClass grayColor].CGColor);
+    CGContextSetFillColorWithColor(context, [STColorClass grayColor].CGColor);
     CGContextAddArc(context,dateCenter.x,dateCenter.y,dateSize.width / 2 + lineWidth,0.0,M_PI*2,YES);
     CGContextFillPath(context);
     
