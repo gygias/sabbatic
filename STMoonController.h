@@ -13,6 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id)initWithView:(SCNView *)view;
 
+- (void)doIntroAnimationWithCompletionHandler:(void (^)(void))completionHandler;
+- (void)animateToCurrentPhaseWithCompletionHandler:(void (^)(void))completionHandler;
+
 @end
 
 NS_ASSUME_NONNULL_END

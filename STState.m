@@ -13,6 +13,8 @@
 #import "STCalendar.h"
 #import "NSDate+MyNow.h"
 
+//#define debugDateStuff
+
 static STState *sState = nil;
 
 @interface STState (Private)
@@ -42,7 +44,8 @@ static STState *sState = nil;
     NSString *fracillum = dict[@"properties"][@"data"][@"fracillum"];
     
     if ( waning )
-        *waning = [phase rangeOfString:@"Waning" options:NSCaseInsensitiveSearch].location != NSNotFound;
+        *waning = [phase rangeOfString:@"Waning" options:NSCaseInsensitiveSearch].location != NSNotFound
+                    || [phase rangeOfString:@"Third Quarter" options:NSCaseInsensitiveSearch].location != NSNotFound;
     
     if ( [phase hasSuffix:@"%"] )
         phase = [phase substringToIndex:[phase length] - 1];
@@ -66,7 +69,6 @@ static STState *sState = nil;
             if ( [[NSDate myNow] timeIntervalSinceDate:aThen] > 0 ) {
                 last = aThen;
                 *stop = YES;
-                NSLog(@"the last conjunction was %@",aThen);
             }
         }
     }];
@@ -86,10 +88,15 @@ static STState *sState = nil;
             NSString *aThenString = nil;
             NSDate *aThen = [self _dateFromUSNODictionary:obj :&aThenString];
             
-            if ( [[NSDate myNow] timeIntervalSinceDate:aThen] < 0 ) {
+            NSDate *myNow = [NSDate myNow];
+            NSTimeInterval interval = [myNow timeIntervalSinceDate:aThen];
+            //if ( interval > -180 && interval < 180 ) {
+            //    NSLog(@"houston we have a problem");
+            //}
+            if ( [myNow timeIntervalSinceDate:aThen] < 0 ) {
+                NSLog(@"%@ is before %@ (%0.3f)",myNow,aThen,interval);
                 next = aThen;
                 *stop = YES;
-                NSLog(@"the next conjunction is %@",aThen);
             }
         }
     }];
@@ -111,7 +118,6 @@ static STState *sState = nil;
                 springEquinoxDate = aDate;
                 springEquinoxDateString = aString;
                 *stop = YES;
-                NSLog(@"spring equinox this year is on %@!",springEquinoxDateString);
             }
         }
     }];
@@ -133,45 +139,58 @@ static STState *sState = nil;
                 lastDelta = [aThen timeIntervalSinceDate:springEquinoxDate];
                 if ( lastDelta < 0 )
                     lastDelta = -lastDelta;
+#ifdef debugDateStuff
                 NSLog(@"new year search, some new moon was %@",last);
+#endif
             } else {
                 NSTimeInterval aDelta = [aThen timeIntervalSinceDate:springEquinoxDate];
                 if ( aDelta < 0 )
                     aDelta = -aDelta;
                 if ( aDelta < lastDelta ) {
+#ifdef debugDateStuff
                     NSLog(@"new year search, %@ is closer to sequinox than %@",aThen,last);
+#endif
                     last = aThen;
                     lastString = aThenString;
                     lastDelta = aDelta;
-                } else
+                }
+#ifdef debugDateStuff
+                else
                     NSLog(@"new year search, %@ is NOT closer to sequinox than %@",aThen,last);
+#endif
             }
         }
     }];
     
     NSTimeInterval daysDelta = lastDelta / 60. / 60. / 24.;
-    NSLog(@"the last new year was %@, %0.0f days removed from the spring equinox",lastString,daysDelta);
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSLog(@"the last new year %@ was %0.0f days removed from the spring equinox",lastString,daysDelta);
+    });
     
     return last;
 }
 
-- (NSInteger)lunarMonthsSinceDate:(NSDate *)date
+- (NSInteger)currentLunarMonth
 {
     NSArray *phases = [self _lunarPhasesFromUSNavyForYear:-1];
     __block NSInteger months = 0;
     __block BOOL found = NO;
     
+    NSDate *lastNewYear = [self lastNewYear];
     [phases enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
         if ( [[obj objectForKey:@"phase"] isEqualToString:@"New Moon"] ) {
             NSString *aThenString = nil;
             NSDate *aThen = [self _dateFromUSNODictionary:obj :&aThenString];
-            if ( [aThen isEqualToDate:date] ) {
-                found = YES;
-                return;
-            }
-            if ( found ) {
-                if ( [date timeIntervalSinceDate:aThen] < 0 )
+            if ( ! found ) {
+                if ( [lastNewYear compare:aThen] == NSOrderedAscending ) {
+                    found = YES;
+                    months++;
+                    return;
+                }
+            } else {
+                if ( [[NSDate myNow] timeIntervalSinceDate:aThen] < 0 )
                     *stop = YES;
                 else
                     months++;
@@ -179,7 +198,10 @@ static STState *sState = nil;
         }
     }];
     
-    NSLog(@"it has been %lu months since the new year",months);
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSLog(@"it has been %lu months since the new year",months);
+    });
     return months;
 }
 
@@ -187,7 +209,7 @@ static STState *sState = nil;
 {
     NSDate *last = [self lastConjunction];
     NSDate *day = [STCalendar newMoonDayForConjunction:last];
-    NSDate *start = [STCalendar date:day byAddingDays:-1 hours:0 minutes:0 seconds:0];
+    NSDate *start = [STCalendar date:day byAddingDays:0 hours:0 minutes:0 seconds:0];
     NSDate *sunsetPreviousDay = [self _fetchSunsetTimeOnDate:start];
     return sunsetPreviousDay;
 }
@@ -196,9 +218,44 @@ static STState *sState = nil;
 {
     NSDate *next = [self nextConjunction];
     NSDate *day = [STCalendar newMoonDayForConjunction:next];
+    NSLog(@"next conjunction for determining nextNewMoonStart: %@, gregorian midnight: %@",next,day);
     NSDate *start = [STCalendar date:day byAddingDays:-1 hours:0 minutes:0 seconds:0];
     NSDate *sunsetPreviousDay = [self _fetchSunsetTimeOnDate:start];
+    NSLog(@"hopefully %@ is not before %@! %@",sunsetPreviousDay,[NSDate myNow],[sunsetPreviousDay compare:[NSDate myNow]] == NSOrderedAscending?@"IT IS!":@"it's not!");
     return sunsetPreviousDay;
+}
+
+- (NSDate *)lastSunset
+{
+    NSDate *myNow = [NSDate myNow];
+    NSDate *sunsetToday = [self sunsetOnDate:myNow];
+    NSTimeInterval timeSince = [myNow timeIntervalSinceDate:sunsetToday];
+    static dispatch_once_t onceToken;
+    if ( timeSince >= 0 ) {
+        dispatch_once(&onceToken, ^{
+            NSLog(@"the sun set %0.2f hours ago at %@",timeSince / 60. / 60.,sunsetToday);
+        });
+        return sunsetToday;
+    }
+    NSDate *dayBefore = [STCalendar date:myNow byAddingDays:-1 hours:0 minutes:0 seconds:0];
+    NSDate *sunsetDayBefore = [self sunsetOnDate:dayBefore];
+    timeSince = [myNow timeIntervalSinceDate:sunsetDayBefore];
+    dispatch_once(&onceToken, ^{
+        NSLog(@"the sun set %0.2f hours ago at %@",timeSince / 60. / 60.,sunsetDayBefore);
+    });
+    return sunsetDayBefore;
+}
+
+- (NSDate *)nextSunset
+{
+    NSDate *myNow = [NSDate myNow];
+    NSDate *sunsetToday = [self sunsetOnDate:myNow];
+    if ( [myNow timeIntervalSinceDate:sunsetToday] <= 0 ) {
+        return sunsetToday;
+    }
+    NSDate *tomorrow = [STCalendar date:myNow byAddingDays:1 hours:0 minutes:0 seconds:0];
+    NSDate *sunsetTomorrow = [self sunsetOnDate:tomorrow];
+    return sunsetTomorrow;
 }
 
 - (NSDate *)sunsetOnDate:(NSDate *)date
@@ -206,13 +263,13 @@ static STState *sState = nil;
     return [self _fetchSunsetTimeOnDate:date];
 }
 
-- (NSDate *)lastNewMoon
+- (NSDate *)lastNewMoonDay
 {
     NSDate *last = [self lastConjunction];    
     return [self normalizeDate:[STCalendar newMoonDayForConjunction:last]];
 }
 
-- (NSDate *)nextNewMoon
+- (NSDate *)nextNewMoonDay
 {
     NSDate *next = [self nextConjunction];
     return [self normalizeDate:[STCalendar newMoonDayForConjunction:next]];
@@ -220,7 +277,7 @@ static STState *sState = nil;
 
 - (NSDate *)lastSabbath
 {
-    NSDate *lastNewMoon = [self lastNewMoon];
+    NSDate *lastNewMoon = [self lastNewMoonDay];
     NSDate *now = [NSDate myNow];
     NSDate *last = nil;
     int i = 3;
@@ -234,17 +291,24 @@ static STState *sState = nil;
     }
     
     if ( ! last ) {
-        NSLog(@"WARNING: the last sabbath from %@ is the last new moon %@!",now,lastNewMoon);
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            NSLog(@"WARNING: the last sabbath from %@ is the last new moon %@!",now,lastNewMoon);
+        });
         last = lastNewMoon;
-    } else
-        NSLog(@"The last sabbath from %@ is the %dth, %@, based on last new moon %@",now,i,last,lastNewMoon);
+    } else {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            NSLog(@"The last sabbath from %@ is the %dth, %@, based on last new moon %@",now,i,last,lastNewMoon);
+        });
+    }
     
     return last;
 }
 
 - (NSDate *)nextSabbath
 {
-    NSDate *lastNewMoon = [self lastNewMoon];
+    NSDate *lastNewMoon = [self lastNewMoonDay];
     NSDate *now = [NSDate myNow];
     NSDate *next = nil;
     int i = 0;
@@ -258,10 +322,17 @@ static STState *sState = nil;
     }
     
     if ( ! next ) {
-        next = [self nextNewMoon];
-        NSLog(@"WARNING: the next sabbath from %@ is the next new moon %@!",now,next);
-    } else
-        NSLog(@"The next sabbath from %@ is the %dth, %@",now,i,next);
+        next = [self nextNewMoonDay];
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            NSLog(@"WARNING: the next sabbath from %@ is the next new moon %@!",now,next);
+        });
+    } else {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            NSLog(@"The next sabbath from %@ is the %dth, %@",now,i,next);
+        });
+    }
     
     return next;
 }
@@ -271,7 +342,9 @@ static STState *sState = nil;
     NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     NSDateComponents *dateComponents = [gregorian components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay) fromDate:date];    
     NSDate *normalizedDate = [gregorian dateFromComponents:dateComponents];
+#ifdef debugDateStuff
     NSLog(@"%@ normalized to %@",date,normalizedDate);
+#endif
     return normalizedDate;
 }
 
@@ -279,7 +352,9 @@ static STState *sState = nil;
 {
     date = [self normalizeDate:date];
     NSDate *normalizedDate = [STCalendar date:date byAddingDays:0 hours:hour minutes:minute seconds:0];
+#ifdef debugDateStuff
     NSLog(@"%@ normalized to %@",date,normalizedDate);
+#endif
     return normalizedDate;
 }
 

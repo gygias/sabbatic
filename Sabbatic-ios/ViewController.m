@@ -13,7 +13,7 @@
 #import "STMoonController.h"
 
 @interface ViewController ()
-@property (strong) STMoonController *moonViewController;
+@property (strong) STMoonController *moonController;
 @property (strong) UIView *calendarView;
 @end
 
@@ -33,8 +33,30 @@
     [self.view addSubview:self.calendarView];
     
     SCNView *moonView = [[SCNView alloc] initWithFrame:CGRectInset([self.view frame], 10, 10) options:NULL];
-    self.moonViewController = [[STMoonController alloc] initWithView:moonView];
+    self.moonController = [[STMoonController alloc] initWithView:moonView];
     [self.view addSubview:moonView];
+    
+    [self.moonController doIntroAnimationWithCompletionHandler:^{
+        NSLog(@"did intro animation");
+        [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
+            NSLog(@"animated to current phase on app launch");
+        }];
+    }];
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
+        NSLog(@"NSCalendarDayChangedNotification!");
+        [self.calendarView setNeedsDisplay];
+        [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
+            NSLog(@"animated to current phase on day change");
+        }];
+    }];
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue]  usingBlock:^(NSNotification * _Nonnull notification) {
+        NSLog(@"NSSystemClockDidChangeNotification!");
+        [self.calendarView setNeedsDisplay];
+        [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
+            NSLog(@"animated to current phase on clock change");
+        }];
+    }];
 }
 
 

@@ -15,11 +15,29 @@ static NSTimeInterval sNSDateMyNowOffset = 0;
 
 + (void)_enqueueDayChangedNoteForDayAfter:(NSDate *)date
 {
+#ifdef gregorian_note
     NSDate *startOfMyNow = [[NSCalendar currentCalendar] startOfDayForDate:date];
     NSDate *startOfMyTomorrow = [STCalendar date:startOfMyNow byAddingDays:1 hours:0 minutes:0 seconds:0];
     NSTimeInterval timeToTomorrow = [startOfMyTomorrow timeIntervalSince1970] - [NSDate myNow].timeIntervalSince1970;
     NSLog(@"enqueueing NSCalendarDayChangedNotification for %@! (in %0.1f seconds)",startOfMyTomorrow,timeToTomorrow);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(timeToTomorrow * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@"posting fake NSCalendarDayChangedNotification...");
+        [[NSNotificationCenter defaultCenter] postNotificationName:NSCalendarDayChangedNotification object:self];
+        
+        [self _enqueueDayChangedNoteForDayAfter:[[NSDate myNow] dateByAddingTimeInterval:60]];
+    });
+#endif
+    NSDate *nextSunset = [[STState state] nextSunset];
+    NSDate *nextStart = [[STState state] nextNewMoonStart];
+    NSLog(@"[[%@ vs %@]]",nextSunset,nextStart);
+    NSTimeInterval timeToNextStart = [nextStart timeIntervalSince1970] - [NSDate myNow].timeIntervalSince1970;
+    if ( timeToNextStart < 0 ) {
+        NSLog(@"something is wrong, nextNewMoonStart is in the past!");
+        return;
+    }
+    NSLog(@"enqueueing NSCalendarDayChangedNotification for %@! (in %0.1f seconds)",nextSunset,timeToNextStart);
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(timeToNextStart * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        NSLog(@"posting fake NSCalendarDayChangedNotification...");
         [[NSNotificationCenter defaultCenter] postNotificationName:NSCalendarDayChangedNotification object:self];
         
         [self _enqueueDayChangedNoteForDayAfter:[[NSDate myNow] dateByAddingTimeInterval:60]];
@@ -29,7 +47,7 @@ static NSTimeInterval sNSDateMyNowOffset = 0;
 + (void)setMyNow:(NSDate *)date
 {
     sNSDateMyNowOffset = [NSDate date].timeIntervalSince1970 - [date timeIntervalSince1970];
-    NSLog(@"MYNOW: we are now %0.1f seconds in the past",sNSDateMyNowOffset);
+    NSLog(@"MYNOW: The time is now %@ (%0.1f seconds in the %@)",[NSDate myNow],sNSDateMyNowOffset,sNSDateMyNowOffset>0?@"past":@"future");
     [self _enqueueDayChangedNoteForDayAfter:date];
 }
 
@@ -40,9 +58,45 @@ static NSTimeInterval sNSDateMyNowOffset = 0;
     return [NSDate date];
 }
 
+- (BOOL)isWithinAbsoluteTimeInterval:(NSTimeInterval)interval ofDate:(NSDate *)date
+{
+    NSTimeInterval sinceDate = [self timeIntervalSinceDate:date];
+    return ( sinceDate <= interval )
+        && ( sinceDate >= -interval );
+}
+
+- (NSString *)_localString:(NSString *)format
+{
+    NSDateFormatter * df = [[NSDateFormatter alloc] init];
+    NSTimeZone *tz = [NSTimeZone localTimeZone];
+    NSLog(@"local time zone: %@",tz);
+    [df setTimeZone:tz];
+    [df setDateFormat:format];
+    return [df stringFromDate:self];
+}
+
+- (NSString *)localYearMonthDayString
+{
+    return [self _localString:@"yyyy-MM-dd"];
+}
+
+- (NSString *)localYearMonthDayHourMinuteString
+{
+    return [self _localString:@"EEE MMM dd HH:mm:ss yyyy"];
+}
+
 @end
 
 @implementation STCalendar
+
++ (BOOL)isDateInLunarToday:(NSDate *)date
+{
+    NSDate *lastSunset = [[STState state] lastSunset];
+    NSDate *nextSunset = [[STState state] nextSunset];
+    
+    return ( [date timeIntervalSinceDate:lastSunset] >= 0 )
+            && ( [date timeIntervalSinceDate:nextSunset] <= 0 );
+}
 
 + (BOOL)isDateInToday:(NSDate *)date
 {
@@ -55,11 +109,6 @@ static NSTimeInterval sNSDateMyNowOffset = 0;
         && [nextDay timeIntervalSince1970] > [date timeIntervalSince1970] )
         return YES;
     return NO;
-}
-
-+ (NSDate *)newMoonStartTimeForConjunction:(NSDate *)date
-{
-    return nil;
 }
 
 + (NSDate *)newMoonDayForConjunction:(NSDate *)date

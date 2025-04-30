@@ -14,6 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setMyNow:(NSDate *)date;
 + (NSDate *)myNow;
 
+- (BOOL)isWithinAbsoluteTimeInterval:(NSTimeInterval)interval ofDate:(NSDate *)date;
+
+- (NSString *)localYearMonthDayString;
+- (NSString *)localYearMonthDayHourMinuteString;
+
 @end
 
 NS_ASSUME_NONNULL_END

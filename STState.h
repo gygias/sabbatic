@@ -25,12 +25,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSDate *)nextConjunction;
 - (NSDate *)lastNewMoonStart; // sunset on previous solar day
 - (NSDate *)nextNewMoonStart; // sunset on previous solar day
-- (NSDate *)lastNewMoon; // midnight on new moon day
-- (NSDate *)nextNewMoon; // midnight on new moon day
+- (NSDate *)lastNewMoonDay; // midnight on new moon day
+- (NSDate *)nextNewMoonDay; // midnight on new moon day
 - (NSDate *)lastNewYear;
-- (NSInteger)lunarMonthsSinceDate:(NSDate *)date;
+- (NSInteger)currentLunarMonth;
 - (NSDate *)lastSabbath;
 - (NSDate *)nextSabbath;
+- (NSDate *)lastSunset;
+- (NSDate *)nextSunset;
 - (NSDate *)sunsetOnDate:(NSDate *)date;
 
 - (NSDate *)normalizeDate:(NSDate *)date; // returns midnight on same calendar date

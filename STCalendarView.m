@@ -20,12 +20,18 @@ CGRect gMyInitRect;
 
 - (void)_initMyNowStuff
 {    
-//#define MyNow
+#define MyNow
 #ifdef MyNow
-    NSDate *lastConjunction = [[STState state] lastConjunction];
-    NSDate *lastNewMoonDay = [STCalendar newMoonDayForConjunction:lastConjunction];
-    NSDate *fiveTil = [STCalendar date:lastNewMoonDay byAddingDays:7 hours:23 minutes:59 seconds:55];
-    [NSDate setMyNow:fiveTil];
+    //NSDate *lastConjunction = [[STState state] lastConjunction];
+    //NSDate *lastNewMoonDay = [STCalendar newMoonDayForConjunction:lastConjunction];
+#warning START HERE five seconds before lastNewMoonStart, bugs!
+    //NSDate *lastNewMoonStart = [[STState state] lastNewMoonStart];
+    //NSDate *myNow = [STCalendar date:lastNewMoonDay byAddingDays:24 hours:23 minutes:59 seconds:55];
+    //NSDate *myNow = [STCalendar date:lastNewMoonDay byAddingDays:6 hours:23 minutes:59 seconds:55];
+    //NSDate *myNow = [STCalendar date:lastNewMoonStart byAddingDays:0 hours:0 minutes:0 seconds:-5];
+    //NSDate *myNow = lastNewMoonDay;
+    NSDate *myNow = [STCalendar date:[NSDate date] byAddingDays:0 hours:0 minutes:0 seconds:0];
+    [NSDate setMyNow:myNow];
 #endif
 }
 
@@ -34,19 +40,6 @@ CGRect gMyInitRect;
 {
     if ( self = [super initWithFrame:frameRect] ) {
         gMyInitRect = frameRect;
-        if ( CGRectEqualToRect(frameRect, [self frame]) ) {
-            NSLog(@"WTF");
-            //abort();
-            [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
-                NSLog(@"NSCalendarDayChangedNotification!");
-                [self setNeedsDisplay:YES];
-            }];
-            [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue]  usingBlock:^(NSNotification * _Nonnull notification) {
-                NSLog(@"NSSystemClockDidChangeNotification!");
-                [self setNeedsDisplay:YES];
-            }];
-        }
-        
         [self _initMyNowStuff];
     }
     return self;
@@ -55,15 +48,6 @@ CGRect gMyInitRect;
 - (id)initWithFrame:(CGRect)frameRect
 {
     if ( self = [super initWithFrame:frameRect] ) {
-        [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
-            NSLog(@"NSCalendarDayChangedNotification!");
-            [self setNeedsDisplay];
-        }];
-        [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue]  usingBlock:^(NSNotification * _Nonnull notification) {
-            NSLog(@"NSSystemClockDidChangeNotification!");
-            [self setNeedsDisplay];
-        }];
-        
         [self _initMyNowStuff];
     }
     return self;
@@ -84,16 +68,24 @@ CGRect gMyInitRect;
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
     [super drawRect:dirtyRect];
     if ( ! CGRectEqualToRect(dirtyRect, gMyInitRect) ) {
-        NSLog(@"WTF");
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            NSLog(@"macos drawrect workaround applied");
+        });
         dirtyRect = CGRectInset(dirtyRect, 50, 50);
     }
 #endif
     
+    CGContextRef context = STContext;
+    
+    //[[NSColor clearColor] set];
+    //NSRectFill(dirtyRect);
+    CGContextSetFillColorWithColor(context, [STColorClass clearColor].CGColor);
+    CGContextFillRect(context, dirtyRect);
+    
     // Drawing code here.
     CGFloat dayWidth = dirtyRect.size.width / 7;
     CGFloat dayHeight = dayWidth;
-    
-    CGContextRef context = STContext;
     
     CGFloat lineWidth = 1;
     CGContextSetLineWidth(context, lineWidth);
@@ -144,8 +136,9 @@ CGRect gMyInitRect;
     CGContextStrokePath(context);
     
     // draw day numbers
-    NSDate *lastConjunction = [[STState state] lastConjunction];
-    NSDate *lastNewMoonDay = [STCalendar newMoonDayForConjunction:lastConjunction];
+    //NSDate *lastConjunction = [[STState state] lastConjunction];
+    //NSDate *lastNewMoonDay = [STCalendar newMoonDayForConjunction:lastConjunction];
+    NSDate *lastNewMoonDay = [[STState state] lastNewMoonStart];
     NSDictionary *textAttributes = @{ NSForegroundColorAttributeName : [STColorClass redColor],
                                       NSFontAttributeName : [STFontClass systemFontOfSize:[self _fontSizeForViewWidth:dirtyRect.size.width]] };
     NSDictionary *smallAttributes = @{ NSForegroundColorAttributeName : [STColorClass lightGrayColor],
@@ -155,8 +148,7 @@ CGRect gMyInitRect;
     //CGSize smallSize = [@"foo" sizeWithAttributes:smallAttributes];
     
     // draw lunation #
-    NSDate *lastNewYear = [[STState state] lastNewYear];
-    NSInteger monthsSinceNewYear = [[STState state] lunarMonthsSinceDate:lastNewYear];
+    NSInteger monthsSinceNewYear = [[STState state] currentLunarMonth];
     NSString *hebrewMonthString = [STCalendar hebrewMonthForMonth:monthsSinceNewYear];
     CGPoint monthPoint;
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
@@ -190,7 +182,7 @@ CGRect gMyInitRect;
 #endif
             
             NSDate *thisDate = [STCalendar date:lastNewMoonDay byAddingDays:day - 1 hours:0 minutes:0 seconds:0];
-            if ( [STCalendar isDateInToday:thisDate] ) {
+            if ( [STCalendar isDateInLunarToday:thisDate] ) {
                 [self _drawTodayCircleAtPoint:CGPointMake(columnX + columnXOffset, ldY)  withLineWidth:lineWidth textAttributes:textAttributes context:context];
             }
             
@@ -207,12 +199,29 @@ CGRect gMyInitRect;
             // sabbath
             if ( j == 6 ) {
                 NSDate *sunset = [[STState state] sunsetOnDate:[NSDate myNow]];
-                NSDate *nextSabbath = [[STState state] nextSabbath];
-                NSDate *lastSabbath = [[STState state] lastSabbath];
-                NSDate *nextNewMoonStart = [[STState state] nextNewMoonStart];
-                NSLog(@"next new moon start: %@",nextNewMoonStart);
+                NSDate *lastNewYear = [[STState state] lastNewYear];
+                NSDate *lastConjunction = [[STState state] lastConjunction];
                 NSDate *lastNewMoonStart = [[STState state] lastNewMoonStart];
-                NSLog(@"last new moon start: %@",lastNewMoonStart);
+                NSDate *lastNewMoonDay = [[STState state] lastNewMoonDay];
+                NSDate *nextConjunction = [[STState state] nextConjunction];
+                NSDate *nextNewMoonStart = [[STState state] nextNewMoonStart];
+                NSDate *nextNewMoonDay = [[STState state] nextNewMoonDay];
+                NSDate *lastSabbath = [[STState state] lastSabbath];
+                NSDate *nextSabbath = [[STState state] nextSabbath];
+                static dispatch_once_t onceToken;
+                dispatch_once(&onceToken, ^{
+                    NSLog(@"last new year: %@",lastNewYear);
+                    NSLog(@"last conjunction: %@",lastConjunction);
+                    NSLog(@"last new moon day began: %@",[lastNewMoonStart localYearMonthDayHourMinuteString]);
+                    NSLog(@"last new moon day: %@",lastNewMoonDay);
+                    NSLog(@"next conjunction: %@",nextConjunction);
+                    NSLog(@"next new moon day begins: %@",[nextNewMoonStart localYearMonthDayHourMinuteString]);
+                    NSLog(@"next new moon day: %@",nextNewMoonDay);
+                    NSLog(@"last sabbath: %@",lastSabbath);
+                    NSLog(@"next sabbath: %@",nextSabbath);
+                    NSLog(@"sunset today: %@",[sunset localYearMonthDayHourMinuteString]);
+                });
+                
             }
         }
     }
@@ -225,7 +234,7 @@ CGRect gMyInitRect;
     CGFloat gdY = ldY + dayHeight - textSize.height;
 #endif
     CGFloat oneX = dirtyRect.origin.x + ( 6 * dayWidth );
-    if ( [STCalendar isDateInToday:lastNewMoonDay] ) {
+    if ( [STCalendar isDateInLunarToday:lastNewMoonDay] ) {
         [self _drawTodayCircleAtPoint:CGPointMake(oneX + lineWidth, ldY) withLineWidth:lineWidth textAttributes:textAttributes context:context];
     }
     oneX += singleDigitDateXOffset;
