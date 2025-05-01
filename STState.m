@@ -544,8 +544,8 @@ static STState *sState = nil;
 #warning detect significant location change (or user tz change) and discard all preferences
 - (NSDate *)_fetchSunsetTimeOnDate:(NSDate *)date
 {
-    //NSInteger tzOffset = [[NSTimeZone localTimeZone] secondsFromGMTForDate:date];
-    //NSDate *lookupDate = [STCalendar date:date byAddingDays:0 hours:0 minutes:0 seconds:-tzOffset];
+    NSInteger tzOffset = [[NSTimeZone localTimeZone] secondsFromGMTForDate:date];
+    NSDate *lookupDate = [STCalendar date:date byAddingDays:0 hours:0 minutes:0 seconds:0];
     NSString *dateString = [self _yearMonthDayStringWithDate:lookupDate];
     NSDictionary *dict = [self _usnoOnedayForDateString:dateString location:[self _effectiveLocation]];
     

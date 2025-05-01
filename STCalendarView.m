@@ -20,7 +20,7 @@ CGRect gMyInitRect;
 
 - (void)_initMyNowStuff
 {    
-//#define MyNow
+#define MyNow
 #ifdef MyNow
     //NSDate *lastConjunction = [[STState state] lastConjunction];
     //NSDate *lastNewMoonDay = [STCalendar newMoonDayForConjunction:lastConjunction];
