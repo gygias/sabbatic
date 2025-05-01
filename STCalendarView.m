@@ -20,7 +20,7 @@ CGRect gMyInitRect;
 
 - (void)_initMyNowStuff
 {    
-#define MyNow
+//#define MyNow
 #ifdef MyNow
     //NSDate *lastConjunction = [[STState state] lastConjunction];
     //NSDate *lastNewMoonDay = [STCalendar newMoonDayForConjunction:lastConjunction];
@@ -202,14 +202,12 @@ CGRect gMyInitRect;
             // +1 hour to handle shortening and lengthening days in one pass (hopefully)
             int effectiveDay = day;
             NSDate *thisDate = [STCalendar date:lastNewMoonStart byAddingDays:effectiveDay hours:1 minutes:0 seconds:0];
-            if ( effectiveDay == 3 )
-                NSLog(@"break");
             BOOL isLunarToday = [STCalendar isDateInLunarToday:thisDate];
             
             if ( isLunarToday ) {
                 if ( foundToday ) {
                     NSLog(@"something is wrong on %@",[NSDate myNow]);
-                    abort();
+                    //abort();
                 }
                 foundToday = YES;
                 
@@ -288,7 +286,7 @@ CGRect gMyInitRect;
         
         if ( foundToday ) {
             NSLog(@"something is wrong on %@",[NSDate myNow]);
-            abort();
+            //abort();
         }
         foundToday = YES;
         
@@ -310,7 +308,7 @@ CGRect gMyInitRect;
 
     if ( ! foundToday ) {
         NSLog(@"something is wrong on %@",[NSDate myNow]);
-        abort();
+        //abort();
     }
 }
 

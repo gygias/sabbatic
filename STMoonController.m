@@ -153,27 +153,18 @@ typedef enum
     fraction = [self _shiftFracillum:fraction];
     if ( self.currentPhase == 0 ) {
         CGFloat twoFraction = fraction * 2;
-        //byVector = SCNVector3Make( idx_1.x * twoFraction + idx_0.x * ( 1 - twoFraction ), 0, idx_0.z * ( 1 - twoFraction ) );
-        //camVector = SCNVector3Make( cam_1.x * twoFraction + cam_0.x * ( 1 - twoFraction ), cam_1.y * twoFraction + cam_0.y * ( 1 - twoFraction ), cam_1.z * twoFraction + cam_0.z * ( 1 - twoFraction ));
         byVector = ScaleTwoVectors(idx_0, idx_1, twoFraction);
         camVector = ScaleTwoVectors(cam_0, cam_1, twoFraction);
     } else if ( self.currentPhase == 1 ) {
         CGFloat oneFraction = ( fraction - .5 ) / .5;
-        //byVector = SCNVector3Make( idx_1.x * ( 1 - oneFraction ), 0, idx_2.z * oneFraction );
-        //camVector = SCNVector3Make( cam_2.x * oneFraction + cam_1.x * ( 1 - oneFraction ), cam_2.y * oneFraction + cam_1.y * ( 1 - oneFraction ), cam_2.z * oneFraction + cam_1.x * ( 1 - oneFraction ) );
         byVector = ScaleTwoVectors(idx_1, idx_2, oneFraction);
         camVector = ScaleTwoVectors(cam_1, cam_2, oneFraction);
     } else if ( self.currentPhase == 2 ) {
         CGFloat oneFraction = ( fraction - .5 ) / .5;
-        //byVector = SCNVector3Make( idx_3.x * ( 1 - oneFraction ), 0, idx_2.z * oneFraction );
-        //NSLog(@"%0.2f * %0.2f = %0.2f",cam_3.z,oneFraction,cam_3.z*oneFraction);
-        //camVector = SCNVector3Make( cam_3.x * oneFraction + cam_2.x * ( 1 - oneFraction ), cam_3.y * oneFraction + cam_2.y * ( 1 - oneFraction ), cam_3.z * oneFraction + cam_2.z * ( 1 - oneFraction ) );
-        byVector = ScaleTwoVectors(idx_2, idx_3, oneFraction);
+        byVector = ScaleTwoVectors(idx_2, idx_3, ( 1 - oneFraction ));
         camVector = ScaleTwoVectors(cam_2, cam_3, oneFraction);
     } else if ( self.currentPhase == 3 ) {
         CGFloat twoFraction = fraction * 2;
-        //byVector = SCNVector3Make( idx_3.x * twoFraction + idx_0_1.x * ( 1 - twoFraction ), 0, idx_0_1.z * ( 1 - twoFraction ));
-        //camVector = SCNVector3Make( cam_0.x * twoFraction + cam_3.x * ( 1 - twoFraction ), cam_0.y * twoFraction + cam_3.y * ( 1 - twoFraction ), cam_0.z * twoFraction + cam_3.z * ( 1 - twoFraction ) );
         byVector = ScaleTwoVectors(idx_0_1, idx_3, twoFraction);
         camVector = ScaleTwoVectors(cam_0, cam_3, twoFraction);
     } else
