@@ -20,7 +20,7 @@ CGRect gMyInitRect;
 
 - (void)_initMyNowStuff
 {    
-#define MyNow
+//#define MyNow
 #ifdef MyNow
     //NSDate *lastConjunction = [[STState state] lastConjunction];
     //NSDate *lastNewMoonDay = [STCalendar newMoonDayForConjunction:lastConjunction];
@@ -178,6 +178,7 @@ CGRect gMyInitRect;
 #endif
         CGFloat ldY = dirtyRect.origin.y + ( i * dayHeight );
         CGFloat ssY = ldY + textSize.height + 3;
+        CGFloat fcY = ssY + textSize.height + 3;
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
         CGFloat gdY = ldY + STGregorianDayOffset;
         //CGFloat sY = ldY + dayHeight / 3;
@@ -214,6 +215,12 @@ CGRect gMyInitRect;
             
             NSString *sunsetHourMinute = [NSString stringWithFormat:@"SS %@",[[[STState state] lastSunsetForDate:thisDate momentAfter:NO] localHourMinuteString]];
             [sunsetHourMinute drawAtPoint:CGPointMake(columnX + columnXOffset, ssY) withAttributes:smallerAttributes];
+            
+            BOOL waning = NO;
+            double fracillum = [[STState state] moonFracillumForDate:thisDate :&waning];
+            NSString *fracillumString = [NSString stringWithFormat:@"%0.0f%%%@",fracillum * 100,waning?@" (waning)":@""];
+            [fracillumString drawAtPoint:CGPointMake(columnX + columnXOffset, fcY) withAttributes:smallerAttributes];
+            
             
             NSString *gregorianString = nil;
             NSAttributedString *attrString = nil;

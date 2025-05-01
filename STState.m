@@ -37,7 +37,12 @@ static STState *sState = nil;
 
 - (double)currentMoonFracillum:(BOOL *)waning
 {
-    NSString *dateString = [self _yearMonthDayStringWithDate:[NSDate myNow]];
+    return [self moonFracillumForDate:[NSDate myNow] :waning];
+}
+
+- (double)moonFracillumForDate:(NSDate *)date :(BOOL *)waning
+{
+    NSString *dateString = [self _yearMonthDayStringWithDate:date];
     NSDictionary *dict = [self _usnoOnedayForDateString:dateString location:[self _effectiveLocation]];
     
     NSString *phase = dict[@"properties"][@"data"][@"curphase"];
@@ -52,7 +57,6 @@ static STState *sState = nil;
     
     return [fracillum doubleValue] / 100.;
 }
-
 
 - (NSDate *)_conjunctionPriorToDate:(NSDate *)date
 {

@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (id)state;
 
 - (double)currentMoonFracillum:(BOOL *)waning;
+- (double)moonFracillumForDate:(NSDate *)date :(BOOL *)waning;
 
 - (NSDate *)lastConjunction;
 - (NSDate *)nextConjunction;
