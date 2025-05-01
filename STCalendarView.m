@@ -33,6 +33,8 @@ CGRect gMyInitRect;
     //NSInteger tzOffset = [[NSTimeZone localTimeZone] secondsFromGMTForDate:myNow];
     //myNow = [STCalendar date:myNow byAddingDays:0 hours:0 minutes:0 seconds:tzOffset];
     [NSDate setMyNow:myNow realSecondsPerDay:3];
+#else
+    [NSDate enqueueRealSunsetNotifications];
 #endif
 }
 
@@ -188,16 +190,16 @@ CGRect gMyInitRect;
             CGFloat columnX = dirtyRect.origin.x + ( j * dayWidth );
             CGFloat columnXOffset = lineWidth;
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
-            int day = 7 * ( 3 - i ) + j + 1;
+            int day = 7 * ( 3 - i ) + j + 2;
 #else
-            int day = 7 * ( i - 1 ) + j + 1;
+            int day = 7 * ( i - 1 ) + j + 2;
 #endif
-            // +1 day to adjust for using newMoonStart, +1 hour to handle shortening and lengthening days in one pass (hopefully)
-            NSDate *thisDate = [STCalendar date:lastNewMoonStart byAddingDays:day + 1 hours:1 minutes:0 seconds:0];
+            // +1 hour to handle shortening and lengthening days in one pass (hopefully)
+            NSDate *thisDate = [STCalendar date:lastNewMoonStart byAddingDays:day-1 hours:1 minutes:0 seconds:0];
             BOOL isLunarToday = [STCalendar isDateInLunarToday:[[STState state] lastSunsetForDate:thisDate momentAfter:YES]];
             
             if ( isLunarToday ) {
-                NSLog(@"today is %d %@",day,thisDate);
+                NSLog(@"today is lunar %dth, %@",day,thisDate);
                 [self _drawTodayCircleAtPoint:CGPointMake(columnX + columnXOffset, ldY) withLineWidth:lineWidth textAttributes:textAttributes context:context];
             }
             
@@ -208,15 +210,17 @@ CGRect gMyInitRect;
             if ( day < 10 )
                 columnXOffset += singleDigitDateXOffset;
             
-            [[NSString stringWithFormat:@"%d",day + 1] drawAtPoint:CGPointMake(columnX + columnXOffset + lineWidth,ldY + yOffset) withAttributes:textAttributes];
+            [[NSString stringWithFormat:@"%d",day] drawAtPoint:CGPointMake(columnX + columnXOffset + lineWidth,ldY + yOffset) withAttributes:textAttributes];
             
             NSString *sunsetHourMinute = [NSString stringWithFormat:@"SS %@",[[[STState state] lastSunsetForDate:thisDate momentAfter:NO] localHourMinuteString]];
             [sunsetHourMinute drawAtPoint:CGPointMake(columnX + columnXOffset, ssY) withAttributes:smallerAttributes];
             
             NSString *gregorianString = nil;
             NSAttributedString *attrString = nil;
+            // account for lunar day start
+            NSDate *mainGregorianDay = [STCalendar date:thisDate byAddingDays:1 hours:1 minutes:0 seconds:0];
             if ( isLunarToday ) {
-                gregorianString = [STCalendar localGregorianPreviousAndCurrentDayFromDate:thisDate delimiter:delimiter];
+                gregorianString = [STCalendar localGregorianPreviousAndCurrentDayFromDate:mainGregorianDay delimiter:delimiter];
                 attrString = [[NSMutableAttributedString alloc] initWithString:gregorianString];
                 NSRange delimiterRange = [gregorianString rangeOfString:delimiter];
                 if ( delimiterRange.location != NSNotFound ) {
@@ -227,7 +231,7 @@ CGRect gMyInitRect;
                     [(NSMutableAttributedString *)attrString addAttributes:betweenSunsetAndMidnight ? smallerAttributes : smallAttributes range:NSMakeRange(thisStart, [attrString length] - thisStart)];
                 }
             } else {
-                gregorianString = [STCalendar localGregorianDayOfTheMonthFromDate:thisDate];
+                gregorianString = [STCalendar localGregorianDayOfTheMonthFromDate:mainGregorianDay];
                 attrString = [[NSAttributedString alloc] initWithString:gregorianString attributes:smallerAttributes];
             }
             [attrString drawAtPoint:CGPointMake(columnX + columnXOffset,gdY)];

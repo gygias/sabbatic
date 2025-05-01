@@ -12,6 +12,17 @@
 
 @implementation NSDate (NSDate_MyNow)
 
++ (void)enqueueRealSunsetNotifications
+{
+    NSDate *time = [[STState state] nextSunset:YES];
+    NSTimeInterval inSecs = [time timeIntervalSinceDate:[NSDate myNow]];
+    NSLog(@"enqueueing REAL sunset notification on %@ (%0.2f secs)",time,inSecs);
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(inSecs * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:NSCalendarDayChangedNotification object:self];
+        [self enqueueRealSunsetNotifications];
+    });
+}
+
 + (void)_enqueueDayChangedNotesForDayAfter:(NSDate *)date
 {
     if ( sNSDateMyNowFast ) {

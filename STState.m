@@ -285,12 +285,6 @@ static STState *sState = nil;
 {
     NSDate *last = [self lastConjunction];    
     NSDate *day = [self normalizeDate:[STCalendar newMoonDayForConjunction:last]];
-    
-    // called after conjunction but before new moon start
-    if ( [[NSDate myNow] timeIntervalSinceDate:day] < 0 ) {
-        NSDate *lastLast = [self _conjunctionPriorToDate:last];
-        day = [self normalizeDate:[STCalendar newMoonDayForConjunction:lastLast]];
-    }
     return day;
 }
 

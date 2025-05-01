@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)setMyNow:(NSDate *)date realSecondsPerDay:(NSInteger)real;
 + (NSDate *)myNow;
 
++ (void)enqueueRealSunsetNotifications;
+
 - (BOOL)isWithinAbsoluteTimeInterval:(NSTimeInterval)interval ofDate:(NSDate *)date;
 
 - (NSString *)localYearMonthDayString;
