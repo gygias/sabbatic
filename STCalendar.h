@@ -9,10 +9,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface STCalendar : NSCalendar // for isDateInToday override
+@interface STCalendar : NSObject
 
-+ (BOOL)isDateInToday:(NSDate *)date;
++ (BOOL)isDateBetweenSunsetAndGregorianMidnight:(NSDate *)date;
++ (BOOL)isDateInGregorianToday:(NSDate *)date;
 + (BOOL)isDateInLunarToday:(NSDate *)date;
++ (BOOL)isDateInLunarYesterday:(NSDate *)date;
 
 + (NSDate *)newMoonDayForConjunction:(NSDate *)date; // gregorian midnight on new moon day
 + (NSDate *)newMoonStartTimeForConjunction:(NSDate *)date; // sunset on previous day
@@ -20,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDate *)date:(NSDate *)date byAddingDays:(NSInteger)days hours:(NSInteger)hours minutes:(NSInteger)minutes seconds:(NSInteger)seconds;
 //+ (NSDate *)date:(NSDate *)date bySubtractingDays:(NSInteger) days;
 + (NSString *)localGregorianDayOfTheMonthFromDate:(NSDate *)date;
++ (NSString *)localGregorianPreviousAndCurrentDayFromDate:(NSDate *)date delimiter:(NSString *)delimiter;
 
 + (NSString *)hebrewMonthForMonth:(NSInteger)month;
 

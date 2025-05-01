@@ -45,7 +45,6 @@
     //});
     
     [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
-        NSLog(@"NSCalendarDayChangedNotification!");
         [self.calendarView setNeedsDisplay:YES];
         [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
             NSLog(@"animated to current phase on day change");

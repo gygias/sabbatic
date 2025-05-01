@@ -113,13 +113,13 @@ typedef enum
         self.moonView.pointOfView.position = cam_3;
     }
     [SCNTransaction setCompletionBlock:^{
-        NSLog(@"an animation to %ld completed!", idx);
+        //NSLog(@"an animation to %ld completed!", idx);
         self.currentPhase = idx;
         
         if ( ! start ) {
             if ( ( self.currentAnimationType == IntroAnimation ) && ( idx == introStartIdx ) ) {
                 [self _completeAndReset];
-                NSLog(@"intro animation ended at phase %ld",self.currentPhase);
+                //NSLog(@"intro animation ended at phase %ld",self.currentPhase);
                 return;
             }
         }

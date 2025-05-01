@@ -31,12 +31,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSInteger)currentLunarMonth;
 - (NSDate *)lastSabbath;
 - (NSDate *)nextSabbath;
-- (NSDate *)lastSunset;
-- (NSDate *)nextSunset;
-- (NSDate *)sunsetOnDate:(NSDate *)date;
+// as there is probably no meaningful authority on this, for purposes of delimiting lunar days, we chose to make the "moment" after sunset (currently 1 second)
+// the first that belongs to the new day, and as a convenience and reminder provide it in sunset-related functions
+- (NSDate *)lastSunset:(BOOL)momentAfter;
+- (NSDate *)nextSunset:(BOOL)momentAfter;
+- (NSDate *)lastSunsetForDate:(NSDate *)date momentAfter:(BOOL)momentAfter;
 
 - (NSDate *)normalizeDate:(NSDate *)date; // returns midnight on same calendar date
-- (NSDate *)normalizeDate:(NSDate *)date hour:(NSInteger)hour minute:(NSInteger)minute; // returns midnight on same calendar date
+- (NSDate *)normalizeDate:(NSDate *)date hour:(NSInteger)hour minute:(NSInteger)minute second:(NSInteger)second; // returns midnight + etc. on same calendar date
 
 - (void)requestNotificationApproval;
 

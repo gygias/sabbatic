@@ -30,7 +30,12 @@ CGRect gMyInitRect;
     //NSDate *myNow = [STCalendar date:lastNewMoonDay byAddingDays:6 hours:23 minutes:59 seconds:55];
     //NSDate *myNow = [STCalendar date:lastNewMoonStart byAddingDays:0 hours:0 minutes:0 seconds:-5];
     //NSDate *myNow = lastNewMoonDay;
-    NSDate *myNow = [STCalendar date:[NSDate date] byAddingDays:0 hours:0 minutes:0 seconds:0];
+    //NSDate *myNow = [[STState state] normalizeDate:[NSDate date] hour:19 minute:53 second:56];
+    NSDate *myNow =   [STCalendar date:[[STState state] normalizeDate:[STCalendar date:[NSDate date] byAddingDays:-1 hours:0 minutes:0 seconds:0]]
+                          byAddingDays:0 hours:23 minutes:59 seconds:55];
+    
+    //NSInteger tzOffset = [[NSTimeZone localTimeZone] secondsFromGMTForDate:myNow];
+    //myNow = [STCalendar date:myNow byAddingDays:0 hours:0 minutes:0 seconds:tzOffset];
     [NSDate setMyNow:myNow];
 #endif
 }
@@ -62,6 +67,11 @@ CGRect gMyInitRect;
 - (NSInteger)_smallFontSizeForViewWidth:(CGFloat)width
 {
     return STLocalGregorianFontSize + ( width / STFontSizeScalar );
+}
+
+- (NSInteger)_smallerFontSizeForViewWidth:(CGFloat)width
+{
+    return STSmallLocalGregorianFontSize + ( width / STFontSizeScalar );
 }
 
 - (void)drawRect:(STRect)dirtyRect {
@@ -138,11 +148,14 @@ CGRect gMyInitRect;
     // draw day numbers
     //NSDate *lastConjunction = [[STState state] lastConjunction];
     //NSDate *lastNewMoonDay = [STCalendar newMoonDayForConjunction:lastConjunction];
-    NSDate *lastNewMoonDay = [[STState state] lastNewMoonStart];
+    NSDate *lastNewMoonStart = [[STState state] lastNewMoonStart];
+    NSLog(@"drawing calendar on %@ with last new moon start %@",[NSDate myNow],lastNewMoonStart);
     NSDictionary *textAttributes = @{ NSForegroundColorAttributeName : [STColorClass redColor],
                                       NSFontAttributeName : [STFontClass systemFontOfSize:[self _fontSizeForViewWidth:dirtyRect.size.width]] };
     NSDictionary *smallAttributes = @{ NSForegroundColorAttributeName : [STColorClass lightGrayColor],
                                        NSFontAttributeName : [STFontClass systemFontOfSize:[self _smallFontSizeForViewWidth:dirtyRect.size.width]] };
+    NSDictionary *smallerAttributes = @{ NSForegroundColorAttributeName : [STColorClass grayColor],
+                                       NSFontAttributeName : [STFontClass systemFontOfSize:[self _smallerFontSizeForViewWidth:dirtyRect.size.width]] };
     CGSize textSize = [@"foo" sizeWithAttributes:textAttributes];
     CGFloat singleDigitDateXOffset = [@"0" sizeWithAttributes:textAttributes].width / 2;
     //CGSize smallSize = [@"foo" sizeWithAttributes:smallAttributes];
@@ -164,8 +177,9 @@ CGRect gMyInitRect;
     for ( int i = 1; i < 5; i++ ) {
 #endif
         CGFloat ldY = dirtyRect.origin.y + ( i * dayHeight );
+        CGFloat ssY = ldY + textSize.height + 3;
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
-        CGFloat gdY = ldY;
+        CGFloat gdY = ldY + STGregorianDayOffset;
         //CGFloat sY = ldY + dayHeight / 3;
         ldY += dayHeight - lineWidth - textSize.height;
 #else
@@ -180,10 +194,12 @@ CGRect gMyInitRect;
 #else
             int day = 7 * ( i - 1 ) + j + 2;
 #endif
+            NSDate *newMoonGregorianStart = [[STState state] lastNewMoonDay];
+            NSDate *thisDate = [STCalendar date:newMoonGregorianStart byAddingDays:day - 1 hours:1 minutes:0 seconds:0];
+            BOOL isLunarToday = [STCalendar isDateInLunarToday:[[STState state] lastSunsetForDate:thisDate momentAfter:YES]];
             
-            NSDate *thisDate = [STCalendar date:lastNewMoonDay byAddingDays:day - 1 hours:0 minutes:0 seconds:0];
-            if ( [STCalendar isDateInLunarToday:thisDate] ) {
-                [self _drawTodayCircleAtPoint:CGPointMake(columnX + columnXOffset, ldY)  withLineWidth:lineWidth textAttributes:textAttributes context:context];
+            if ( isLunarToday ) {
+                [self _drawTodayCircleAtPoint:CGPointMake(columnX + columnXOffset, ldY) withLineWidth:lineWidth textAttributes:textAttributes context:context];
             }
             
             CGFloat yOffset = 0;
@@ -192,55 +208,58 @@ CGRect gMyInitRect;
 //#endif
             if ( day < 10 )
                 columnXOffset += singleDigitDateXOffset;
-            [[NSString stringWithFormat:@"%d",day] drawAtPoint:CGPointMake(columnX + columnXOffset + lineWidth,ldY + yOffset) withAttributes:textAttributes];
-            NSString *gregorianMonthDay = [STCalendar localGregorianDayOfTheMonthFromDate:thisDate];
-            [gregorianMonthDay drawAtPoint:CGPointMake(columnX + columnXOffset,gdY) withAttributes:smallAttributes];
             
-            // sabbath
+            [[NSString stringWithFormat:@"%d",day] drawAtPoint:CGPointMake(columnX + columnXOffset + lineWidth,ldY + yOffset) withAttributes:textAttributes];
+            
+            NSString *sunsetHourMinute = [NSString stringWithFormat:@"SS %@",[[[STState state] lastSunsetForDate:thisDate momentAfter:NO] localHourMinuteString]];
+            [sunsetHourMinute drawAtPoint:CGPointMake(columnX + columnXOffset, ssY) withAttributes:smallerAttributes];
+            
+            NSString *delimiter = @" - ";
+            NSString *gregorianString = nil;
+            NSAttributedString *attrString = nil;
+            if ( isLunarToday ) {
+                gregorianString = [STCalendar localGregorianPreviousAndCurrentDayFromDate:thisDate delimiter:delimiter];
+                attrString = [[NSMutableAttributedString alloc] initWithString:gregorianString];
+                NSRange delimiterRange = [gregorianString rangeOfString:delimiter];
+                if ( delimiterRange.location != NSNotFound ) {
+                    BOOL betweenSunsetAndMidnight = [STCalendar isDateBetweenSunsetAndGregorianMidnight:[NSDate myNow]];
+                    [(NSMutableAttributedString *)attrString addAttributes:betweenSunsetAndMidnight ? smallAttributes : smallerAttributes range:NSMakeRange(0, delimiterRange.location + [delimiter length])];
+                    delimiterRange = [gregorianString rangeOfString:delimiter];
+                    NSUInteger thisStart = delimiterRange.location + delimiterRange.length;
+                    [(NSMutableAttributedString *)attrString addAttributes:betweenSunsetAndMidnight ? smallerAttributes : smallAttributes range:NSMakeRange(thisStart, [attrString length] - thisStart)];
+                }
+            } else {
+                gregorianString = [STCalendar localGregorianDayOfTheMonthFromDate:thisDate];
+                attrString = [[NSAttributedString alloc] initWithString:gregorianString attributes:smallerAttributes];
+            }
+            [attrString drawAtPoint:CGPointMake(columnX + columnXOffset,gdY)];
+            
+            // a sabbath
             if ( j == 6 ) {
-                NSDate *sunset = [[STState state] sunsetOnDate:[NSDate myNow]];
-                NSDate *lastNewYear = [[STState state] lastNewYear];
-                NSDate *lastConjunction = [[STState state] lastConjunction];
-                NSDate *lastNewMoonStart = [[STState state] lastNewMoonStart];
-                NSDate *lastNewMoonDay = [[STState state] lastNewMoonDay];
-                NSDate *nextConjunction = [[STState state] nextConjunction];
-                NSDate *nextNewMoonStart = [[STState state] nextNewMoonStart];
-                NSDate *nextNewMoonDay = [[STState state] nextNewMoonDay];
-                NSDate *lastSabbath = [[STState state] lastSabbath];
-                NSDate *nextSabbath = [[STState state] nextSabbath];
-                static dispatch_once_t onceToken;
-                dispatch_once(&onceToken, ^{
-                    NSLog(@"last new year: %@",lastNewYear);
-                    NSLog(@"last conjunction: %@",lastConjunction);
-                    NSLog(@"last new moon day began: %@",[lastNewMoonStart localYearMonthDayHourMinuteString]);
-                    NSLog(@"last new moon day: %@",lastNewMoonDay);
-                    NSLog(@"next conjunction: %@",nextConjunction);
-                    NSLog(@"next new moon day begins: %@",[nextNewMoonStart localYearMonthDayHourMinuteString]);
-                    NSLog(@"next new moon day: %@",nextNewMoonDay);
-                    NSLog(@"last sabbath: %@",lastSabbath);
-                    NSLog(@"next sabbath: %@",nextSabbath);
-                    NSLog(@"sunset today: %@",[sunset localYearMonthDayHourMinuteString]);
-                });
-                
             }
         }
     }
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
     CGFloat ldY = dirtyRect.origin.y + ( 4 * dayHeight );
-    CGFloat gdY = ldY;
+    CGFloat ssY = ldY + textSize.height + 3;
+    CGFloat gdY = ldY + STGregorianDayOffset;
     ldY += dayHeight - textSize.height;
 #else
     CGFloat ldY = dirtyRect.origin.y;
     CGFloat gdY = ldY + dayHeight - textSize.height;
 #endif
     CGFloat oneX = dirtyRect.origin.x + ( 6 * dayWidth );
-    if ( [STCalendar isDateInLunarToday:lastNewMoonDay] ) {
+    if ( [STCalendar isDateInLunarToday:lastNewMoonStart] ) {
         [self _drawTodayCircleAtPoint:CGPointMake(oneX + lineWidth, ldY) withLineWidth:lineWidth textAttributes:textAttributes context:context];
     }
     oneX += singleDigitDateXOffset;
     [@"1" drawAtPoint:CGPointMake(oneX,ldY) withAttributes:textAttributes];
-    NSString *gregorianMonthDay = [STCalendar localGregorianDayOfTheMonthFromDate:lastNewMoonDay];
-    [gregorianMonthDay drawAtPoint:CGPointMake(oneX,gdY) withAttributes:smallAttributes];
+    NSDate *lastNewMoonDayMidnight = [[STState state] lastNewMoonDay];
+    NSDate *sunsetOnNewMoonDay = [[STState state] lastSunsetForDate:lastNewMoonDayMidnight momentAfter:NO];
+    NSString *sunsetHourMinute = [NSString stringWithFormat:@"SS %@",[sunsetOnNewMoonDay localHourMinuteString]];
+    [sunsetHourMinute drawAtPoint:CGPointMake(oneX, ssY) withAttributes:smallerAttributes];
+    NSString *gregorianMonthDay = [STCalendar localGregorianDayOfTheMonthFromDate:lastNewMoonDayMidnight];
+    [gregorianMonthDay drawAtPoint:CGPointMake(oneX,gdY) withAttributes:smallerAttributes];
 }
 
 - (void)_drawTodayCircleAtPoint:(CGPoint)point withLineWidth:(CGFloat)lineWidth textAttributes:(NSDictionary *)textAttributes context:(CGContextRef)context

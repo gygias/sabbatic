@@ -8,47 +8,55 @@
 #import "NSDate+MyNow.h"
 #import "STCalendar.h"
 #import "STState.h"
+#import "STDefines.h"
 
 @implementation NSDate (NSDate_MyNow)
 
 static NSTimeInterval sNSDateMyNowOffset = 0;
 
-+ (void)_enqueueDayChangedNoteForDayAfter:(NSDate *)date
++ (void)_enqueueDayChangedNotesForDayAfter:(NSDate *)date
 {
-#ifdef gregorian_note
+    [self _enqueueGregorianDayChangedNoteAfter:date];
+    [self _enqueueLunarDayChangedNoteForDayAfter:date];
+}
+
++ (void)_enqueueGregorianDayChangedNoteAfter:(NSDate *)date
+{
     NSDate *startOfMyNow = [[NSCalendar currentCalendar] startOfDayForDate:date];
     NSDate *startOfMyTomorrow = [STCalendar date:startOfMyNow byAddingDays:1 hours:0 minutes:0 seconds:0];
     NSTimeInterval timeToTomorrow = [startOfMyTomorrow timeIntervalSince1970] - [NSDate myNow].timeIntervalSince1970;
-    NSLog(@"enqueueing NSCalendarDayChangedNotification for %@! (in %0.1f seconds)",startOfMyTomorrow,timeToTomorrow);
+    NSLog(@"enqueueing fake gregorian NSCalendarDayChangedNotification for %@! (in %0.1f seconds)",startOfMyTomorrow,timeToTomorrow);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(timeToTomorrow * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSLog(@"posting fake NSCalendarDayChangedNotification...");
+        NSLog(@"posting fake gregorian NSCalendarDayChangedNotification...");
         [[NSNotificationCenter defaultCenter] postNotificationName:NSCalendarDayChangedNotification object:self];
         
-        [self _enqueueDayChangedNoteForDayAfter:[[NSDate myNow] dateByAddingTimeInterval:60]];
+        [self _enqueueGregorianDayChangedNoteAfter:[[NSDate myNow] dateByAddingTimeInterval:60]];
     });
-#endif
-    NSDate *nextSunset = [[STState state] nextSunset];
-    NSDate *nextStart = [[STState state] nextNewMoonStart];
-    NSLog(@"[[%@ vs %@]]",nextSunset,nextStart);
-    NSTimeInterval timeToNextStart = [nextStart timeIntervalSince1970] - [NSDate myNow].timeIntervalSince1970;
+}
+
++ (void)_enqueueLunarDayChangedNoteForDayAfter:(NSDate *)date
+{
+    NSDate *nextSunset = [[STState state] nextSunset:YES];
+    NSTimeInterval timeToNextStart = [nextSunset timeIntervalSince1970] - [NSDate myNow].timeIntervalSince1970;
     if ( timeToNextStart < 0 ) {
         NSLog(@"something is wrong, nextNewMoonStart is in the past!");
         return;
     }
-    NSLog(@"enqueueing NSCalendarDayChangedNotification for %@! (in %0.1f seconds)",nextSunset,timeToNextStart);
+    NSLog(@"enqueueing fake lunar NSCalendarDayChangedNotification for %@! (in %0.1f seconds)",nextSunset,timeToNextStart);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(timeToNextStart * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSLog(@"posting fake NSCalendarDayChangedNotification...");
+        NSLog(@"posting fake lunar NSCalendarDayChangedNotification...");
         [[NSNotificationCenter defaultCenter] postNotificationName:NSCalendarDayChangedNotification object:self];
         
-        [self _enqueueDayChangedNoteForDayAfter:[[NSDate myNow] dateByAddingTimeInterval:60]];
+        [self _enqueueLunarDayChangedNoteForDayAfter:[[NSDate myNow] dateByAddingTimeInterval:60]];
     });
 }
 
 + (void)setMyNow:(NSDate *)date
 {
     sNSDateMyNowOffset = [NSDate date].timeIntervalSince1970 - [date timeIntervalSince1970];
-    NSLog(@"MYNOW: The time is now %@ (%0.1f seconds in the %@)",[NSDate myNow],sNSDateMyNowOffset,sNSDateMyNowOffset>0?@"past":@"future");
-    [self _enqueueDayChangedNoteForDayAfter:date];
+    NSDate *myNow = [NSDate myNow];
+    NSLog(@"MyNow: The time is now %@ (%@) (%0.1f seconds in the %@)",[myNow localYearMonthDayHourMinuteString],myNow,sNSDateMyNowOffset,sNSDateMyNowOffset>0?@"past":@"future");
+    [self _enqueueDayChangedNotesForDayAfter:date];
 }
 
 + (NSDate *)myNow
@@ -69,7 +77,6 @@ static NSTimeInterval sNSDateMyNowOffset = 0;
 {
     NSDateFormatter * df = [[NSDateFormatter alloc] init];
     NSTimeZone *tz = [NSTimeZone localTimeZone];
-    NSLog(@"local time zone: %@",tz);
     [df setTimeZone:tz];
     [df setDateFormat:format];
     return [df stringFromDate:self];
@@ -85,20 +92,37 @@ static NSTimeInterval sNSDateMyNowOffset = 0;
     return [self _localString:@"EEE MMM dd HH:mm:ss yyyy"];
 }
 
+- (NSString *)localHourMinuteString
+{
+    return [self _localString:@"HH:mm"];
+}
+
 @end
 
 @implementation STCalendar
 
+// as a convention, we take the second after sunset to be the first belonging to the new day
 + (BOOL)isDateInLunarToday:(NSDate *)date
 {
-    NSDate *lastSunset = [[STState state] lastSunset];
-    NSDate *nextSunset = [[STState state] nextSunset];
+    NSDate *lastSunset = [[STState state] lastSunset:YES];
+    NSDate *nextSunset = [[STState state] nextSunset:NO];
     
     return ( [date timeIntervalSinceDate:lastSunset] >= 0 )
             && ( [date timeIntervalSinceDate:nextSunset] <= 0 );
 }
 
-+ (BOOL)isDateInToday:(NSDate *)date
++ (BOOL)isDateInLunarYesterday:(NSDate *)date
+{
+    NSDate *lastSunset = [[STState state] lastSunset:NO];
+    NSDate *lunarDayBeforeYesterday = [STCalendar date:lastSunset byAddingDays:-1 hours:-1 minutes:0 seconds:0];
+    NSDate *lastLastSunset = [[STState state] lastSunsetForDate:lunarDayBeforeYesterday momentAfter:YES];
+    
+    return ( [date timeIntervalSinceDate:lastLastSunset] >= 0 )
+            && ( [date timeIntervalSinceDate:lastSunset] <= 0 );
+    
+}
+
++ (BOOL)isDateInGregorianToday:(NSDate *)date
 {
     if ( ! sNSDateMyNowOffset )
         return [[NSCalendar currentCalendar] isDateInToday:date];
@@ -109,6 +133,16 @@ static NSTimeInterval sNSDateMyNowOffset = 0;
         && [nextDay timeIntervalSince1970] > [date timeIntervalSince1970] )
         return YES;
     return NO;
+}
+
++ (BOOL)isDateBetweenSunsetAndGregorianMidnight:(NSDate *)date
+{
+    NSDate *lastSunset = [[STState state] lastSunset:YES];
+    NSDate *approxNextSunset = [STCalendar date:lastSunset byAddingDays:1 hours:0 minutes:0 seconds:0];
+    NSDate *midnightAfterLastSunset = [[STState state] normalizeDate:approxNextSunset];
+        
+    return ( [date timeIntervalSinceDate:lastSunset] >= 0 )
+            && ( [date timeIntervalSinceDate:midnightAfterLastSunset] < 0 );
 }
 
 + (NSDate *)newMoonDayForConjunction:(NSDate *)date
@@ -133,6 +167,13 @@ static NSTimeInterval sNSDateMyNowOffset = 0;
     return [[STState state] normalizeDate:[self date:date byAddingDays:days hours:0 minutes:0 seconds:0]];
 }
 
++ (NSDate *)newMoonStartTimeForConjunction:(NSDate *)date
+{
+    NSDate *newMoonDay = [self newMoonDayForConjunction:date];
+    NSDate *previousDay = [STCalendar date:newMoonDay byAddingDays:-1 hours:0 minutes:0 seconds:0];
+    return [[STState state] lastSunsetForDate:previousDay momentAfter:YES];
+}
+
 + (NSDate *)date:(NSDate *)date byAddingDays:(NSInteger)days hours:(NSInteger)hours minutes:(NSInteger)minutes seconds:(NSInteger)seconds
 {
     NSCalendar *theCalendar = [NSCalendar currentCalendar];
@@ -145,20 +186,30 @@ static NSTimeInterval sNSDateMyNowOffset = 0;
     return nextDate;
 }
 
-+ (NSString *)localGregorianDayOfTheMonthFromDate:(NSDate *)date
++ (NSDateFormatter *)_formatter:(NSString *)format
 {
     NSString * deviceLanguage = [[NSLocale preferredLanguages] objectAtIndex:0];
     NSDateFormatter * dateFormatter = [NSDateFormatter new];
     NSLocale * locale = [[NSLocale alloc] initWithLocaleIdentifier:deviceLanguage];
 
-    [dateFormatter setDateFormat:@"EE dd MMM"];
+    [dateFormatter setDateFormat:format];
     [dateFormatter setLocale:locale];
+    return dateFormatter;
+}
 
-    NSString * dateString = [dateFormatter stringFromDate:date];
-
-    //NSLog(@"%@", dateString);
-    
++ (NSString *)localGregorianDayOfTheMonthFromDate:(NSDate *)date
+{
+    NSString * dateString = [[self _formatter:@"EE dd MMM"] stringFromDate:date];
     return dateString;
+}
+
++ (NSString *)localGregorianPreviousAndCurrentDayFromDate:(NSDate *)date delimiter:(NSString *)delimiter
+{
+    NSDate *previousDay = [STCalendar date:date byAddingDays:-1 hours:0 minutes:0 seconds:0];
+    NSString *previousString = [[self _formatter:@"dd"] stringFromDate:previousDay];
+    NSString *thisString = [self localGregorianDayOfTheMonthFromDate:date];
+    NSString *compositeString = [NSString stringWithFormat:@"%@%@%@",previousString,delimiter,thisString];
+    return compositeString;
 }
 
 + (NSString *)hebrewMonthForMonth:(NSInteger)month

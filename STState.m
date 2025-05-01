@@ -90,11 +90,7 @@ static STState *sState = nil;
             
             NSDate *myNow = [NSDate myNow];
             NSTimeInterval interval = [myNow timeIntervalSinceDate:aThen];
-            //if ( interval > -180 && interval < 180 ) {
-            //    NSLog(@"houston we have a problem");
-            //}
             if ( [myNow timeIntervalSinceDate:aThen] < 0 ) {
-                NSLog(@"%@ is before %@ (%0.3f)",myNow,aThen,interval);
                 next = aThen;
                 *stop = YES;
             }
@@ -210,7 +206,7 @@ static STState *sState = nil;
     NSDate *last = [self lastConjunction];
     NSDate *day = [STCalendar newMoonDayForConjunction:last];
     NSDate *start = [STCalendar date:day byAddingDays:0 hours:0 minutes:0 seconds:0];
-    NSDate *sunsetPreviousDay = [self _fetchSunsetTimeOnDate:start];
+    NSDate *sunsetPreviousDay = [self lastSunsetForDate:start momentAfter:YES];
     return sunsetPreviousDay;
 }
 
@@ -225,42 +221,48 @@ static STState *sState = nil;
     return sunsetPreviousDay;
 }
 
-- (NSDate *)lastSunset
+- (NSDate *)lastSunset:(BOOL)momentAfter
 {
     NSDate *myNow = [NSDate myNow];
-    NSDate *sunsetToday = [self sunsetOnDate:myNow];
+    NSDate *sunsetToday = [self lastSunsetForDate:myNow momentAfter:momentAfter];
     NSTimeInterval timeSince = [myNow timeIntervalSinceDate:sunsetToday];
     static dispatch_once_t onceToken;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        onceToken = 0;
+    });
     if ( timeSince >= 0 ) {
         dispatch_once(&onceToken, ^{
-            NSLog(@"the sun set %0.2f hours ago at %@",timeSince / 60. / 60.,sunsetToday);
+            NSLog(@"the sun set %0.2f hours ago at %@ (%@)",timeSince / 60. / 60.,sunsetToday,myNow);
         });
         return sunsetToday;
     }
-    NSDate *dayBefore = [STCalendar date:myNow byAddingDays:-1 hours:0 minutes:0 seconds:0];
-    NSDate *sunsetDayBefore = [self sunsetOnDate:dayBefore];
+    NSDate *dayBefore = [STCalendar date:myNow byAddingDays:-1 hours:+1 minutes:0 seconds:0];
+    NSDate *sunsetDayBefore = [self lastSunsetForDate:dayBefore momentAfter:momentAfter];
     timeSince = [myNow timeIntervalSinceDate:sunsetDayBefore];
     dispatch_once(&onceToken, ^{
-        NSLog(@"the sun set %0.2f hours ago at %@",timeSince / 60. / 60.,sunsetDayBefore);
+        NSLog(@"the sun set %0.2f hours ago at %@ (%@)",timeSince / 60. / 60.,sunsetDayBefore,myNow);
     });
     return sunsetDayBefore;
 }
 
-- (NSDate *)nextSunset
+- (NSDate *)nextSunset:(BOOL)momentAfter
 {
     NSDate *myNow = [NSDate myNow];
-    NSDate *sunsetToday = [self sunsetOnDate:myNow];
+    NSDate *sunsetToday = [self lastSunsetForDate:myNow momentAfter:momentAfter];
     if ( [myNow timeIntervalSinceDate:sunsetToday] <= 0 ) {
         return sunsetToday;
     }
     NSDate *tomorrow = [STCalendar date:myNow byAddingDays:1 hours:0 minutes:0 seconds:0];
-    NSDate *sunsetTomorrow = [self sunsetOnDate:tomorrow];
+    NSDate *sunsetTomorrow = [self lastSunsetForDate:tomorrow momentAfter:momentAfter];
     return sunsetTomorrow;
 }
 
-- (NSDate *)sunsetOnDate:(NSDate *)date
+- (NSDate *)lastSunsetForDate:(NSDate *)date momentAfter:(BOOL)momentAfter
 {
-    return [self _fetchSunsetTimeOnDate:date];
+    NSDate *sunset = [self _fetchSunsetTimeOnDate:date];
+    if ( momentAfter )
+        sunset = [STCalendar date:sunset byAddingDays:0 hours:0 minutes:0 seconds:1];
+    return sunset;
 }
 
 - (NSDate *)lastNewMoonDay
@@ -345,13 +347,14 @@ static STState *sState = nil;
 #ifdef debugDateStuff
     NSLog(@"%@ normalized to %@",date,normalizedDate);
 #endif
+    //normalizedDate = [normalizedDate dateByAddingTimeInterval:[[NSTimeZone localTimeZone] secondsFromGMTForDate:normalizedDate]];
     return normalizedDate;
 }
 
-- (NSDate *)normalizeDate:(NSDate *)date hour:(NSInteger)hour minute:(NSInteger)minute
+- (NSDate *)normalizeDate:(NSDate *)date hour:(NSInteger)hour minute:(NSInteger)minute second:(NSInteger)second
 {
     date = [self normalizeDate:date];
-    NSDate *normalizedDate = [STCalendar date:date byAddingDays:0 hours:hour minutes:minute seconds:0];
+    NSDate *normalizedDate = [STCalendar date:date byAddingDays:0 hours:hour minutes:minute seconds:second];
 #ifdef debugDateStuff
     NSLog(@"%@ normalized to %@",date,normalizedDate);
 #endif
@@ -386,6 +389,13 @@ static STState *sState = nil;
         NSLog(@"location not authorized: %d",manager.authorizationStatus);
 }
 
+- (CLLocation *)_effectiveLocation
+{
+    if ( _location )
+        return _location;
+    return [[CLLocation alloc] initWithLatitude:38.63 longitude:-90.20];
+}
+
 - (NSArray *)_lunarPhasesFromUSNavyForYear:(NSInteger)year
 {
     BOOL includePreviousYear = NO;
@@ -409,11 +419,6 @@ static STState *sState = nil;
                 NSLog(@"fetched usno lunar phases");
             
             [[NSUserDefaults standardUserDefaults] setObject:dict forKey:key];
-        } else {
-            static dispatch_once_t onceToken;
-            dispatch_once(&onceToken, ^{
-                NSLog(@"loaded usno lunar phases for %ld from preferences",year);
-            });
         }
         
         [retArray addObjectsFromArray:[dict objectForKey:@"phasedata"]];
@@ -447,11 +452,6 @@ static STState *sState = nil;
                 NSLog(@"fetched usno solar events");
             
             [[NSUserDefaults standardUserDefaults] setObject:dict forKey:key];
-        } else {
-            static dispatch_once_t onceToken;
-            dispatch_once(&onceToken, ^{
-                NSLog(@"loaded usno solar events for %ld from preferences",year);
-            });
         }
         
         [retArray addObjectsFromArray:[dict objectForKey:@"data"]];
@@ -484,13 +484,6 @@ static STState *sState = nil;
     [df setTimeZone:tz];
     [df setDateFormat:@"yyyy"];
     return [[df stringFromDate:date] integerValue];
-}
-
-- (CLLocation *)_effectiveLocation
-{
-    if ( _location )
-        return _location;
-    return [[CLLocation alloc] initWithLatitude:38.63 longitude:-90.20];
 }
 
 // NSJSONSerialization creates NSNulls from "<null>", which cfprefs doesn't allow
@@ -530,13 +523,17 @@ static STState *sState = nil;
 #warning detect significant location change (or user tz change) and discard all preferences
 - (NSDate *)_fetchSunsetTimeOnDate:(NSDate *)date
 {
-    NSString *dateString = [self _yearMonthDayStringWithDate:date];
+    NSInteger tzOffset = [[NSTimeZone localTimeZone] secondsFromGMTForDate:date];
+    NSDate *lookupDate = [STCalendar date:date byAddingDays:0 hours:0 minutes:0 seconds:-tzOffset];
+    NSString *dateString = [self _yearMonthDayStringWithDate:lookupDate];
     NSDictionary *dict = [self _usnoOnedayForDateString:dateString location:[self _effectiveLocation]];
     
+    //NSLog(@"%@ lookup %@ (%@)",date,lookupDate,dateString);
     for ( NSDictionary *sunEvent in dict[@"properties"][@"data"][@"sundata"] ) {
         if ( [sunEvent[@"phen"] isEqualToString:@"Set"] ) {
             NSArray *components = [sunEvent[@"time"] componentsSeparatedByString:@":"];
-            return [self normalizeDate:date hour:[components[0] integerValue] minute:[components[1] integerValue]];
+            NSDate *sunset = [self normalizeDate:lookupDate hour:[components[0] integerValue] minute:[components[1] integerValue] second:tzOffset];
+            return sunset;
         }
     }
     
@@ -559,11 +556,6 @@ static STState *sState = nil;
         NSDictionary *sanitized = [self _sanitizedJSON:dict];
         NSLog(@"SANITIZED JSON: %@",sanitized);
         [[NSUserDefaults standardUserDefaults] setObject:sanitized forKey:key];
-    } else {
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            NSLog(@"loaded usno oneday for %@ from preferences",dateString);
-        });
     }
     
     return dict;

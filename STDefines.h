@@ -13,15 +13,21 @@
 #define STContext [NSGraphicsContext currentContext].CGContext
 #define STColorClass NSColor
 #define STFontClass NSFont
-#define STLocalGregorianFontSize 8
+#define STLocalGregorianFontSize 6
+#define STSmallLocalGregorianFontSize 5
 #define STFontSizeScalar 100
+#define STGregorianDayOffset 3
 #else
 #define STRect CGRect
 #define STContext UIGraphicsGetCurrentContext()
 #define STColorClass UIColor
 #define STFontClass UIFont
-#define STLocalGregorianFontSize 7
+#define STLocalGregorianFontSize 5
+#define STSmallLocalGregorianFontSize 4
 #define STFontSizeScalar 320
+#define STGregorianDayOffset 3
 #endif
+
+#define STSecondsPerGregorianDay 86400
 
 #endif /* STDefines_h */
