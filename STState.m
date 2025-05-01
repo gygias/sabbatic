@@ -54,7 +54,7 @@ static STState *sState = nil;
 }
 
 
-- (NSDate *)lastConjunction
+- (NSDate *)_conjunctionPriorToDate:(NSDate *)date
 {
     __block NSDate *last = nil;
     NSArray *phases = [self _lunarPhasesFromUSNavyForYear:-1];
@@ -66,7 +66,7 @@ static STState *sState = nil;
             NSString *aThenString = nil;
             NSDate *aThen = [self _dateFromUSNODictionary:obj :&aThenString];
             
-            if ( [[NSDate myNow] timeIntervalSinceDate:aThen] > 0 ) {
+            if ( [date timeIntervalSinceDate:aThen] > 0 ) {
                 last = aThen;
                 *stop = YES;
             }
@@ -74,6 +74,11 @@ static STState *sState = nil;
     }];
     
     return last;
+}
+
+- (NSDate *)lastConjunction
+{
+    return [self _conjunctionPriorToDate:[NSDate myNow]];
 }
 
 - (NSDate *)nextConjunction
@@ -178,15 +183,18 @@ static STState *sState = nil;
         
         if ( [[obj objectForKey:@"phase"] isEqualToString:@"New Moon"] ) {
             NSString *aThenString = nil;
+            
+            // find the lunar day delineation based on this conjunction time
             NSDate *aThen = [self _dateFromUSNODictionary:obj :&aThenString];
+            NSDate *day = [STCalendar newMoonDayForConjunction:aThen];
+            NSDate *sunset = [[STState state] lastSunsetForDate:day momentAfter:YES];
             if ( ! found ) {
-                if ( [lastNewYear compare:aThen] == NSOrderedAscending ) {
+                if ( [lastNewYear compare:sunset] == NSOrderedAscending ) {
                     found = YES;
-                    months++;
                     return;
                 }
             } else {
-                if ( [[NSDate myNow] timeIntervalSinceDate:aThen] < 0 )
+                if ( [[NSDate myNow] timeIntervalSinceDate:sunset] < 0 )
                     *stop = YES;
                 else
                     months++;
@@ -194,10 +202,7 @@ static STState *sState = nil;
         }
     }];
     
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NSLog(@"it has been %lu months since the new year",months);
-    });
+    NSLog(@"it has been %lu months since the new year",months);
     return months;
 }
 
@@ -207,6 +212,14 @@ static STState *sState = nil;
     NSDate *day = [STCalendar newMoonDayForConjunction:last];
     NSDate *start = [STCalendar date:day byAddingDays:0 hours:0 minutes:0 seconds:0];
     NSDate *sunsetPreviousDay = [self lastSunsetForDate:start momentAfter:YES];
+    
+    // called after conjunction but before new moon start
+    if ( [[NSDate myNow] timeIntervalSinceDate:sunsetPreviousDay] < 0 ) {
+        NSDate *lastLast = [self _conjunctionPriorToDate:last];
+        NSDate *lastLastDay = [STCalendar newMoonDayForConjunction:lastLast];
+        sunsetPreviousDay = [self lastSunsetForDate:lastLastDay momentAfter:YES];
+    }
+    
     return sunsetPreviousDay;
 }
 
@@ -217,7 +230,10 @@ static STState *sState = nil;
     NSLog(@"next conjunction for determining nextNewMoonStart: %@, gregorian midnight: %@",next,day);
     NSDate *start = [STCalendar date:day byAddingDays:-1 hours:0 minutes:0 seconds:0];
     NSDate *sunsetPreviousDay = [self _fetchSunsetTimeOnDate:start];
-    NSLog(@"hopefully %@ is not before %@! %@",sunsetPreviousDay,[NSDate myNow],[sunsetPreviousDay compare:[NSDate myNow]] == NSOrderedAscending?@"IT IS!":@"it's not!");
+    if ( [[NSDate myNow] timeIntervalSinceDate:sunsetPreviousDay] > 0 ) {
+        NSLog(@"uh-oh! newNewMoonStart is in the future!");
+        abort();
+    }
     return sunsetPreviousDay;
 }
 
@@ -268,7 +284,14 @@ static STState *sState = nil;
 - (NSDate *)lastNewMoonDay
 {
     NSDate *last = [self lastConjunction];    
-    return [self normalizeDate:[STCalendar newMoonDayForConjunction:last]];
+    NSDate *day = [self normalizeDate:[STCalendar newMoonDayForConjunction:last]];
+    
+    // called after conjunction but before new moon start
+    if ( [[NSDate myNow] timeIntervalSinceDate:day] < 0 ) {
+        NSDate *lastLast = [self _conjunctionPriorToDate:last];
+        day = [self normalizeDate:[STCalendar newMoonDayForConjunction:lastLast]];
+    }
+    return day;
 }
 
 - (NSDate *)nextNewMoonDay

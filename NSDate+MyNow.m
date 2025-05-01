@@ -12,12 +12,17 @@
 
 @implementation NSDate (NSDate_MyNow)
 
-static NSTimeInterval sNSDateMyNowOffset = 0;
-
 + (void)_enqueueDayChangedNotesForDayAfter:(NSDate *)date
 {
-    [self _enqueueGregorianDayChangedNoteAfter:date];
-    [self _enqueueLunarDayChangedNoteForDayAfter:date];
+    if ( sNSDateMyNowFast ) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(sNSDateMyNowSecsPerDay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:NSCalendarDayChangedNotification object:self];
+            [self _enqueueDayChangedNotesForDayAfter:nil];
+        });
+    } else {
+        [self _enqueueGregorianDayChangedNoteAfter:date];
+        [self _enqueueLunarDayChangedNoteForDayAfter:date];
+    }
 }
 
 + (void)_enqueueGregorianDayChangedNoteAfter:(NSDate *)date
@@ -51,18 +56,34 @@ static NSTimeInterval sNSDateMyNowOffset = 0;
     });
 }
 
-+ (void)setMyNow:(NSDate *)date
+static NSTimeInterval sNSDateMyNowOffset = 0;
+static BOOL sNSDateMyNowFast = NO;
+static NSInteger sNSDateMyNowSecsPerDay = 0;
+static NSDate *sNSDateMyNowStart = nil;
+
++ (void)setMyNow:(NSDate *)date realSecondsPerDay:(NSInteger)real
 {
     sNSDateMyNowOffset = [NSDate date].timeIntervalSince1970 - [date timeIntervalSince1970];
+    if ( real > 0 ) {
+        sNSDateMyNowFast = YES;
+        sNSDateMyNowSecsPerDay = real;
+        sNSDateMyNowStart = [NSDate date];
+    }
     NSDate *myNow = [NSDate myNow];
-    NSLog(@"MyNow: The time is now %@ (%@) (%0.1f seconds in the %@)",[myNow localYearMonthDayHourMinuteString],myNow,sNSDateMyNowOffset,sNSDateMyNowOffset>0?@"past":@"future");
+    NSLog(@"MyNow: The time is now %@ (%0.1f seconds in the %@)",myNow,sNSDateMyNowOffset,sNSDateMyNowOffset>0?@"past":@"future");
     [self _enqueueDayChangedNotesForDayAfter:date];
 }
 
 + (NSDate *)myNow
 {
-    if ( sNSDateMyNowOffset )
-        return [NSDate dateWithTimeIntervalSince1970:[[NSDate date] timeIntervalSince1970] - sNSDateMyNowOffset];
+    if ( sNSDateMyNowOffset ) {
+        NSTimeInterval offset = sNSDateMyNowOffset;
+        if ( sNSDateMyNowFast ) {
+            NSTimeInterval fastInterval = [sNSDateMyNowStart timeIntervalSinceDate:[NSDate date]];
+            offset += (int)(fastInterval) * STSecondsPerGregorianDay / sNSDateMyNowSecsPerDay;
+        }
+        return [NSDate dateWithTimeIntervalSince1970:[[NSDate date] timeIntervalSince1970] - offset];
+    }
     return [NSDate date];
 }
 

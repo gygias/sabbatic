@@ -25,6 +25,8 @@
 		63A207B42D8D15DE0019A763 /* STCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A2077F2D8BE0F10019A763 /* STCalendar.m */; };
 		63A207B52D8D15DE0019A763 /* STCalendarView.h in Sources */ = {isa = PBXBuildFile; fileRef = 63A207782D8BE04A0019A763 /* STCalendarView.h */; };
 		63A207B62D8D15DE0019A763 /* STCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A207792D8BE04A0019A763 /* STCalendarView.m */; };
+		63B1D12D2DC40D2700593445 /* todo in Resources */ = {isa = PBXBuildFile; fileRef = 63B1D12C2DC40D2400593445 /* todo */; };
+		63B1D12E2DC40D2700593445 /* todo in Resources */ = {isa = PBXBuildFile; fileRef = 63B1D12C2DC40D2400593445 /* todo */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +47,7 @@
 		63A207872D8BEA100019A763 /* moon.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = moon.scn; sourceTree = "<group>"; };
 		63A2078B2D8BED810019A763 /* MoonScene.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = MoonScene.scn; sourceTree = "<group>"; };
 		63A207912D8D13D40019A763 /* Sabbatic-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sabbatic-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		63B1D12C2DC40D2400593445 /* todo */ = {isa = PBXFileReference; lastKnownFileType = text; path = todo; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -107,6 +110,7 @@
 				639EA4572DBC197300E31716 /* STMoonController.m */,
 				634BF7E52DB09C30007BD17F /* STState.h */,
 				634BF7E22DB09C20007BD17F /* STState.m */,
+				63B1D12C2DC40D2400593445 /* todo */,
 				63A207852D8BE5AB0019A763 /* moon.dae */,
 				63A207872D8BEA100019A763 /* moon.scn */,
 				63A2078B2D8BED810019A763 /* MoonScene.scn */,
@@ -221,6 +225,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63B1D12E2DC40D2700593445 /* todo in Resources */,
 				63A2078C2D8BED810019A763 /* MoonScene.scn in Resources */,
 				63A207862D8BE5AB0019A763 /* moon.dae in Resources */,
 				63A207882D8BEA100019A763 /* moon.scn in Resources */,
@@ -231,6 +236,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63B1D12D2DC40D2700593445 /* todo in Resources */,
 				63A207AC2D8D15CA0019A763 /* moon.dae in Resources */,
 				63A207AD2D8D15CA0019A763 /* moon.scn in Resources */,
 				63A207AE2D8D15CA0019A763 /* MoonScene.scn in Resources */,

@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSDate (NSDate_MyNow)
 
-+ (void)setMyNow:(NSDate *)date;
++ (void)setMyNow:(NSDate *)date realSecondsPerDay:(NSInteger)real;
 + (NSDate *)myNow;
 
 - (BOOL)isWithinAbsoluteTimeInterval:(NSTimeInterval)interval ofDate:(NSDate *)date;
