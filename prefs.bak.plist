@@ -2,6 +2,16 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>LastGeneralNoteDate</key>
+	<real>1746189980.7475319</real>
+	<key>LastNotificationRequest</key>
+	<real>1746184808.246412</real>
+	<key>LastNotificationRequestDate</key>
+	<real>1746190345.5290341</real>
+	<key>LastNotificationRequestResult</key>
+	<true/>
+	<key>LastNotificationRequestResultCode</key>
+	<integer>0</integer>
 	<key>com.combobulated.Sabbatic.usno.2000</key>
 	<dict>
 		<key>apiversion</key>

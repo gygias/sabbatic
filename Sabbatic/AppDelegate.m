@@ -31,7 +31,7 @@
     self.moonController = [[STMoonController alloc] initWithView:moonView];
     [self.window.contentView addSubview:moonView];
     
-    self.calendarView = [[STCalendarView alloc] initWithFrame:CGRectInset([self.window.contentView frame], STCalendarViewMacosInset, STCalendarViewMacosInset)];
+    self.calendarView = [[STCalendarView alloc] initWithFrame:CGRectInset([self.window.contentView frame], STCalendarViewInset, STCalendarViewInset)];
     [self.window.contentView addSubview:self.calendarView];
     //self.calendarView.layer.opaque = 0.75;
     //self.calendarView.layer.backgroundColor = [NSColor clearColor].CGColor;

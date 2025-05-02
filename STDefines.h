@@ -35,7 +35,8 @@
 #define STSmallLocalGregorianFontSize 5
 #define STFontSizeScalar 100
 #define STSmallTextOffsetY 3
-#define STCalendarViewMacosInset 25
+#define STCalendarLineWidth (2.)
+#define STCalendarViewInset 25
 #define STLunarDayOffsetX (-2)
 #define STLunarDayScalarX 4
 #define STLunarDayScalarY 6
@@ -48,8 +49,9 @@
 #define STSmallLocalGregorianFontSize 6
 #define STFontSizeScalar 320
 #define STSmallTextOffsetY 3
+#define STCalendarLineWidth (2.)
 #define STCalendarViewInsetX 0
-#define STCalendarViewInsetY 175
+#define STCalendarViewInsetY 150
 #define STLunarDayScalarX 2
 #define STLunarDayScalarY 3
 #endif

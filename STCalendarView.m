@@ -93,10 +93,11 @@ CGRect gMyInitRect;
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
     self.dayHeight = intercalary ? self.dayWidth * .8 : self.dayWidth;
 #else
+#warning todo scale based on screen height
     self.dayHeight = self.dayWidth * 1.5;
 #endif
     
-    self.lineWidth = 2;
+    self.lineWidth = STCalendarLineWidth;
     CGContextSetLineWidth(context, self.lineWidth);
     
     // draw calendar frame

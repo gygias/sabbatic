@@ -459,7 +459,7 @@ static STState *sState = nil;
     
     NSString *prefsKey = LastGeneralNoteDate;
 
-//#define note_debug
+#define note_debug
 #ifdef note_debug
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:LastGeneralNoteDate];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:LastUrgentNoteDate];
