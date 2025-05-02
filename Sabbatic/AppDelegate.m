@@ -12,6 +12,7 @@
 #import "STCalendarView.h"
 #import "STState.h"
 #import "STMoonController.h"
+#import "STDefines.h"
 
 @interface AppDelegate ()
 
@@ -25,15 +26,15 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     // Insert code here to initialize your application
-    
-    self.calendarView = [[STCalendarView alloc] initWithFrame:CGRectInset([self.window.contentView frame], 50, 50)];
-    [self.window.contentView addSubview:self.calendarView];
-    self.calendarView.layer.opaque = 0.75;
-    //self.calendarView.layer.backgroundColor = [NSColor clearColor].CGColor;
         
     SCNView *moonView = [[SCNView alloc] initWithFrame:CGRectInset([self.window.contentView frame], 10, 10) options:NULL];
     self.moonController = [[STMoonController alloc] initWithView:moonView];
     [self.window.contentView addSubview:moonView];
+    
+    self.calendarView = [[STCalendarView alloc] initWithFrame:CGRectInset([self.window.contentView frame], STCalendarViewMacosInset, STCalendarViewMacosInset)];
+    [self.window.contentView addSubview:self.calendarView];
+    //self.calendarView.layer.opaque = 0.75;
+    //self.calendarView.layer.backgroundColor = [NSColor clearColor].CGColor;
     
     //dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self.moonController doIntroAnimationWithCompletionHandler:^{

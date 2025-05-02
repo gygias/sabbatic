@@ -17,6 +17,7 @@
 #define STSmallLocalGregorianFontSize 5
 #define STFontSizeScalar 100
 #define STGregorianDayOffset 3
+#define STCalendarViewMacosInset 25
 #else
 #define STRect CGRect
 #define STContext UIGraphicsGetCurrentContext()
@@ -26,6 +27,8 @@
 #define STSmallLocalGregorianFontSize 4
 #define STFontSizeScalar 320
 #define STGregorianDayOffset 3
+#define STCalendarViewInsetX 25
+#define STCalendarViewInsetY 200
 #endif
 
 #define STSecondsPerGregorianDay 86400

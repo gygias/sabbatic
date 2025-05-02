@@ -51,7 +51,7 @@ typedef enum
     if ( self = [super init] ) {
         
         self.moonView = view;
-        self.moonView.layer.opacity = 0.5;
+        //self.moonView.layer.opacity = 1.0;
         
         //view.scene = [SCNScene sceneNamed:@"moon.dae"];
         self.moonView.scene = [SCNScene sceneNamed:@"MoonScene.scn"];
