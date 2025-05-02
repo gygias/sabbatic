@@ -12,6 +12,7 @@
 #import "STState.h"
 #import "STCalendar.h"
 #import "NSDate+MyNow.h"
+#import "STDefines.h"
 
 //#define debugDateStuff
 
@@ -329,14 +330,17 @@ static STState *sState = nil;
     return [self normalizeDate:[STCalendar newMoonDayForConjunction:next :NULL]];
 }
 
-- (NSDate *)lastSabbath
+#warning presumably this doesn't either \
+    "The next sabbath from Fri May  2 07:01:08 2025 is the 1th, Wed May  7 00:00:00 2025" \
+    untested changes to match those to -nextSabbath
+- (NSDate *)lastSabbath:(BOOL)momentAfter
 {
     NSDate *lastNewMoon = [self lastNewMoonDay];
     NSDate *now = [NSDate myNow];
     NSDate *last = nil;
-    int i = 3;
+    int i = 4;
     for( ; i > 0; i-- ) {
-        NSInteger days = i * 7 + 1 + 1;
+        NSInteger days = i * 7;
         NSDate *aSabbath = [STCalendar date:lastNewMoon byAddingDays:days hours:0 minutes:0 seconds:0];
         if ( [now timeIntervalSinceDate:aSabbath] > 0 ) {
             last = aSabbath;
@@ -351,6 +355,7 @@ static STState *sState = nil;
         });
         last = lastNewMoon;
     } else {
+        last = [self lastSunsetForDate:last momentAfter:momentAfter];
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
             NSLog(@"The last sabbath from %@ is the %dth, %@, based on last new moon %@",now,i,last,lastNewMoon);
@@ -360,14 +365,15 @@ static STState *sState = nil;
     return last;
 }
 
-- (NSDate *)nextSabbath
+#warning this does NOT work!
+- (NSDate *)nextSabbath:(BOOL)momentAfter
 {
     NSDate *lastNewMoon = [self lastNewMoonDay];
     NSDate *now = [NSDate myNow];
     NSDate *next = nil;
-    int i = 0;
-    for( ; i < 4; i++ ) {
-        NSInteger days = i * 7 + 2;
+    int i = 1;
+    for( ; i < 5; i++ ) {
+        NSInteger days = i * 7;
         NSDate *aSabbath = [STCalendar date:lastNewMoon byAddingDays:days hours:0 minutes:0 seconds:0];
         if ( [now timeIntervalSinceDate:aSabbath] <= 0 ) {
             next = aSabbath;
@@ -382,6 +388,7 @@ static STState *sState = nil;
             NSLog(@"WARNING: the next sabbath from %@ is the next new moon %@!",now,next);
         });
     } else {
+        next = [self lastSunsetForDate:next momentAfter:momentAfter];
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
             NSLog(@"The next sabbath from %@ is the %dth, %@",now,i,next);
@@ -413,12 +420,151 @@ static STState *sState = nil;
     return normalizedDate;
 }
 
-- (void)requestNotificationApproval
+
+- (BOOL)_shouldSendNoteBasedOnTimeKey:(NSString *)key andMinimumInterval:(NSTimeInterval)notMoreFrequentThan
 {
+    NSUserDefaults *df = [NSUserDefaults standardUserDefaults];
+    NSTimeInterval last = [df doubleForKey:key];
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:last];
+    NSTimeInterval interval = [[NSDate myNow] timeIntervalSinceDate:date];
+    
+    if ( ! interval )
+        return YES;
+    else if ( interval < 0 ) {
+        NSLog(@"are you time travelling?");
+        return NO;
+    }
+    
+    if ( interval < notMoreFrequentThan )
+        return NO;
+    
+    return YES;
+}
+
+- (BOOL)_shouldSendGeneralSabbathNote
+{
+    return [self _shouldSendNoteBasedOnTimeKey:LastGeneralNoteDate andMinimumInterval:STSecondsPerGregorianDay];
+}
+
+- (BOOL)_shouldSendUrgentSabbathNote
+{
+    return [self _shouldSendNoteBasedOnTimeKey:LastUrgentNoteDate andMinimumInterval:( STSecondsPerGregorianDay * 6 )];
+}
+
+- (void)sendSabbathNotificationWithDelay:(NSTimeInterval)delay
+{
+    NSDate *now = [NSDate myNow];
+    NSDate *nextSabbath = [self nextSabbath:NO];
+    NSTimeInterval interval = [now timeIntervalSinceDate:nextSabbath];
+    
+    NSString *prefsKey = LastGeneralNoteDate;
+
+//#define note_debug
+#ifdef note_debug
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:LastGeneralNoteDate];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:LastUrgentNoteDate];
+    NSLog(@"notification prefs cleared");
+#endif
+    
+    if ( ! [self _shouldSendGeneralSabbathNote] ) {
+        if ( -(interval) <= STSecondsPerGregorianDay ) {
+            if ( ! [self _shouldSendUrgentSabbathNote] ) {
+                NSLog(@"urgent sabbath note sequestered on basis of time (%0.2f)",interval);
+                return;
+            } else
+                prefsKey = LastUrgentNoteDate;
+        } else {
+            NSLog(@"general sabbath note sequestered on basis of time");
+            return;
+        }
+    }
+    
+    NSString *myId = @"com.combobulated.Sabbatic";
     UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-    [center requestAuthorizationWithOptions:UNAuthorizationOptionAlert|UNAuthorizationOptionProvisional completionHandler:^(BOOL granted, NSError * _Nullable error) {
-        NSLog(@"user %@ notifications: %@",granted?@"granted":@"declined",error);
+    UNMutableNotificationContent *content = [UNMutableNotificationContent new];
+    
+    
+    int formatValue = 0;
+    NSString *formatUnit = nil;
+    
+    if ( ! nextSabbath ) {
+        NSLog(@"BUG: couldn't get next sabbath");
+        return;
+    } else if ( interval >= 0 ) {
+        NSLog(@"BUG: next sabbath is in the past! (%@ vs %@)",now,nextSabbath);
+        return;
+    } else {
+        double daysUntilSabbath = -(interval) / STSecondsPerGregorianDay;
+        if ( daysUntilSabbath < 1 ) {
+            int hoursUntilSabbath = interval / 24.0;
+            if ( hoursUntilSabbath < 0 ) {
+                int minutesUntilSabbath = interval / 60.;
+                if ( minutesUntilSabbath < 1 ) {
+                    NSLog(@"BUG: couldn't format time to sabbath from %0.2f",interval);
+                    return;
+                }
+                formatValue = minutesUntilSabbath;
+                formatUnit = minutesUntilSabbath > 1 ? @"minutes" : @"minute";
+            } else {
+                formatValue = hoursUntilSabbath;
+                formatUnit = hoursUntilSabbath > 1 ? @"hours" : @"hour";
+            }
+        } else {
+            double fraction = daysUntilSabbath - ((long)daysUntilSabbath);
+            int wholeUntilSabbath = (int)daysUntilSabbath;
+            if ( fraction >= .5 )
+                wholeUntilSabbath++;
+            formatValue = wholeUntilSabbath;
+            formatUnit = daysUntilSabbath > 1 ? @"days" : @"day";
+        }
+    }
+    
+    content.title = [NSString stringWithFormat:@"Sabbath in %d %@!",formatValue,formatUnit];
+    content.body = [NSString stringWithFormat:@"Starts at %@.",[nextSabbath notificationPresentationString]];
+    UNNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:delay repeats:NO];
+    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:myId content:content trigger:trigger];
+    [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
+        NSLog(@"notification completed with result: %@",error);
     }];
+    
+    NSTimeInterval prefsInterval = [[NSDate date] timeIntervalSince1970];
+    [[NSUserDefaults standardUserDefaults] setDouble:prefsInterval forKey:prefsKey];
+    NSLog(@"%@ => %0.2f",prefsKey,prefsInterval);
+    
+    NSLog(@"submitted notification request");
+}
+
+- (void)requestNotificationApprovalWithDelay:(NSTimeInterval)delay
+{
+    NSString *key = LastNotificationRequestDate;
+    NSString *resultKey = LastNotificationRequestResult;
+    NSString *domainKey = LastNotificationRequestResultDomain;
+    NSString *codeKey = LastNotificationRequestResultCode;
+    NSUserDefaults *df = [NSUserDefaults standardUserDefaults];
+    double lnr = [df doubleForKey:key];
+    if ( ! lnr ) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+            [center requestAuthorizationWithOptions:UNAuthorizationOptionAlert|UNAuthorizationOptionProvisional completionHandler:^(BOOL granted, NSError * _Nullable error) {
+                NSLog(@"user %@ notifications: %@",granted?@"granted":@"declined",error);
+                if ( granted ) {
+                    [self sendSabbathNotificationWithDelay:STSabbathNotificationDelay];
+                }
+                [df setBool:granted forKey:resultKey];
+                [df setObject:[error domain] forKey:domainKey];
+                [df setInteger:[error code] forKey:codeKey];
+            }];
+            [df setDouble:[[NSDate date] timeIntervalSince1970] forKey:key];
+        });
+    } else {
+        NSDate *date = [NSDate dateWithTimeIntervalSince1970:lnr];
+        NSString *domain = [df objectForKey:domainKey];
+        NSInteger code = [df integerForKey:codeKey];
+        NSLog(@"last asked for notification approval on %@\nlast time, we got '%ld: %@,' shall we ask again?",date,code,domain);
+        
+        if ( code == 0 )
+            [self sendSabbathNotificationWithDelay:STSabbathNotificationDelay];
+    }
 }
 
 - (void)requestLocationAuthorization
@@ -459,7 +605,7 @@ static STState *sState = nil;
     NSMutableArray *retArray = [NSMutableArray array];
     
     do {
-        NSString *key = [NSString stringWithFormat:@"com.combobulated.Sabbatic.usno.%ld",year];
+        NSString *key = [NSString stringWithFormat:USNOLunarPhasesFormat,year];
         NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:key];
         
         if ( ! dict ) {
@@ -492,7 +638,7 @@ static STState *sState = nil;
     NSMutableArray *retArray = [NSMutableArray array];
     
     do {
-        NSString *key = [NSString stringWithFormat:@"com.combobulated.Sabbatic.usno.solar.%ld",year];
+        NSString *key = [NSString stringWithFormat:USNOSolarEventsFormat,year];
         NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:key];
         
         if ( ! dict ) {
@@ -594,7 +740,7 @@ static STState *sState = nil;
 
 - (NSDictionary *)_usnoOnedayForDateString:(NSString *)dateString location:(CLLocation *)location
 {
-    NSString *key = [NSString stringWithFormat:@"com.combobulated.Sabbatic.usno.oneday.%@",dateString];
+    NSString *key = [NSString stringWithFormat:USNOOnedayFormat,dateString];
     NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:key];
     
     if ( ! dict ) {

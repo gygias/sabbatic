@@ -12,6 +12,7 @@
 #import "STCalendarView.h"
 #import "STMoonController.h"
 #import "STDefines.h"
+#import "STState.h"
 
 @interface ViewController ()
 @property (strong) STMoonController *moonController;
@@ -24,7 +25,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
-    SCNView *moonView = [[SCNView alloc] initWithFrame:CGRectInset([self.view frame], 10, 10) options:NULL];
+    SCNView *moonView = [[SCNView alloc] initWithFrame:[self.view frame] options:NULL];
     self.moonController = [[STMoonController alloc] initWithView:moonView];
     [self.view addSubview:moonView];
     
@@ -45,6 +46,8 @@
         [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
             NSLog(@"animated to current phase on day change");
         }];
+        
+        [[STState state] sendSabbathNotificationWithDelay:STSecondsPerGregorianDay / 2.];
     }];
     [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue]  usingBlock:^(NSNotification * _Nonnull notification) {
         NSLog(@"NSSystemClockDidChangeNotification!");
@@ -52,7 +55,11 @@
         [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
             NSLog(@"animated to current phase on clock change");
         }];
+        
+        [[STState state] sendSabbathNotificationWithDelay:0];
     }];
+    
+    [[STState state] requestNotificationApprovalWithDelay:STNotificationRequestDelay];
 }
 
 

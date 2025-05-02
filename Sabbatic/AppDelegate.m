@@ -50,6 +50,8 @@
         [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
             NSLog(@"animated to current phase on day change");
         }];
+        
+        [[STState state] sendSabbathNotificationWithDelay:STSecondsPerGregorianDay / 2.];
     }];
     [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue]  usingBlock:^(NSNotification * _Nonnull notification) {
         NSLog(@"NSSystemClockDidChangeNotification!");
@@ -57,7 +59,11 @@
         [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
             NSLog(@"animated to current phase on clock change");
         }];
+        
+        [[STState state] sendSabbathNotificationWithDelay:0];
     }];
+    
+    [[STState state] requestNotificationApprovalWithDelay:STNotificationRequestDelay];
 }
 
 

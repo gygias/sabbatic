@@ -1,2 +1,2 @@
 test transition to new lastNewYear case after conjunction, before sunset, like lastNewMoonDay/Start fallback properly
-29 day months
+make all 'momentsAfter' truly momentary

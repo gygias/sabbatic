@@ -136,6 +136,13 @@ static NSDate *sNSDateMyNowStart = nil;
     return [self _localString:@"HH:mm"];
 }
 
+- (NSString *)notificationPresentationString
+{
+    NSString *first = [self _localString:@"EEEE"];
+    NSString *second = [self _localString:@"HH:mm"];
+    return [NSString stringWithFormat:@"%@ at %@",first,second];
+}
+
 @end
 
 @implementation STCalendar
