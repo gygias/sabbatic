@@ -16,8 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)isDateInLunarToday:(NSDate *)date;
 + (BOOL)isDateInLunarYesterday:(NSDate *)date;
 
-+ (NSDate *)newMoonDayForConjunction:(NSDate *)date; // gregorian midnight on new moon day
-+ (NSDate *)newMoonStartTimeForConjunction:(NSDate *)date; // sunset on previous day
++ (NSDate *)newMoonDayForConjunction:(NSDate *)date :(nullable BOOL *)intercalary; // gregorian midnight on new moon day
++ (NSDate *)newMoonStartTimeForConjunction:(NSDate *)date :(nullable BOOL *)intercalary; // sunset on previous day
 
 + (NSDate *)date:(NSDate *)date byAddingDays:(NSInteger)days hours:(NSInteger)hours minutes:(NSInteger)minutes seconds:(NSInteger)seconds;
 //+ (NSDate *)date:(NSDate *)date bySubtractingDays:(NSInteger) days;

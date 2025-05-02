@@ -36,9 +36,12 @@ CGRect gMyInitRect;
     //myNow = [STCalendar date:myNow byAddingDays:0 hours:0 minutes:0 seconds:-5];
     
     // plain old now
-    NSDate *myNow = [NSDate myNow];
+    //NSDate *myNow = [NSDate myNow];
     
-    NSInteger fast = 2;
+    // 15 days ago
+    NSDate *myNow = [STCalendar date:[NSDate date] byAddingDays:-15 hours:0 minutes:0 seconds:0];
+    
+    NSInteger fast = 0;
     [NSDate setMyNow:myNow realSecondsPerDay:fast];
 #else
     [NSDate enqueueRealSunsetNotifications];
@@ -86,6 +89,11 @@ CGRect gMyInitRect;
         dirtyRect = CGRectInset(dirtyRect, 50, 50);
     }
 #endif
+    NSDate *lastNewMoonStart = [[STState state] lastNewMoonStart];
+    NSDate *nextConjunction = [[STState state] nextConjunction];
+    BOOL intercalary = NO;
+    NSDate *nextNewMoonStart = [STCalendar newMoonDayForConjunction:nextConjunction :&intercalary];
+    NSLog(@"drawing %@month at myNow %@ with lastNewMoonStart %@",intercalary?@"intercalary ":@"",[NSDate myNow],lastNewMoonStart);
     
     CGContextRef context = STContext;
     
@@ -96,14 +104,17 @@ CGRect gMyInitRect;
     
     // Drawing code here.
     CGFloat dayWidth = dirtyRect.size.width / 7;
-    CGFloat dayHeight = dayWidth;
+    CGFloat dayHeight = intercalary ? dayWidth * .8 : dayWidth;
     
-    CGFloat lineWidth = 1;
+    CGFloat lineWidth = 2;
     CGContextSetLineWidth(context, lineWidth);
     
     // draw calendar frame
+    CGFloat calendarBoxOrigin = intercalary ? dirtyRect.origin.y + dayHeight : dirtyRect.origin.y;
+    CGFloat calendarBoxHeight = intercalary ? dirtyRect.size.height - dayHeight : dirtyRect.size.height;
     CGRect monthRect = CGRectMake(dirtyRect.origin.x,dirtyRect.origin.y,dirtyRect.size.width,dirtyRect.size.height);
     CGContextAddRect(context, monthRect);
+#warning clear here
     CGContextSetFillColorWithColor(context, [STColorClass blackColor].CGColor);
     CGContextFillPath(context);
     CGContextSetStrokeColorWithColor(context, [STColorClass redColor].CGColor);
@@ -113,27 +124,31 @@ CGRect gMyInitRect;
     for ( int i = 0; i < 8; i++ ) {
         CGFloat columnX = dirtyRect.origin.x + ( i * dayWidth );
         
-        CGFloat lineHeight;
-        if ( i < 6 ) {
+        CGFloat endY;
+        if ( intercalary && ( i == 0 || i == 1 ) ) {
+            endY = dayHeight * 4;
+            CGContextMoveToPoint(context, columnX, dirtyRect.origin.y);
+        } else if ( i >= 6 ) {
+            endY = dayHeight * 5;
+            CGContextMoveToPoint(context, columnX, calendarBoxOrigin);
+        } else {
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
-            lineHeight = dayHeight * 4;
+            endY = dayHeight * 4;
             CGFloat yOff = 0;
 #else
             lineHeight = dayHeight * 5;
             CGFloat yOff = dayHeight;
 #endif
-            CGContextMoveToPoint(context, columnX, dirtyRect.origin.y + yOff);
-        } else {
-            lineHeight = dayHeight * 5;
-            CGContextMoveToPoint(context, columnX, dirtyRect.origin.y);
+            CGContextMoveToPoint(context, columnX, calendarBoxOrigin + yOff);
         }
-        CGFloat endY = dirtyRect.size.height > lineHeight ? lineHeight : dirtyRect.size.height;
-        CGFloat startY = dirtyRect.origin.y;
-        CGContextAddLineToPoint(context, columnX, startY + endY);
+        
+        CGContextAddLineToPoint(context, columnX, calendarBoxOrigin + endY);
         //[[NSString stringWithFormat:@"%d",i] drawAtPoint:CGPointMake(columnX,dirtyRect.origin.y + endY) withAttributes:textAttributes];
     }
+    
+    // draw common lines to RHS
     for ( int i = 0; i < 6; i++ ) {
-        CGFloat rowY = dirtyRect.origin.y + ( i * dayHeight );
+        CGFloat rowY = calendarBoxOrigin + ( i * dayHeight );
         CGFloat rowX =
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
                         ( i < 5 ) ?
@@ -147,11 +162,13 @@ CGRect gMyInitRect;
     }
     CGContextStrokePath(context);
     
+    if ( intercalary ) {
+        CGContextMoveToPoint(context, dirtyRect.origin.x, dirtyRect.origin.y);
+        CGContextAddLineToPoint(context, dirtyRect.origin.x + dayWidth, dirtyRect.origin.y);
+        CGContextStrokePath(context);
+    }
+    
     // draw day numbers
-    //NSDate *lastConjunction = [[STState state] lastConjunction];
-    //NSDate *lastNewMoonDay = [STCalendar newMoonDayForConjunction:lastConjunction];
-    NSDate *lastNewMoonStart = [[STState state] lastNewMoonStart];
-    NSLog(@"drawing at myNow %@ with lastNewMoonStart %@",[NSDate myNow],lastNewMoonStart);
     NSDictionary *textAttributes = @{ NSForegroundColorAttributeName : [STColorClass redColor],
                                       NSFontAttributeName : [STFontClass systemFontOfSize:[self _fontSizeForViewWidth:dirtyRect.size.width]] };
     NSDictionary *smallAttributes = @{ NSForegroundColorAttributeName : [STColorClass lightGrayColor],
@@ -182,7 +199,7 @@ CGRect gMyInitRect;
 #else
     for ( int i = 1; i < 5; i++ ) {
 #endif
-        CGFloat ldY = dirtyRect.origin.y + ( i * dayHeight );
+        CGFloat ldY = calendarBoxOrigin + ( i * dayHeight );
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
         CGFloat gdY = ldY + STGregorianDayOffset;
         CGFloat ssY = gdY + smallerTextSize.height + 3;
@@ -209,7 +226,7 @@ CGRect gMyInitRect;
             
             if ( isLunarToday ) {
                 if ( foundToday ) {
-                    NSLog(@"something is wrong on %@",[NSDate myNow]);
+                    NSLog(@"BUG: multiple todays on %@",[NSDate myNow]);
                     //abort();
                 }
                 foundToday = YES;
@@ -263,7 +280,7 @@ CGRect gMyInitRect;
         }
     }
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
-    CGFloat ldY = dirtyRect.origin.y + ( 4 * dayHeight );
+    CGFloat ldY = calendarBoxOrigin + ( 4 * dayHeight );
     CGFloat ssY = ldY + textSize.height + 3;
     CGFloat gdY = ldY + STGregorianDayOffset;
     ldY += dayHeight - textSize.height;
@@ -288,7 +305,7 @@ CGRect gMyInitRect;
     if ( isLunarToday ) {
         
         if ( foundToday ) {
-            NSLog(@"something is wrong on %@",[NSDate myNow]);
+            NSLog(@"BUG: multiple todays on %@",[NSDate myNow]);
             //abort();
         }
         foundToday = YES;
@@ -310,7 +327,7 @@ CGRect gMyInitRect;
     [attrString drawAtPoint:CGPointMake(oneX,gdY)];
 
     if ( ! foundToday ) {
-        NSLog(@"something is wrong on %@",[NSDate myNow]);
+        NSLog(@"BUG: no todays on %@",[NSDate myNow]);
         //abort();
     }
 }

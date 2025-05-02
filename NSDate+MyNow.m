@@ -189,7 +189,7 @@ static NSDate *sNSDateMyNowStart = nil;
             && ( [date timeIntervalSinceDate:midnightAfterLastSunset] < 0 );
 }
 
-+ (NSDate *)newMoonDayForConjunction:(NSDate *)date
++ (NSDate *)newMoonDayForConjunction:(NSDate *)date :(BOOL *)intercalary
 {
     // motnc 2025-6 calendar suggests matthew puts new moon day off a day
     // if the conjunction happens around 4pm or later (3:54pm the latest conjunction with
@@ -205,15 +205,21 @@ static NSDate *sNSDateMyNowStart = nil;
     unsigned int flags = NSCalendarUnitHour;
     NSInteger days = 1;
     NSDateComponents *comps = [theCalendar components:flags fromDate:date];
-    if ( comps.hour >= 16 )
+    if ( comps.hour >= 16 ) {
         days = 2;
+        if ( intercalary )
+            *intercalary = YES;
+    } else {
+        if ( intercalary )
+            *intercalary = NO;
+    }
 
     return [[STState state] normalizeDate:[self date:date byAddingDays:days hours:0 minutes:0 seconds:0]];
 }
 
-+ (NSDate *)newMoonStartTimeForConjunction:(NSDate *)date
++ (NSDate *)newMoonStartTimeForConjunction:(NSDate *)date :(BOOL *)intercalary
 {
-    NSDate *newMoonDay = [self newMoonDayForConjunction:date];
+    NSDate *newMoonDay = [self newMoonDayForConjunction:date :intercalary];
     NSDate *previousDay = [STCalendar date:newMoonDay byAddingDays:-1 hours:0 minutes:0 seconds:0];
     return [[STState state] lastSunsetForDate:previousDay momentAfter:YES];
 }
