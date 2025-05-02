@@ -16,7 +16,7 @@
 {
     NSDate *time = [[STState state] nextSunset:YES];
     NSTimeInterval inSecs = [time timeIntervalSinceDate:[NSDate myNow]];
-    NSLog(@"enqueueing REAL sunset notification on %@ (%0.2f secs)",time,inSecs);
+    NSLog(@"enqueueing REAL sunset notification on %@ (%0.1f hours)",time,inSecs/60./60.);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(inSecs * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] postNotificationName:NSCalendarDayChangedNotification object:self];
         [self enqueueRealSunsetNotifications];
@@ -139,8 +139,13 @@ static NSDate *sNSDateMyNowStart = nil;
     NSDate *lastSunset = [[STState state] lastSunset:YES];
     NSDate *nextSunset = [[STState state] nextSunset:NO];
     
-    return ( [date timeIntervalSinceDate:lastSunset] >= 0 )
-            && ( [date timeIntervalSinceDate:nextSunset] <= 0 );
+    BOOL lunarToday = ( [date timeIntervalSinceDate:lastSunset] >= 0 )
+        && ( [date timeIntervalSinceDate:nextSunset] <= 0 );
+    
+    if ( lunarToday )
+        NSLog(@"LUNAR TODAY is %@ < <%@> < %@",lastSunset,date,nextSunset);
+    
+    return lunarToday;
 }
 
 + (BOOL)isDateInLunarYesterday:(NSDate *)date

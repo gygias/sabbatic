@@ -26,16 +26,20 @@ CGRect gMyInitRect;
     //NSDate *lastNewMoonDay = [STCalendar newMoonDayForConjunction:lastConjunction];
     
     // 5 secs before last new moon
-    NSDate *lastNewMoonStart = [[STState state] lastNewMoonStart];
-    NSDate *myNow = [STCalendar date:lastNewMoonStart byAddingDays:0 hours:0 minutes:0 seconds:-5];
+    //NSDate *lastNewMoonStart = [[STState state] lastNewMoonStart];
+    //NSDate *myNow = [STCalendar date:lastNewMoonStart byAddingDays:0 hours:0 minutes:0 seconds:-5];
     
     // yesterday 5 seconds to midnight
     //NSDate *myNow =   [STCalendar date:[[STState state] normalizeDate:[STCalendar date:[NSDate date] byAddingDays:-1 hours:0 minutes:0 seconds:0]]
     //                      byAddingDays:0 hours:23 minutes:59 seconds:55];
     
-    //NSDate *myNow = [STCalendar date:[NSDate myNow] byAddingDays:0 hours:0 minutes:0 seconds:0];
+    //NSDate *myNow = [STCalendar date:[NSDate myNow] byAddingDays:0 hours:2 minutes:0 seconds:0];
     
-    NSInteger fast = 3;
+    // 5 secs before last sunset
+    NSDate *myNow = [[STState state] lastSunsetForDate:[NSDate myNow] momentAfter:YES];
+    myNow = [STCalendar date:myNow byAddingDays:0 hours:0 minutes:0 seconds:-5];
+    
+    NSInteger fast = 0;
     [NSDate setMyNow:myNow realSecondsPerDay:fast];
 #else
     [NSDate enqueueRealSunsetNotifications];

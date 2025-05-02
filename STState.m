@@ -267,27 +267,42 @@ static STState *sState = nil;
 
 - (NSDate *)nextSunset:(BOOL)momentAfter
 {
-    NSDate *myNow = [NSDate myNow];
-    NSDate *sunsetToday = [self lastSunsetForDate:myNow momentAfter:momentAfter];
-    if ( [myNow timeIntervalSinceDate:sunsetToday] <= 0 ) {
-        return sunsetToday;
+    NSDate *origDate = [NSDate myNow];
+    NSDate *date = origDate;
+    NSDate *sunsetDate = nil;
+    date = [STCalendar date:date byAddingDays:-1 hours:0 minutes:0 seconds:0];
+    while ( ( sunsetDate = [self lastSunsetForDate:date momentAfter:YES] ) ) {
+        if ( [origDate timeIntervalSinceDate:sunsetDate] <= 0 ) {
+            if ( momentAfter )
+                sunsetDate = [STCalendar date:sunsetDate byAddingDays:0 hours:0 minutes:0 seconds:1];
+            return sunsetDate;
+        }
+        date = [STCalendar date:date byAddingDays:1 hours:1 minutes:0 seconds:0];
     }
-    NSDate *tomorrow = [STCalendar date:myNow byAddingDays:1 hours:0 minutes:0 seconds:0];
-    NSDate *sunsetTomorrow = [self lastSunsetForDate:tomorrow momentAfter:momentAfter];
-    return sunsetTomorrow;
+    
+    return nil;
 }
 
 - (NSDate *)lastSunsetForDate:(NSDate *)date momentAfter:(BOOL)momentAfter
 {
-    NSDate *sunset = [self _fetchSunsetTimeOnDate:date];
-    if ( momentAfter )
-        sunset = [STCalendar date:sunset byAddingDays:0 hours:0 minutes:0 seconds:1];
-    return sunset;
+    NSDate *origDate = date;
+    NSDate *sunsetDate = nil;
+    date = [STCalendar date:date byAddingDays:1 hours:0 minutes:0 seconds:0];
+    while ( ( sunsetDate = [self _fetchSunsetTimeOnDate:date] ) ) {
+        if ( [origDate timeIntervalSinceDate:sunsetDate] >= 0 ) {
+            if ( momentAfter )
+                sunsetDate = [STCalendar date:sunsetDate byAddingDays:0 hours:0 minutes:0 seconds:1];
+            return sunsetDate;
+        }
+        date = [STCalendar date:date byAddingDays:-1 hours:0 minutes:0 seconds:0];
+    }
+    
+    return nil;
 }
 
 - (NSDate *)lastNewMoonDay
 {
-    NSDate *last = [self lastConjunction];    
+    NSDate *last = [self lastConjunction];
     NSDate *day = [self normalizeDate:[STCalendar newMoonDayForConjunction:last]];
     return day;
 }
