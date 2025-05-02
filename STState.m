@@ -214,8 +214,7 @@ static STState *sState = nil;
 {
     NSDate *last = [self lastConjunction];
     NSDate *day = [STCalendar newMoonDayForConjunction:last];
-    NSDate *start = [STCalendar date:day byAddingDays:0 hours:0 minutes:0 seconds:0];
-    NSDate *sunsetPreviousDay = [self lastSunsetForDate:start momentAfter:YES];
+    NSDate *sunsetPreviousDay = [self lastSunsetForDate:day momentAfter:YES];
     
     // called after conjunction but before new moon start
     if ( [[NSDate myNow] timeIntervalSinceDate:sunsetPreviousDay] < 0 ) {
@@ -295,6 +294,23 @@ static STState *sState = nil;
             return sunsetDate;
         }
         date = [STCalendar date:date byAddingDays:-1 hours:0 minutes:0 seconds:0];
+    }
+    
+    return nil;
+}
+
+- (NSDate *)nextSunsetForDate:(NSDate *)date momentAfter:(BOOL)momentAfter
+{
+    NSDate *origDate = date;
+    NSDate *sunsetDate = nil;
+    date = [STCalendar date:date byAddingDays:-1 hours:0 minutes:0 seconds:0];
+    while ( ( sunsetDate = [self _fetchSunsetTimeOnDate:date] ) ) {
+        if ( [origDate timeIntervalSinceDate:sunsetDate] < 0 ) {
+            if ( momentAfter )
+                sunsetDate = [STCalendar date:sunsetDate byAddingDays:0 hours:0 minutes:0 seconds:1];
+            return sunsetDate;
+        }
+        date = [STCalendar date:date byAddingDays:1 hours:0 minutes:0 seconds:0];
     }
     
     return nil;

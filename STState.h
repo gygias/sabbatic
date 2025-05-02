@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSDate *)lastSunset:(BOOL)momentAfter;
 - (NSDate *)nextSunset:(BOOL)momentAfter;
 - (NSDate *)lastSunsetForDate:(NSDate *)date momentAfter:(BOOL)momentAfter;
+- (NSDate *)nextSunsetForDate:(NSDate *)date momentAfter:(BOOL)momentAfter;
 
 - (NSDate *)normalizeDate:(NSDate *)date; // returns midnight on same calendar date
 - (NSDate *)normalizeDate:(NSDate *)date hour:(NSInteger)hour minute:(NSInteger)minute second:(NSInteger)second; // returns midnight + etc. on same calendar date

@@ -74,12 +74,19 @@ static NSDate *sNSDateMyNowStart = nil;
 
 + (void)setMyNow:(NSDate *)date realSecondsPerDay:(NSInteger)real
 {
-    sNSDateMyNowOffset = [NSDate date].timeIntervalSince1970 - [date timeIntervalSince1970];
+    NSDate *realNow = [NSDate date];
+    // allow use of 'fast' for unchanged 'now'
+    if ( date && ( [date timeIntervalSinceDate:realNow] == 0 ) )
+        sNSDateMyNowOffset = .000001;
+    else
+        sNSDateMyNowOffset = realNow.timeIntervalSince1970 - [date timeIntervalSince1970];
+    
     if ( real > 0 ) {
         sNSDateMyNowFast = YES;
         sNSDateMyNowSecsPerDay = real;
         sNSDateMyNowStart = [NSDate date];
     }
+    
     NSDate *myNow = [NSDate myNow];
     NSLog(@"MyNow: The time is now %@ (%0.1f seconds in the %@)",myNow,sNSDateMyNowOffset,sNSDateMyNowOffset>0?@"past":@"future");
     [self _enqueueDayChangedNotesForDayAfter:date];
