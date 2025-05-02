@@ -79,9 +79,6 @@ CGRect gMyInitRect;
     
     CGContextRef context = STContext;
     
-    CGContextSetFillColorWithColor(context, [STColorClass clearColor].CGColor);
-    CGContextFillRect(context, dirtyRect);
-    
     // Drawing code here.
     self.dirtyRect = dirtyRect;
     self.dayWidth = dirtyRect.size.width / 7;
@@ -142,8 +139,8 @@ CGRect gMyInitRect;
 #else
             int day = 7 * ( i - 1 ) + j + 1;
 #endif
-            // +1 hour to handle shortening and lengthening days in one pass (hopefully)
             int effectiveDay = day;
+            // +1 hour to handle shortening and lengthening days in one pass (hopefully)
             NSDate *thisDate = [STCalendar date:lastNewMoonStart byAddingDays:effectiveDay hours:1 minutes:0 seconds:0];
             BOOL isLunarToday = [STCalendar isDateInLunarToday:thisDate];
             [self drawDayAtPoint:CGPointMake(columnX,ldY) lunar:effectiveDay + 1 date:thisDate asToday:isLunarToday foundToday:&foundToday];
@@ -160,7 +157,20 @@ CGRect gMyInitRect;
     //NSDate *sunsetOnNewMoonDay = [[STState state] lastSunsetForDate:lastNewMoonDayMidnight momentAfter:NO];
     BOOL isLunarToday = [STCalendar isDateInLunarToday:lastNewMoonDayMidnight];
     [self drawDayAtPoint:CGPointMake(oneX,ldY) lunar:1 date:lastNewMoonDayMidnight asToday:isLunarToday foundToday:&foundToday];
-
+    
+    if ( intercalary ) {
+        int effectiveDay = 29;
+        oneX = dirtyRect.origin.x;
+#ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
+        CGFloat ldY = self.calendarBoxOrigin - self.dayHeight;
+#else
+        CGFloat ldY = self.calendarBoxOrigin + ( 5 * self.dayHeight );
+#endif
+        NSDate *thisDate = [STCalendar date:lastNewMoonStart byAddingDays:effectiveDay hours:1 minutes:0 seconds:0];
+        BOOL isLunarToday = [STCalendar isDateInLunarToday:thisDate];
+        [self drawDayAtPoint:CGPointMake(oneX,ldY) lunar:effectiveDay + 1 date:thisDate asToday:isLunarToday foundToday:&foundToday];
+    }
+    
     if ( ! foundToday ) {
         NSLog(@"BUG: no todays on %@",[NSDate myNow]);
         //abort();
@@ -205,9 +215,7 @@ CGRect gMyInitRect;
 {
     CGContextRef context = STContext;
     
-    //CGFloat calendarBoxHeight = intercalary ? self.dirtyRect.size.height - self.dayHeight : self.dirtyRect.size.height;
-    CGRect monthRect = CGRectMake(self.dirtyRect.origin.x,self.dirtyRect.origin.y,self.dirtyRect.size.width,self.dirtyRect.size.height);
-    CGContextAddRect(context, monthRect);
+    CGContextAddRect(context, self.dirtyRect);
     CGContextSetFillColorWithColor(context, [STColorClass clearColor].CGColor);
     CGContextFillPath(context);
     CGContextSetStrokeColorWithColor(context, [STColorClass redColor].CGColor);
@@ -304,7 +312,7 @@ CGRect gMyInitRect;
 
     BOOL waning = NO;
     double fracillum = [[STState state] moonFracillumForDate:date :&waning];
-    NSString *fracillumString = [NSString stringWithFormat:@"%0.0f%%%@",fracillum * 100,waning?@" (waning)":@""];
+    NSString *fracillumString = [NSString stringWithFormat:@"%0.0f%%",fracillum * 100];
     [fracillumString drawAtPoint:CGPointMake(oneX, fcY) withAttributes:self.smallerAttributes];
     
     // draw attributed gregorian date
@@ -312,7 +320,7 @@ CGRect gMyInitRect;
     NSAttributedString *attrString = nil;
     // account for lunar day start on dynamic days
     NSDate *gregorianDay = nil;
-    if ( lunar > 1 && lunar < 29 )
+    if ( lunar > 1 )
         gregorianDay = [STCalendar date:date byAddingDays:1 hours:0 minutes:0 seconds:0];
     else
         gregorianDay = date;

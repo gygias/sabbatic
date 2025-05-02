@@ -23,8 +23,8 @@
 #define STContext UIGraphicsGetCurrentContext()
 #define STColorClass UIColor
 #define STFontClass UIFont
-#define STLocalGregorianFontSize 5
-#define STSmallLocalGregorianFontSize 4
+#define STLocalGregorianFontSize 6
+#define STSmallLocalGregorianFontSize 6
 #define STFontSizeScalar 320
 #define STGregorianDayOffset 3
 #define STCalendarViewInsetX 25

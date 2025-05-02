@@ -58,7 +58,7 @@ typedef enum
         
         SCNLight *light = [SCNLight new];
         light.type = SCNLightTypeOmni;
-        light.intensity = 3000;
+        light.intensity = 250;
         light.color = [STColorClass whiteColor];
         
         self.lightNode = [SCNNode new];
