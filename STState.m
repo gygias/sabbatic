@@ -36,9 +36,36 @@ static STState *sState = nil;
     return sState;
 }
 
+#warning usno only gives fracillum for noon on a particular day
+- (double)_syntheticMoonPhaseCurve:(double)zeroThruOne {
+    if ( zeroThruOne < 0 || zeroThruOne > 1 ) {
+        NSLog(@"uh-oh!");
+        abort();
+    }
+    double pi = 3.14159;
+    double centered = 2 * pi * zeroThruOne - pi;
+    double y = sin(centered + ( pi / 2 ) ) + 1;
+    double synthetic = y / 2;
+    NSLog(@"%0.2f: sin(%0.2f + ( %0.2f / 2 )) => %0.2f",zeroThruOne,centered,pi,synthetic);
+    return synthetic;
+}
+
 - (double)currentMoonFracillum:(BOOL *)waning
 {
-    return [self moonFracillumForDate:[NSDate myNow] :waning];
+    NSDate *now = [NSDate myNow];
+    NSDate *last = [self lastConjunction];
+    NSTimeInterval timeSinceLast = [now timeIntervalSinceDate:last];
+    if ( timeSinceLast < 0 ) {
+        NSLog(@"uh-oh!");
+        abort();
+    }
+    double monthCompleted = timeSinceLast / STSecondsPerLunarDay;
+    
+    double usno = [self moonFracillumForDate:now :waning];
+    double synthetic = [self _syntheticMoonPhaseCurve:monthCompleted];
+    NSLog(@"%0.2f vs %0.2f",synthetic,usno);
+    
+    return synthetic;
 }
 
 - (double)moonFracillumForDate:(NSDate *)date :(BOOL *)waning
@@ -99,7 +126,6 @@ static STState *sState = nil;
             NSDate *aThen = [self _dateFromUSNODictionary:obj :&aThenString];
             
             NSDate *myNow = [NSDate myNow];
-            NSTimeInterval interval = [myNow timeIntervalSinceDate:aThen];
             if ( [myNow timeIntervalSinceDate:aThen] < 0 ) {
                 next = aThen;
                 *stop = YES;
@@ -214,6 +240,9 @@ static STState *sState = nil;
 - (NSDate *)lastNewMoonStart
 {
     NSDate *last = [self lastConjunction];
+    NSDate *next = [self nextConjunction];
+    if ( [next timeIntervalSinceDate:[NSDate myNow]] > STSecondsPerLunarDay )
+        last = [self _conjunctionPriorToDate:last];
     NSDate *day = [STCalendar newMoonDayForConjunction:last :NULL];
     NSDate *sunsetPreviousDay = [self lastSunsetForDate:day momentAfter:YES];
     
@@ -241,7 +270,7 @@ static STState *sState = nil;
     return sunsetPreviousDay;
 }
 
-- (NSDate *)lastSunset:(BOOL)momentAfter
+/*- (NSDate *)lastSunset:(BOOL)momentAfter
 {
     NSDate *myNow = [NSDate myNow];
     NSDate *sunsetToday = [self lastSunsetForDate:myNow momentAfter:momentAfter];
@@ -263,6 +292,24 @@ static STState *sState = nil;
         NSLog(@"the sun set %0.2f hours ago at %@ (%@)",timeSince / 60. / 60.,sunsetDayBefore,myNow);
     });
     return sunsetDayBefore;
+}*/
+
+- (NSDate *)lastSunset:(BOOL)momentAfter
+{
+    NSDate *origDate = [NSDate myNow];
+    NSDate *date = origDate;
+    NSDate *sunsetDate = nil;
+    date = [STCalendar date:date byAddingDays:1 hours:0 minutes:0 seconds:0];
+    while ( ( sunsetDate = [self lastSunsetForDate:date momentAfter:momentAfter] ) ) {
+        if ( [origDate timeIntervalSinceDate:sunsetDate] >= 0 ) {
+            if ( momentAfter )
+                sunsetDate = [STCalendar date:sunsetDate byAddingDays:0 hours:0 minutes:0 seconds:1];
+            return sunsetDate;
+        }
+        date = [STCalendar date:date byAddingDays:-1 hours:0 minutes:0 seconds:0];
+    }
+    
+    return nil;
 }
 
 - (NSDate *)nextSunset:(BOOL)momentAfter
@@ -271,13 +318,13 @@ static STState *sState = nil;
     NSDate *date = origDate;
     NSDate *sunsetDate = nil;
     date = [STCalendar date:date byAddingDays:-1 hours:0 minutes:0 seconds:0];
-    while ( ( sunsetDate = [self lastSunsetForDate:date momentAfter:YES] ) ) {
-        if ( [origDate timeIntervalSinceDate:sunsetDate] <= 0 ) {
+    while ( ( sunsetDate = [self lastSunsetForDate:date momentAfter:momentAfter] ) ) {
+        if ( [origDate timeIntervalSinceDate:sunsetDate] < 0 ) {
             if ( momentAfter )
                 sunsetDate = [STCalendar date:sunsetDate byAddingDays:0 hours:0 minutes:0 seconds:1];
             return sunsetDate;
         }
-        date = [STCalendar date:date byAddingDays:1 hours:1 minutes:0 seconds:0];
+        date = [STCalendar date:date byAddingDays:1 hours:0 minutes:0 seconds:0];
     }
     
     return nil;
@@ -521,6 +568,7 @@ static STState *sState = nil;
     
     content.title = [NSString stringWithFormat:@"Sabbath in %d %@!",formatValue,formatUnit];
     content.body = [NSString stringWithFormat:@"Starts at %@.",[nextSabbath notificationPresentationString]];
+    if ( ! delay ) delay = 0.01;
     UNNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:delay repeats:NO];
     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:myId content:content trigger:trigger];
     [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {

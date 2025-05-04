@@ -243,7 +243,4 @@ typedef enum
         [self _animateToPhase:( self.currentPhase + 1 ) % 4 start:YES];
 }
 
-#warning usno only gives fracillum for noon on a particular day
-- (void)syntheticMoonPhaseCurve { }
-
 @end

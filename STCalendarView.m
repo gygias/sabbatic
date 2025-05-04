@@ -21,7 +21,8 @@ CGRect gMyInitRect;
 @property CGFloat dayHeight;
 @property CGFloat dayWidth;
 @property CGFloat lineWidth;
-@property CGFloat calendarBoxOrigin;
+@property CGFloat calendarBoxOriginX;
+@property CGFloat calendarBoxOriginY;
 @property (strong) NSDictionary *bigTextAttributes;
 @property (strong) NSDictionary *textAttributes;
 @property (strong) NSDictionary *smallAttributes;
@@ -37,15 +38,19 @@ CGRect gMyInitRect;
 
 - (void)_initMyNowStuff
 {    
-//#define MyNow
-#define fast 2
+#define MyNow
+#define fast 3
 #ifdef MyNow
 #warning this becomes -66 seconds from nms notification. if you wait it out the transition is smooth. \
         if you don't and try to add a minute here, there is no today until the notification fires, \
         there is a minute of no-mans-land would benefit from longer or "real life" draw intervals \
         (and, it draws intercalary, as if based on this month) \
         put it on fast mode and 'two todays' will walk across the calendar :-)
-    NSDate *myNow = [STCalendar date:[[STState state] lastNewMoonStart] byAddingDays:0 hours:-1 minutes:0 seconds:-5];
+    //NSDate *myNow = [STCalendar date:[[STState state] lastNewMoonStart] byAddingDays:0 hours:0 minutes:0 seconds:-5];
+    
+    NSDate *myNow = [NSDate myNow];
+    //NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    //NSDate *myNow = [gregorian dateWithEra:1 year:2025 month:4 day:27 hour:19 minute:49 second:55 nanosecond:0];
     
     // yesterday 5 seconds to midnight
     //NSDate *myNow =   [STCalendar date:[[STState state] normalizeDate:[STCalendar date:[NSDate date] byAddingDays:-1 hours:0 minutes:0 seconds:0]]
@@ -65,6 +70,9 @@ CGRect gMyInitRect;
     // 15 days ago
     //NSDate *myNow = [STCalendar date:[NSDate date] byAddingDays:-15 hours:0 minutes:0 seconds:0];
     
+    // 1 hour ago
+    //NSDate *myNow = [STCalendar date:[NSDate date] byAddingDays:0 hours:-1 minutes:0 seconds:0];
+    
     [NSDate setMyNow:myNow realSecondsPerDay:fast];
 #else
     [NSDate enqueueRealSunsetNotifications];
@@ -75,15 +83,19 @@ CGRect gMyInitRect;
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
     [super drawRect:dirtyRect];
     if ( ! CGRectEqualToRect(dirtyRect, gMyInitRect) ) {
-        dirtyRect = CGRectInset(dirtyRect, STCalendarViewMacosInset, STCalendarViewMacosInset);
+        dirtyRect = CGRectInset(dirtyRect, STCalendarViewInset, STCalendarViewInset);
     }
 #endif
     BOOL foundToday = NO;
     NSDate *lastNewMoonStart = [[STState state] lastNewMoonStart];
-    NSDate *nextConjunction = [[STState state] nextConjunction];
+    NSDate *aConjunction = [[STState state] nextConjunction];
+    // handle time between conjunction and next new moon day
+    NSTimeInterval timeUntilNextConjunction = [aConjunction timeIntervalSinceDate:[NSDate myNow]];
+    if ( timeUntilNextConjunction > STSecondsPerLunarDay )
+        aConjunction = [[STState state] lastConjunction];
     BOOL intercalary = NO;
-    __unused NSDate *nextNewMoonStart = [STCalendar newMoonDayForConjunction:nextConjunction :&intercalary];
-    NSLog(@"drawing %@month at myNow %@ with lastNewMoonStart %@",intercalary?@"intercalary ":@"",[NSDate myNow],lastNewMoonStart);
+    __unused NSDate *nextNewMoonStart = [STCalendar newMoonDayForConjunction:aConjunction :&intercalary];
+    NSLog(@"drawing %@month at myNow %@ with lastNewMoonStart %@\n\tConjunction %@\n\tnextNewMoonStart %@",intercalary?@"intercalary ":@"",[NSDate myNow],lastNewMoonStart,aConjunction,nextNewMoonStart);
     
     CGContextRef context = STContext;
     
@@ -102,9 +114,11 @@ CGRect gMyInitRect;
     
     // draw calendar frame
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
-    self.calendarBoxOrigin = intercalary ? dirtyRect.origin.y + self.dayHeight : dirtyRect.origin.y;
+    self.calendarBoxOriginX = dirtyRect.origin.x;
+    self.calendarBoxOriginY = intercalary ? dirtyRect.origin.y + self.dayHeight : dirtyRect.origin.y;
 #else
-    self.calendarBoxOrigin = dirtyRect.origin.y;
+    self.calendarBoxOriginX = dirtyRect.origin.x + self.lineWidth / 2;
+    self.calendarBoxOriginY = dirtyRect.origin.y;
 #endif
     [self _drawCalendarFrame:intercalary];
     
@@ -117,7 +131,11 @@ CGRect gMyInitRect;
                                NSFontAttributeName : [STFontClass systemFontOfSize:[self _smallFontSizeForViewWidth:dirtyRect.size.width]] };
     self.smallerAttributes = @{ NSForegroundColorAttributeName : [STColorClass grayColor],
                                    NSFontAttributeName : [STFontClass systemFontOfSize:[self _smallerFontSizeForViewWidth:dirtyRect.size.width]] };
+#ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
     self.delimiter = @" - ";
+#else
+    self.delimiter = @"-";
+#endif
     
     NSInteger monthsSinceNewYear = [[STState state] currentLunarMonth];
     NSString *hebrewMonthString = [STCalendar hebrewMonthForMonth:monthsSinceNewYear];
@@ -142,9 +160,9 @@ CGRect gMyInitRect;
 #else
     for ( int i = 1; i < 5; i++ ) {
 #endif
-        CGFloat ldY = self.calendarBoxOrigin + ( i * self.dayHeight );
+        CGFloat ldY = self.calendarBoxOriginY + ( i * self.dayHeight );
         for ( int j = 0; j < 7; j++ ) {
-            CGFloat columnX = dirtyRect.origin.x + ( j * self.dayWidth );
+            CGFloat columnX = self.calendarBoxOriginX + ( j * self.dayWidth );
             //CGFloat columnXOffset = lineWidth;
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
             int day = 7 * ( 3 - i ) + j + 1;
@@ -162,9 +180,9 @@ CGRect gMyInitRect;
         
     CGFloat oneX = dirtyRect.origin.x + ( 6 * self.dayWidth );
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
-    CGFloat ldY = self.calendarBoxOrigin + ( 4 * self.dayHeight );
+    CGFloat ldY = self.calendarBoxOriginY + ( 4 * self.dayHeight );
 #else
-    CGFloat ldY = self.calendarBoxOrigin;
+    CGFloat ldY = self.calendarBoxOriginY;
     oneX--;
 #endif
         
@@ -177,9 +195,9 @@ CGRect gMyInitRect;
         int effectiveDay = 29;
         oneX = dirtyRect.origin.x;
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
-        CGFloat ldY = self.calendarBoxOrigin - self.dayHeight;
+        CGFloat ldY = self.calendarBoxOriginY - self.dayHeight;
 #else
-        CGFloat ldY = self.calendarBoxOrigin + ( 5 * self.dayHeight );
+        CGFloat ldY = self.calendarBoxOriginY + ( 5 * self.dayHeight );
 #endif
         NSDate *thisDate = [STCalendar date:lastNewMoonStart byAddingDays:effectiveDay hours:1 minutes:0 seconds:0];
         BOOL isLunarToday = [STCalendar isDateInLunarToday:thisDate];
@@ -242,7 +260,9 @@ CGRect gMyInitRect;
     CGContextStrokePath(context);
     
     for ( int i = 0; i < 8; i++ ) {
-        CGFloat columnX = self.dirtyRect.origin.x + ( i * self.dayWidth );
+        CGFloat columnX = self.calendarBoxOriginX + ( i * self.dayWidth );
+        if ( i == 7 )
+            columnX -= 2 * ( self.calendarBoxOriginX - self.dirtyRect.origin.x);
         
         CGFloat endY;
         if ( intercalary && ( i == 0 || i == 1 ) ) {
@@ -250,13 +270,13 @@ CGRect gMyInitRect;
             endY = self.dayHeight * 4;
             CGFloat yOrigin = self.dirtyRect.origin.y;
 #else
-            CGFloat yOrigin = self.calendarBoxOrigin + self.dayHeight;
+            CGFloat yOrigin = self.calendarBoxOriginY + self.dayHeight;
             endY = self.dayHeight * 6;
 #endif
             CGContextMoveToPoint(context, columnX, yOrigin);
         } else if ( i >= 6 ) {
             endY = self.dayHeight * 5;
-            CGContextMoveToPoint(context, columnX, self.calendarBoxOrigin);
+            CGContextMoveToPoint(context, columnX, self.calendarBoxOriginY);
         } else {
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
             endY = self.dayHeight * 4;
@@ -265,16 +285,16 @@ CGRect gMyInitRect;
             endY = self.dayHeight * 5;
             CGFloat yOff = self.dayHeight;
 #endif
-            CGContextMoveToPoint(context, columnX, self.calendarBoxOrigin + yOff);
+            CGContextMoveToPoint(context, columnX, self.calendarBoxOriginY + yOff);
         }
         
-        CGContextAddLineToPoint(context, columnX, self.calendarBoxOrigin + endY);
+        CGContextAddLineToPoint(context, columnX, self.calendarBoxOriginY + endY);
         //[[NSString stringWithFormat:@"%d",i] drawAtPoint:CGPointMake(columnX,dirtyRect.origin.y + endY) withAttributes:textAttributes];
     }
     
     // draw common lines to RHS
     for ( int i = 0; i < 6; i++ ) {
-        CGFloat rowY = self.calendarBoxOrigin + ( i * self.dayHeight );
+        CGFloat rowY = self.calendarBoxOriginY + ( i * self.dayHeight );
         CGFloat rowX =
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
                         ( i < 5 ) ?
@@ -292,7 +312,7 @@ CGRect gMyInitRect;
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
         CGFloat yOrigin = self.dirtyRect.origin.y;
 #else
-        CGFloat yOrigin = self.calendarBoxOrigin + self.dayHeight * 6;
+        CGFloat yOrigin = self.calendarBoxOriginY + self.dayHeight * 6;
 #endif
         CGContextMoveToPoint(context, self.dirtyRect.origin.x, yOrigin);
         CGContextAddLineToPoint(context, self.dirtyRect.origin.x + self.dayWidth, yOrigin);

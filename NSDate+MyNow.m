@@ -55,8 +55,8 @@
     NSDate *nextSunset = [[STState state] nextSunset:YES];
     NSTimeInterval timeToNextStart = [nextSunset timeIntervalSince1970] - [NSDate myNow].timeIntervalSince1970;
     if ( timeToNextStart < 0 ) {
-        NSLog(@"something is wrong, nextNewMoonStart is in the past!");
-        return;
+        NSLog(@"something is wrong, nextSunset is in the past!");
+        abort();
     }
     NSLog(@"enqueueing fake lunar NSCalendarDayChangedNotification for %@! (in %0.1f seconds)",nextSunset,timeToNextStart);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(timeToNextStart * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -98,7 +98,7 @@ static NSDate *sNSDateMyNowStart = nil;
         NSTimeInterval offset = sNSDateMyNowOffset;
         if ( sNSDateMyNowFast ) {
             NSTimeInterval fastInterval = [sNSDateMyNowStart timeIntervalSinceDate:[NSDate date]];
-            offset += (int)(fastInterval) * STSecondsPerGregorianDay / sNSDateMyNowSecsPerDay;
+            offset += (int)(fastInterval) * STSecondsPerGregorianDay / sNSDateMyNowSecsPerDay - 0.000001;
         }
         return [NSDate dateWithTimeIntervalSince1970:[[NSDate date] timeIntervalSince1970] - offset];
     }
