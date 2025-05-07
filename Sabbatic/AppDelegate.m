@@ -18,7 +18,7 @@
 
 @property (strong) IBOutlet NSWindow *window;
 @property (strong) STMoonController *moonController;
-@property (strong) NSView *calendarView;
+@property (strong) STCalendarView *calendarView;
 @property (strong) SCNNode *lightNode;
 @end
 
@@ -41,6 +41,7 @@
     [self.window.contentView addSubview:moonView];
     
     self.calendarView = [[STCalendarView alloc] initWithFrame:CGRectInset([self.window.contentView frame], STCalendarViewInset, STCalendarViewInset)];
+    self.calendarView.effectiveNewMoonStart = [[STState state] lastNewMoonStart];
     [self.window.contentView addSubview:self.calendarView];
     //self.calendarView.layer.opaque = 0.75;
     //self.calendarView.layer.backgroundColor = [NSColor clearColor].CGColor;

@@ -409,6 +409,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to determine the time of sunset.";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -438,6 +439,7 @@
 				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to determine the time of sunset.";
 				INFOPLIST_KEY_NSMainNibFile = MainMenu;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -464,6 +466,7 @@
 				DEVELOPMENT_TEAM = B7CLPV6KGB;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Sabbatic-ios/Info.plist";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to determine the time of sunset.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -497,6 +500,7 @@
 				DEVELOPMENT_TEAM = B7CLPV6KGB;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Sabbatic-ios/Info.plist";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to determine the time of sunset.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;

@@ -93,7 +93,7 @@ CGRect gMyInitRect;
     }
 #endif
     BOOL foundToday = NO;
-    NSDate *lastNewMoonStart = [[STState state] lastNewMoonStart];
+    NSDate *lastNewMoonStart = self.effectiveNewMoonStart;
     // may be two literal conjunctions ago, when drawing between conjunction and new moon start
     NSDate *effectiveLastConjunction = [[STState state] conjunctionPriorToDate:lastNewMoonStart];
     NSDate *nextConjunction = [[STState state] conjunctionPriorToDate:[STCalendar date:effectiveLastConjunction byAddingDays:30 hours:0 minutes:0 seconds:0]];
@@ -146,7 +146,7 @@ CGRect gMyInitRect;
     self.delimiter = @"-";
 #endif
     
-    NSInteger monthsSinceNewYear = [[STState state] currentLunarMonth];
+    NSInteger monthsSinceNewYear = [[STState state] lunarMonthForDate:self.effectiveNewMoonStart];
     NSString *hebrewMonthString = [STCalendar hebrewStringMonthForMonth:monthsSinceNewYear];
     self.bigTextSize = [hebrewMonthString sizeWithAttributes:self.bigTextAttributes];
     self.textSize = [@"foo" sizeWithAttributes:self.textAttributes];
@@ -194,11 +194,10 @@ CGRect gMyInitRect;
     CGFloat ldY = self.calendarBoxOriginY;
     oneX--;
 #endif
-        
-    NSDate *lastNewMoonDayMidnight = [[STState state] lastNewMoonDay];
-    //NSDate *sunsetOnNewMoonDay = [[STState state] lastSunsetForDate:lastNewMoonDayMidnight momentAfter:NO];
-    BOOL isLunarToday = [STCalendar isDateInLunarToday:lastNewMoonStart];
-    [self drawDayAtPoint:CGPointMake(oneX,ldY) lunarDay:1 lunarMonth:monthsSinceNewYear date:lastNewMoonDayMidnight asToday:isLunarToday foundToday:&foundToday];
+    
+    BOOL isLunarToday = [STCalendar isDateInLunarToday:self.effectiveNewMoonStart];
+    NSDate *someTimeLater = [STCalendar date:self.effectiveNewMoonStart byAddingDays:0 hours:5 minutes:0 seconds:0];
+    [self drawDayAtPoint:CGPointMake(oneX,ldY) lunarDay:1 lunarMonth:monthsSinceNewYear date:someTimeLater asToday:isLunarToday foundToday:&foundToday];
     
     if ( intercalary ) {
         int effectiveDay = 29;

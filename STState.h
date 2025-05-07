@@ -31,7 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSDate *)lastNewMoonDay; // midnight on new moon day
 - (NSDate *)nextNewMoonDay; // midnight on new moon day
 - (NSDate *)lastNewYear;
+- (NSDate *)lastNewYearForDate:(NSDate *)date;
 - (NSInteger)currentLunarMonth;
+- (NSInteger)lunarMonthForDate:(NSDate *)date;
 - (NSDate *)lastSabbath:(BOOL)momentAfter;
 - (NSDate *)nextSabbath:(BOOL)momentAfter;
 // as there is probably no meaningful authority on this, for purposes of delimiting lunar days, we chose to make the "moment" after sunset (currently 1 second)

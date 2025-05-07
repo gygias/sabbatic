@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface STCalendarView : STCalendarViewSuper
 
+@property (strong) NSDate *effectiveNewMoonStart;
+
 @end
 
 NS_ASSUME_NONNULL_END

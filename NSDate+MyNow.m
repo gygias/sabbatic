@@ -137,6 +137,11 @@ static NSDate *sNSDateMyNowStart = nil;
     return [self _localString:@"HH:mm"];
 }
 
+- (NSString *)yearString
+{
+    return [self _localString:@"yyyy"];
+}
+
 - (NSString *)notificationPresentationString
 {
     NSString *first = [self _localString:@"EEEE"];
@@ -248,8 +253,8 @@ static NSDate *sNSDateMyNowStart = nil;
 + (NSDate *)newMoonStartTimeForConjunction:(NSDate *)date :(BOOL *)intercalary
 {
     NSDate *newMoonDay = [self newMoonDayForConjunction:date :intercalary];
-    NSDate *previousDay = [STCalendar date:newMoonDay byAddingDays:-1 hours:0 minutes:0 seconds:0];
-    return [[STState state] lastSunsetForDate:previousDay momentAfter:YES];
+    //NSDate *previousDay = [STCalendar date:newMoonDay byAddingDays:-1 hours:0 minutes:0 seconds:0];
+    return [[STState state] lastSunsetForDate:newMoonDay momentAfter:YES];
 }
 
 + (NSDate *)date:(NSDate *)date byAddingDays:(NSInteger)days hours:(NSInteger)hours minutes:(NSInteger)minutes seconds:(NSInteger)seconds
@@ -277,14 +282,14 @@ static NSDate *sNSDateMyNowStart = nil;
 
 + (NSString *)localGregorianDayOfTheMonthFromDate:(NSDate *)date
 {
-    NSString * dateString = [[self _formatter:@"EE dd MMM"] stringFromDate:date];
+    NSString * dateString = [[self _formatter:@"EE d MMM"] stringFromDate:date];
     return dateString;
 }
 
 + (NSString *)localGregorianPreviousAndCurrentDayFromDate:(NSDate *)date delimiter:(NSString *)delimiter
 {
     NSDate *previousDay = [STCalendar date:date byAddingDays:-1 hours:0 minutes:0 seconds:0];
-    NSString *previousString = [[self _formatter:@"dd"] stringFromDate:previousDay];
+    NSString *previousString = [[self _formatter:@"d"] stringFromDate:previousDay];
     NSString *thisString = [self localGregorianDayOfTheMonthFromDate:date];
     NSString *compositeString = [NSString stringWithFormat:@"%@%@%@",previousString,delimiter,thisString];
     return compositeString;

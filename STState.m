@@ -89,7 +89,7 @@ static STState *sState = nil;
 - (NSDate *)conjunctionPriorToDate:(NSDate *)date
 {
     __block NSDate *last = nil;
-    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:-1];
+    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:[[date yearString] intValue] :YES];
     
     // search backwards to the first one in the past
     [phases enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -108,6 +108,28 @@ static STState *sState = nil;
     return last;
 }
 
+- (NSDate *)conjunctionAfterDate:(NSDate *)date
+{
+    __block NSDate *next = nil;
+    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:[[date yearString] intValue] + 1 :YES];
+    
+    // search backwards to the first one in the past
+    [phases enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        
+        if ( [[obj objectForKey:@"phase"] isEqualToString:@"New Moon"] ) {
+            NSString *aThenString = nil;
+            NSDate *aThen = [self _dateFromUSNODictionary:obj :&aThenString];
+            
+            if ( [date timeIntervalSinceDate:aThen] < 0 ) {
+                next = aThen;
+                *stop = YES;
+            }
+        }
+    }];
+    
+    return next;
+}
+
 - (NSDate *)lastConjunction
 {
     return [self conjunctionPriorToDate:[NSDate myNow]];
@@ -116,7 +138,7 @@ static STState *sState = nil;
 - (NSDate *)nextConjunction
 {
     __block NSDate *next = nil;
-    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:-1];
+    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:[[[NSDate myNow] yearString] intValue] :YES];
     
     // search forwards to the first one in the future
     [phases enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -138,7 +160,12 @@ static STState *sState = nil;
 
 - (NSDate *)lastNewYear
 {
-    NSArray *solarEvents = [self _solarEventsFromUSNavyForYear:-1];
+    return [self lastNewYearForDate:[NSDate myNow]];
+}
+
+- (NSDate *)lastNewYearForDate:(NSDate *)date
+{
+    NSArray *solarEvents = [self _solarEventsFromUSNavyForYear:[[date yearString] integerValue] :YES];
     __block NSDate *springEquinoxDate = nil;
     __block NSString *springEquinoxDateString = nil;
     [solarEvents enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -158,7 +185,7 @@ static STState *sState = nil;
     __block NSString *lastString = nil;
     __block NSTimeInterval lastDelta;
     
-    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:-1];
+    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:[[date yearString] intValue] :YES];
     [phases enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
         if ( [[obj objectForKey:@"phase"] isEqualToString:@"New Moon"] ) {
@@ -203,13 +230,13 @@ static STState *sState = nil;
     return last;
 }
 
-- (NSInteger)currentLunarMonth
+- (NSInteger)lunarMonthForDate:(NSDate *)date
 {
-    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:-1];
+    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:[[date yearString] intValue] :YES];
     __block NSInteger months = 0;
     __block BOOL found = NO;
     
-    NSDate *lastNewYear = [self lastNewYear];
+    NSDate *lastNewYear = [self lastNewYearForDate:date];
     [phases enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
         if ( [[obj objectForKey:@"phase"] isEqualToString:@"New Moon"] ) {
@@ -225,7 +252,7 @@ static STState *sState = nil;
                     return;
                 }
             } else {
-                if ( [[NSDate myNow] timeIntervalSinceDate:sunset] < 0 )
+                if ( [date timeIntervalSinceDate:sunset] < 0 )
                     *stop = YES;
                 else
                     months++;
@@ -235,6 +262,12 @@ static STState *sState = nil;
     
     NSLog(@"it has been %lu months since the new year",months);
     return months;
+    
+}
+
+- (NSInteger)currentLunarMonth
+{
+    return [self lunarMonthForDate:[NSDate myNow]];
 }
 
 - (NSDate *)lastNewMoonStart
@@ -623,15 +656,12 @@ static STState *sState = nil;
     return [[CLLocation alloc] initWithLatitude:38.63 longitude:-90.20];
 }
 
-- (NSArray *)_lunarPhasesFromUSNavyForYear:(NSInteger)year
+- (NSArray *)_lunarPhasesFromUSNavyForYear:(NSInteger)year :(BOOL)includePreviousYear
 {
-    BOOL includePreviousYear = NO;
-    if ( year < 0 ) {
-        year = [self _theCurrentYear] - 1;
-        includePreviousYear = YES;
-    }
-    
     NSMutableArray *retArray = [NSMutableArray array];
+    
+    if ( includePreviousYear )
+        year--;
     
     do {
         NSDictionary *usnoDict = [[NSUserDefaults standardUserDefaults] objectForKey:USNODataKey];
@@ -662,15 +692,12 @@ static STState *sState = nil;
     return retArray;
 }
 
-- (NSArray *)_solarEventsFromUSNavyForYear:(NSInteger)year
+- (NSArray *)_solarEventsFromUSNavyForYear:(NSInteger)year :(BOOL)includePreviousYear
 {
-    BOOL includePreviousYear = NO;
-    if ( year < 0 ) {
-        year = [self _theCurrentYear] - 1;
-        includePreviousYear = YES;
-    }
-    
     NSMutableArray *retArray = [NSMutableArray array];
+    
+    if ( includePreviousYear )
+        year--;
     
     do {
         NSDictionary *usnoDict = [[NSUserDefaults standardUserDefaults] objectForKey:USNODataKey];
@@ -810,8 +837,6 @@ static STState *sState = nil;
         if ( [self onedayKey:aKey isInRangeOfLocation:location] ) {
             locDict = [onedays objectForKey:aKey];
             break;
-        } else {
-            NSLog(@"%@ is not in range!",aKey);
         }
     }
     
@@ -826,11 +851,13 @@ static STState *sState = nil;
         } else
             NSLog(@"fetched oneday on %@ from usno",dateString);
         
-        NSDictionary *sanitized = [self _sanitizedJSON:dict];
-        NSLog(@"SANITIZED JSON: %@",sanitized);
+        dict = [self _sanitizedJSON:dict];
+        NSLog(@"SANITIZED JSON: %@",dict);
         NSMutableDictionary *usnoM = [usnoDict mutableCopy];
         NSMutableDictionary *onedaysM = [onedays mutableCopy];
-        [onedaysM setObject:dict forKey:key];
+        NSMutableDictionary *locDictM = locDict ? [locDict mutableCopy] : [NSMutableDictionary dictionary];
+        [locDictM setObject:dict forKey:dateString];
+        [onedaysM setObject:locDictM forKey:key];
         [usnoM setObject:onedaysM forKey:USNOOneDayKey];
         [[NSUserDefaults standardUserDefaults] setObject:usnoM forKey:USNODataKey];
     }
