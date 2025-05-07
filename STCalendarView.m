@@ -25,6 +25,7 @@ CGRect gMyInitRect;
 @property CGFloat calendarBoxOriginY;
 @property (strong) NSDictionary *bigTextAttributes;
 @property (strong) NSDictionary *textAttributes;
+@property (strong) NSDictionary *redAttributes;
 @property (strong) NSDictionary *smallAttributes;
 @property (strong) NSDictionary *smallerAttributes;
 @property CGSize bigTextSize;
@@ -57,7 +58,7 @@ CGRect gMyInitRect;
     //                      byAddingDays:0 hours:23 minutes:59 seconds:55];
     
     // today at x x x
-    NSDate *myNow =   [[NSDate date] normalizedDatePlusHour:19 minute:57 second:55];
+    //NSDate *myNow =   [[NSDate date] normalizedDatePlusHour:19 minute:57 second:55];
     
     // 5 secs before last sunset
     //NSDate *myNow = [[STState state] lastSunsetForDate:[NSDate myNow] momentAfter:YES];
@@ -76,7 +77,7 @@ CGRect gMyInitRect;
     //NSDate *myNow = [STCalendar date:[NSDate date] byAddingDays:0 hours:-1 minutes:0 seconds:0];
     
     // 12 hours from now
-    //NSDate *myNow = [STCalendar date:[NSDate date] byAddingDays:0 hours:12 minutes:0 seconds:0];
+    NSDate *myNow = [STCalendar date:[NSDate date] byAddingDays:0 hours:12 minutes:0 seconds:0];
     
     [NSDate setMyNow:myNow realSecondsPerDay:fast];
 #else
@@ -129,10 +130,11 @@ CGRect gMyInitRect;
 #endif
     [self _drawCalendarFrame:intercalary];
     
-    // draw day numbers
-    self.bigTextAttributes = @{ NSForegroundColorAttributeName : [STColorClass redColor],
+    self.bigTextAttributes = @{ NSForegroundColorAttributeName : [STColorClass lightGrayColor],
                                 NSFontAttributeName : [STFontClass systemFontOfSize:[self _bigFontSizeForViewWidth:dirtyRect.size.width]] };
-    self.textAttributes = @{ NSForegroundColorAttributeName : [STColorClass redColor],
+    self.textAttributes = @{ NSForegroundColorAttributeName : [STColorClass lightGrayColor],
+                              NSFontAttributeName : [STFontClass systemFontOfSize:[self _fontSizeForViewWidth:dirtyRect.size.width]] };
+    self.redAttributes = @{ NSForegroundColorAttributeName : [STColorClass redColor],
                               NSFontAttributeName : [STFontClass systemFontOfSize:[self _fontSizeForViewWidth:dirtyRect.size.width]] };
     self.smallAttributes = @{ NSForegroundColorAttributeName : [STColorClass lightGrayColor],
                                NSFontAttributeName : [STFontClass systemFontOfSize:[self _smallFontSizeForViewWidth:dirtyRect.size.width]] };
@@ -193,10 +195,10 @@ CGRect gMyInitRect;
     oneX--;
 #endif
         
-    //NSDate *lastNewMoonDayMidnight = [[STState state] lastNewMoonDay];
+    NSDate *lastNewMoonDayMidnight = [[STState state] lastNewMoonDay];
     //NSDate *sunsetOnNewMoonDay = [[STState state] lastSunsetForDate:lastNewMoonDayMidnight momentAfter:NO];
     BOOL isLunarToday = [STCalendar isDateInLunarToday:lastNewMoonStart];
-    [self drawDayAtPoint:CGPointMake(oneX,ldY) lunarDay:1 lunarMonth:monthsSinceNewYear date:lastNewMoonStart asToday:isLunarToday foundToday:&foundToday];
+    [self drawDayAtPoint:CGPointMake(oneX,ldY) lunarDay:1 lunarMonth:monthsSinceNewYear date:lastNewMoonDayMidnight asToday:isLunarToday foundToday:&foundToday];
     
     if ( intercalary ) {
         int effectiveDay = 29;
@@ -341,8 +343,8 @@ CGRect gMyInitRect;
     CGFloat xOffset = [@"0" sizeWithAttributes:self.smallerAttributes].width / 2;
     
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
-    CGFloat ssY = ldY + self.textSize.height + STSmallTextOffsetY;
-    CGFloat gdY = ldY + STSmallTextOffsetY;
+    CGFloat gdY = ldY + STSmallTextStackOffsetY;
+    CGFloat ssY = gdY + self.smallerTextSize.height + STSmallTextOffsetY;
     CGFloat fcY = ssY + self.smallerTextSize.height + STSmallTextOffsetY;
     CGFloat mdY = fcY + self.smallerTextSize.height + STSmallTextOffsetY;
     ldY += self.dayHeight - self.textSize.height;
@@ -369,7 +371,10 @@ CGRect gMyInitRect;
         [self _drawTodayCircleAtPoint:CGPointMake(oneX + circleOffsetX, ldY + circleOffsetY) withLineWidth:self.lineWidth textAttributes:self.textAttributes context:context];
     }
     
-    [lunarString drawAtPoint:CGPointMake(oneX + lunarOffsetX,ldY + lunarOffsetY) withAttributes:self.textAttributes];
+    NSDictionary *thisAttributes = self.textAttributes;
+    if ( ( lunarDay - 1 ) % 7 == 0 )
+        thisAttributes = self.redAttributes;
+    [lunarString drawAtPoint:CGPointMake(oneX + lunarOffsetX,ldY + lunarOffsetY) withAttributes:thisAttributes];
     NSString *sunsetHourMinute = [NSString stringWithFormat:@"SS %@",[sunset localHourMinuteString]];
     [sunsetHourMinute drawAtPoint:CGPointMake(oneX + xOffset, ssY) withAttributes:self.smallerAttributes];
 
@@ -378,7 +383,7 @@ CGRect gMyInitRect;
     NSString *fracillumString = [NSString stringWithFormat:@"%0.0f%%",fracillum * 100];
     [fracillumString drawAtPoint:CGPointMake(oneX + xOffset, fcY) withAttributes:self.smallerAttributes];
     
-    NSString *moedString = [STCalendar moedStringForLunarDay:lunarDay ofLunarMonth:lunarMonth];
+    NSString *moedString = [STCalendar moedStringForLunarDay:lunarDay - 1 ofLunarMonth:lunarMonth];
     if ( moedString ) {
         [moedString drawAtPoint:CGPointMake(oneX + xOffset, mdY) withAttributes:self.smallerAttributes];
     }

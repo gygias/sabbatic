@@ -315,6 +315,8 @@ static NSDate *sNSDateMyNowStart = nil;
     return @"Unknown";
 }
 
+#define PentecostTemplate "Pentecost %d"
+
 + (NSString *)moedStringForLunarDay:(NSInteger)day ofLunarMonth:(NSInteger)month
 {
     if ( month == 0 ) {
@@ -326,9 +328,21 @@ static NSDate *sNSDateMyNowStart = nil;
             return @"Passover";
         } else if ( day >= 14 && day <= 20 ) {
             return [NSString stringWithFormat:@"Unl'd Bread %ld",day - 13];
+        } else if ( day == 21 ) {
+            return [NSString stringWithFormat:@PentecostTemplate,1];
+        } else if ( day == 28 ) {
+            return [NSString stringWithFormat:@PentecostTemplate,2];
         }
+    } else if ( month == 1 ) {
+        if ( day && ( day % 7 == 0 ) )
+            return [NSString stringWithFormat:@PentecostTemplate,(int)day / 7 + 2];
     } else if ( month == 2 ) {
-        if ( day == 9 )
+        if ( day == 7 )
+            return [NSString stringWithFormat:@PentecostTemplate,7];
+        else if ( day == 8 )
+            return [NSString stringWithFormat:@"50d to Pentecost"];
+    } else if ( month == 4 ) {
+        if ( day == 0 )
             return @"Pentecost";
     } else if ( month == 6 ) {
         if ( day == 0 )
