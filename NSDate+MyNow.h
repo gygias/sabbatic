@@ -24,6 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)notificationPresentationString;
 
+- (NSDate *)normalizedDate; // returns midnight on same calendar date
+- (NSDate *)normalizedDatePlusHour:(NSInteger)hour minute:(NSInteger)minute second:(NSInteger)second; // returns midnight + etc. on same calendar date
+
 @end
 
 NS_ASSUME_NONNULL_END

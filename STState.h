@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSDate *)lastConjunction;
 - (NSDate *)nextConjunction;
+- (NSDate *)conjunctionPriorToDate:(NSDate *)date;
+- (NSDate *)conjunctionAfterDate:(NSDate *)date;
 - (NSDate *)lastNewMoonStart; // sunset on previous solar day
 - (NSDate *)nextNewMoonStart; // sunset on previous solar day
 - (NSDate *)lastNewMoonDay; // midnight on new moon day
@@ -38,9 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSDate *)nextSunset:(BOOL)momentAfter;
 - (NSDate *)lastSunsetForDate:(NSDate *)date momentAfter:(BOOL)momentAfter;
 - (NSDate *)nextSunsetForDate:(NSDate *)date momentAfter:(BOOL)momentAfter;
-
-- (NSDate *)normalizeDate:(NSDate *)date; // returns midnight on same calendar date
-- (NSDate *)normalizeDate:(NSDate *)date hour:(NSInteger)hour minute:(NSInteger)minute second:(NSInteger)second; // returns midnight + etc. on same calendar date
 
 - (void)requestNotificationApprovalWithDelay:(NSTimeInterval)delay;
 

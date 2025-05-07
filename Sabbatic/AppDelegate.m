@@ -24,6 +24,15 @@
 
 @implementation AppDelegate
 
+- (void)_updatePhase
+{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(STMoonRedrawInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
+            [self _updatePhase];
+        }];
+    });
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     // Insert code here to initialize your application
         
@@ -41,6 +50,7 @@
             NSLog(@"did intro animation");
             [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
                 NSLog(@"animated to current phase on app launch");
+                [self _updatePhase];
             }];
         }];
     //});

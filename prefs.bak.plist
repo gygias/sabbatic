@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>LastGeneralNoteDate</key>
-	<real>1746322919.066442</real>
 	<key>LastNotificationRequest</key>
 	<real>1746184808.246412</real>
 	<key>LastNotificationRequestDate</key>
@@ -3492,6 +3490,108 @@
 		<key>type</key>
 		<string>Feature</string>
 	</dict>
+	<key>com.combobulated.Sabbatic.usno.oneday.2024-03-10</key>
+	<dict>
+		<key>apiversion</key>
+		<string>4.0.1</string>
+		<key>geometry</key>
+		<dict>
+			<key>coordinates</key>
+			<array>
+				<real>-90.200000000000003</real>
+				<real>38.630000000000003</real>
+			</array>
+			<key>type</key>
+			<string>Point</string>
+		</dict>
+		<key>properties</key>
+		<dict>
+			<key>data</key>
+			<dict>
+				<key>closestphase</key>
+				<dict>
+					<key>day</key>
+					<integer>10</integer>
+					<key>month</key>
+					<integer>3</integer>
+					<key>phase</key>
+					<string>New Moon</string>
+					<key>time</key>
+					<string>09:00</string>
+					<key>year</key>
+					<integer>2024</integer>
+				</dict>
+				<key>curphase</key>
+				<string>New Moon</string>
+				<key>day</key>
+				<integer>10</integer>
+				<key>day_of_week</key>
+				<string>Sunday</string>
+				<key>fracillum</key>
+				<string>0%</string>
+				<key>isdst</key>
+				<false/>
+				<key>label</key>
+				<string>((null))</string>
+				<key>month</key>
+				<integer>3</integer>
+				<key>moondata</key>
+				<array>
+					<dict>
+						<key>phen</key>
+						<string>Rise</string>
+						<key>time</key>
+						<string>12:39</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Upper Transit</string>
+						<key>time</key>
+						<string>18:35</string>
+					</dict>
+				</array>
+				<key>sundata</key>
+				<array>
+					<dict>
+						<key>phen</key>
+						<string>Set</string>
+						<key>time</key>
+						<string>00:03</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>End Civil Twilight</string>
+						<key>time</key>
+						<string>00:29</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Begin Civil Twilight</string>
+						<key>time</key>
+						<string>11:52</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Rise</string>
+						<key>time</key>
+						<string>12:19</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Upper Transit</string>
+						<key>time</key>
+						<string>18:11</string>
+					</dict>
+				</array>
+				<key>tz</key>
+				<real>0.0</real>
+				<key>year</key>
+				<integer>2024</integer>
+			</dict>
+		</dict>
+		<key>type</key>
+		<string>Feature</string>
+	</dict>
 	<key>com.combobulated.Sabbatic.usno.oneday.2024-03-11</key>
 	<dict>
 		<key>apiversion</key>
@@ -3697,6 +3797,108 @@
 						<string>Upper Transit</string>
 						<key>time</key>
 						<string>18:10</string>
+					</dict>
+				</array>
+				<key>tz</key>
+				<real>0.0</real>
+				<key>year</key>
+				<integer>2024</integer>
+			</dict>
+		</dict>
+		<key>type</key>
+		<string>Feature</string>
+	</dict>
+	<key>com.combobulated.Sabbatic.usno.oneday.2024-04-08</key>
+	<dict>
+		<key>apiversion</key>
+		<string>4.0.1</string>
+		<key>geometry</key>
+		<dict>
+			<key>coordinates</key>
+			<array>
+				<real>-90.200000000000003</real>
+				<real>38.630000000000003</real>
+			</array>
+			<key>type</key>
+			<string>Point</string>
+		</dict>
+		<key>properties</key>
+		<dict>
+			<key>data</key>
+			<dict>
+				<key>closestphase</key>
+				<dict>
+					<key>day</key>
+					<integer>8</integer>
+					<key>month</key>
+					<integer>4</integer>
+					<key>phase</key>
+					<string>New Moon</string>
+					<key>time</key>
+					<string>18:21</string>
+					<key>year</key>
+					<integer>2024</integer>
+				</dict>
+				<key>curphase</key>
+				<string>New Moon</string>
+				<key>day</key>
+				<integer>8</integer>
+				<key>day_of_week</key>
+				<string>Monday</string>
+				<key>fracillum</key>
+				<string>0%</string>
+				<key>isdst</key>
+				<false/>
+				<key>label</key>
+				<string>((null))</string>
+				<key>month</key>
+				<integer>4</integer>
+				<key>moondata</key>
+				<array>
+					<dict>
+						<key>phen</key>
+						<string>Rise</string>
+						<key>time</key>
+						<string>11:30</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Upper Transit</string>
+						<key>time</key>
+						<string>18:01</string>
+					</dict>
+				</array>
+				<key>sundata</key>
+				<array>
+					<dict>
+						<key>phen</key>
+						<string>Set</string>
+						<key>time</key>
+						<string>00:31</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>End Civil Twilight</string>
+						<key>time</key>
+						<string>00:58</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Begin Civil Twilight</string>
+						<key>time</key>
+						<string>11:07</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Rise</string>
+						<key>time</key>
+						<string>11:34</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Upper Transit</string>
+						<key>time</key>
+						<string>18:02</string>
 					</dict>
 				</array>
 				<key>tz</key>
@@ -3924,6 +4126,114 @@
 		<key>type</key>
 		<string>Feature</string>
 	</dict>
+	<key>com.combobulated.Sabbatic.usno.oneday.2024-05-08</key>
+	<dict>
+		<key>apiversion</key>
+		<string>4.0.1</string>
+		<key>geometry</key>
+		<dict>
+			<key>coordinates</key>
+			<array>
+				<real>-90.200000000000003</real>
+				<real>38.630000000000003</real>
+			</array>
+			<key>type</key>
+			<string>Point</string>
+		</dict>
+		<key>properties</key>
+		<dict>
+			<key>data</key>
+			<dict>
+				<key>closestphase</key>
+				<dict>
+					<key>day</key>
+					<integer>8</integer>
+					<key>month</key>
+					<integer>5</integer>
+					<key>phase</key>
+					<string>New Moon</string>
+					<key>time</key>
+					<string>03:22</string>
+					<key>year</key>
+					<integer>2024</integer>
+				</dict>
+				<key>curphase</key>
+				<string>New Moon</string>
+				<key>day</key>
+				<integer>8</integer>
+				<key>day_of_week</key>
+				<string>Wednesday</string>
+				<key>fracillum</key>
+				<string>0%</string>
+				<key>isdst</key>
+				<false/>
+				<key>label</key>
+				<string>((null))</string>
+				<key>month</key>
+				<integer>5</integer>
+				<key>moondata</key>
+				<array>
+					<dict>
+						<key>phen</key>
+						<string>Set</string>
+						<key>time</key>
+						<string>00:53</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Rise</string>
+						<key>time</key>
+						<string>10:59</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Upper Transit</string>
+						<key>time</key>
+						<string>18:28</string>
+					</dict>
+				</array>
+				<key>sundata</key>
+				<array>
+					<dict>
+						<key>phen</key>
+						<string>Set</string>
+						<key>time</key>
+						<string>00:59</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>End Civil Twilight</string>
+						<key>time</key>
+						<string>01:28</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Begin Civil Twilight</string>
+						<key>time</key>
+						<string>10:26</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Rise</string>
+						<key>time</key>
+						<string>10:55</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Upper Transit</string>
+						<key>time</key>
+						<string>17:57</string>
+					</dict>
+				</array>
+				<key>tz</key>
+				<real>0.0</real>
+				<key>year</key>
+				<integer>2024</integer>
+			</dict>
+		</dict>
+		<key>type</key>
+		<string>Feature</string>
+	</dict>
 	<key>com.combobulated.Sabbatic.usno.oneday.2024-05-09</key>
 	<dict>
 		<key>apiversion</key>
@@ -4129,6 +4439,114 @@
 						<string>Upper Transit</string>
 						<key>time</key>
 						<string>17:57</string>
+					</dict>
+				</array>
+				<key>tz</key>
+				<real>0.0</real>
+				<key>year</key>
+				<integer>2024</integer>
+			</dict>
+		</dict>
+		<key>type</key>
+		<string>Feature</string>
+	</dict>
+	<key>com.combobulated.Sabbatic.usno.oneday.2024-06-06</key>
+	<dict>
+		<key>apiversion</key>
+		<string>4.0.1</string>
+		<key>geometry</key>
+		<dict>
+			<key>coordinates</key>
+			<array>
+				<real>-90.200000000000003</real>
+				<real>38.630000000000003</real>
+			</array>
+			<key>type</key>
+			<string>Point</string>
+		</dict>
+		<key>properties</key>
+		<dict>
+			<key>data</key>
+			<dict>
+				<key>closestphase</key>
+				<dict>
+					<key>day</key>
+					<integer>6</integer>
+					<key>month</key>
+					<integer>6</integer>
+					<key>phase</key>
+					<string>New Moon</string>
+					<key>time</key>
+					<string>12:38</string>
+					<key>year</key>
+					<integer>2024</integer>
+				</dict>
+				<key>curphase</key>
+				<string>New Moon</string>
+				<key>day</key>
+				<integer>6</integer>
+				<key>day_of_week</key>
+				<string>Thursday</string>
+				<key>fracillum</key>
+				<string>0%</string>
+				<key>isdst</key>
+				<false/>
+				<key>label</key>
+				<string>((null))</string>
+				<key>month</key>
+				<integer>6</integer>
+				<key>moondata</key>
+				<array>
+					<dict>
+						<key>phen</key>
+						<string>Set</string>
+						<key>time</key>
+						<string>01:01</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Rise</string>
+						<key>time</key>
+						<string>10:17</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Upper Transit</string>
+						<key>time</key>
+						<string>18:11</string>
+					</dict>
+				</array>
+				<key>sundata</key>
+				<array>
+					<dict>
+						<key>phen</key>
+						<string>Set</string>
+						<key>time</key>
+						<string>01:22</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>End Civil Twilight</string>
+						<key>time</key>
+						<string>01:54</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Begin Civil Twilight</string>
+						<key>time</key>
+						<string>10:05</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Rise</string>
+						<key>time</key>
+						<string>10:36</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Upper Transit</string>
+						<key>time</key>
+						<string>18:00</string>
 					</dict>
 				</array>
 				<key>tz</key>
@@ -4356,6 +4774,114 @@
 		<key>type</key>
 		<string>Feature</string>
 	</dict>
+	<key>com.combobulated.Sabbatic.usno.oneday.2024-07-06</key>
+	<dict>
+		<key>apiversion</key>
+		<string>4.0.1</string>
+		<key>geometry</key>
+		<dict>
+			<key>coordinates</key>
+			<array>
+				<real>-90.200000000000003</real>
+				<real>38.630000000000003</real>
+			</array>
+			<key>type</key>
+			<string>Point</string>
+		</dict>
+		<key>properties</key>
+		<dict>
+			<key>data</key>
+			<dict>
+				<key>closestphase</key>
+				<dict>
+					<key>day</key>
+					<integer>5</integer>
+					<key>month</key>
+					<integer>7</integer>
+					<key>phase</key>
+					<string>New Moon</string>
+					<key>time</key>
+					<string>22:57</string>
+					<key>year</key>
+					<integer>2024</integer>
+				</dict>
+				<key>curphase</key>
+				<string>Waxing Crescent</string>
+				<key>day</key>
+				<integer>6</integer>
+				<key>day_of_week</key>
+				<string>Saturday</string>
+				<key>fracillum</key>
+				<string>1%</string>
+				<key>isdst</key>
+				<false/>
+				<key>label</key>
+				<string>((null))</string>
+				<key>month</key>
+				<integer>7</integer>
+				<key>moondata</key>
+				<array>
+					<dict>
+						<key>phen</key>
+						<string>Set</string>
+						<key>time</key>
+						<string>01:52</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Rise</string>
+						<key>time</key>
+						<string>11:01</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Upper Transit</string>
+						<key>time</key>
+						<string>18:52</string>
+					</dict>
+				</array>
+				<key>sundata</key>
+				<array>
+					<dict>
+						<key>phen</key>
+						<string>Set</string>
+						<key>time</key>
+						<string>01:28</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>End Civil Twilight</string>
+						<key>time</key>
+						<string>02:00</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Begin Civil Twilight</string>
+						<key>time</key>
+						<string>10:11</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Rise</string>
+						<key>time</key>
+						<string>10:43</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Upper Transit</string>
+						<key>time</key>
+						<string>18:06</string>
+					</dict>
+				</array>
+				<key>tz</key>
+				<real>0.0</real>
+				<key>year</key>
+				<integer>2024</integer>
+			</dict>
+		</dict>
+		<key>type</key>
+		<string>Feature</string>
+	</dict>
 	<key>com.combobulated.Sabbatic.usno.oneday.2024-07-07</key>
 	<dict>
 		<key>apiversion</key>
@@ -4572,6 +5098,114 @@
 		<key>type</key>
 		<string>Feature</string>
 	</dict>
+	<key>com.combobulated.Sabbatic.usno.oneday.2024-08-04</key>
+	<dict>
+		<key>apiversion</key>
+		<string>4.0.1</string>
+		<key>geometry</key>
+		<dict>
+			<key>coordinates</key>
+			<array>
+				<real>-90.200000000000003</real>
+				<real>38.630000000000003</real>
+			</array>
+			<key>type</key>
+			<string>Point</string>
+		</dict>
+		<key>properties</key>
+		<dict>
+			<key>data</key>
+			<dict>
+				<key>closestphase</key>
+				<dict>
+					<key>day</key>
+					<integer>4</integer>
+					<key>month</key>
+					<integer>8</integer>
+					<key>phase</key>
+					<string>New Moon</string>
+					<key>time</key>
+					<string>11:13</string>
+					<key>year</key>
+					<integer>2024</integer>
+				</dict>
+				<key>curphase</key>
+				<string>New Moon</string>
+				<key>day</key>
+				<integer>4</integer>
+				<key>day_of_week</key>
+				<string>Sunday</string>
+				<key>fracillum</key>
+				<string>0%</string>
+				<key>isdst</key>
+				<false/>
+				<key>label</key>
+				<string>((null))</string>
+				<key>month</key>
+				<integer>8</integer>
+				<key>moondata</key>
+				<array>
+					<dict>
+						<key>phen</key>
+						<string>Set</string>
+						<key>time</key>
+						<string>01:10</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Rise</string>
+						<key>time</key>
+						<string>11:00</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Upper Transit</string>
+						<key>time</key>
+						<string>18:26</string>
+					</dict>
+				</array>
+				<key>sundata</key>
+				<array>
+					<dict>
+						<key>phen</key>
+						<string>Set</string>
+						<key>time</key>
+						<string>01:09</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>End Civil Twilight</string>
+						<key>time</key>
+						<string>01:38</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Begin Civil Twilight</string>
+						<key>time</key>
+						<string>10:36</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Rise</string>
+						<key>time</key>
+						<string>11:06</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Upper Transit</string>
+						<key>time</key>
+						<string>18:07</string>
+					</dict>
+				</array>
+				<key>tz</key>
+				<real>0.0</real>
+				<key>year</key>
+				<integer>2024</integer>
+			</dict>
+		</dict>
+		<key>type</key>
+		<string>Feature</string>
+	</dict>
 	<key>com.combobulated.Sabbatic.usno.oneday.2024-08-05</key>
 	<dict>
 		<key>apiversion</key>
@@ -4777,6 +5411,114 @@
 						<string>Upper Transit</string>
 						<key>time</key>
 						<string>18:07</string>
+					</dict>
+				</array>
+				<key>tz</key>
+				<real>0.0</real>
+				<key>year</key>
+				<integer>2024</integer>
+			</dict>
+		</dict>
+		<key>type</key>
+		<string>Feature</string>
+	</dict>
+	<key>com.combobulated.Sabbatic.usno.oneday.2024-09-03</key>
+	<dict>
+		<key>apiversion</key>
+		<string>4.0.1</string>
+		<key>geometry</key>
+		<dict>
+			<key>coordinates</key>
+			<array>
+				<real>-90.200000000000003</real>
+				<real>38.630000000000003</real>
+			</array>
+			<key>type</key>
+			<string>Point</string>
+		</dict>
+		<key>properties</key>
+		<dict>
+			<key>data</key>
+			<dict>
+				<key>closestphase</key>
+				<dict>
+					<key>day</key>
+					<integer>3</integer>
+					<key>month</key>
+					<integer>9</integer>
+					<key>phase</key>
+					<string>New Moon</string>
+					<key>time</key>
+					<string>01:55</string>
+					<key>year</key>
+					<integer>2024</integer>
+				</dict>
+				<key>curphase</key>
+				<string>New Moon</string>
+				<key>day</key>
+				<integer>3</integer>
+				<key>day_of_week</key>
+				<string>Tuesday</string>
+				<key>fracillum</key>
+				<string>0%</string>
+				<key>isdst</key>
+				<false/>
+				<key>label</key>
+				<string>((null))</string>
+				<key>month</key>
+				<integer>9</integer>
+				<key>moondata</key>
+				<array>
+					<dict>
+						<key>phen</key>
+						<string>Set</string>
+						<key>time</key>
+						<string>00:33</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Rise</string>
+						<key>time</key>
+						<string>11:57</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Upper Transit</string>
+						<key>time</key>
+						<string>18:30</string>
+					</dict>
+				</array>
+				<key>sundata</key>
+				<array>
+					<dict>
+						<key>phen</key>
+						<string>Set</string>
+						<key>time</key>
+						<string>00:28</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>End Civil Twilight</string>
+						<key>time</key>
+						<string>00:55</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Begin Civil Twilight</string>
+						<key>time</key>
+						<string>11:05</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Rise</string>
+						<key>time</key>
+						<string>11:32</string>
+					</dict>
+					<dict>
+						<key>phen</key>
+						<string>Upper Transit</string>
+						<key>time</key>
+						<string>18:00</string>
 					</dict>
 				</array>
 				<key>tz</key>

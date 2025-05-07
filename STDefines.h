@@ -26,6 +26,8 @@
 #define STMinutesPerGregorianDay 1440
 #define STNotificationRequestDelay 5.0
 #define STSabbathNotificationDelay 5.0
+#define STMomentAfterInterval 0.000001
+#define STMoonRedrawInterval ( 10 * 60 )
 
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
 #define STRect NSRect

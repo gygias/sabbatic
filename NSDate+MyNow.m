@@ -23,16 +23,16 @@
     });
 }
 
-+ (void)_enqueueDayChangedNotesForDayAfter:(NSDate *)date
++ (void)_enqueueDayChangedNotesForDate:(NSDate *)date
 {
     if ( sNSDateMyNowFast ) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(sNSDateMyNowSecsPerDay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [[NSNotificationCenter defaultCenter] postNotificationName:NSCalendarDayChangedNotification object:self];
-            [self _enqueueDayChangedNotesForDayAfter:nil];
+            [self _enqueueDayChangedNotesForDate:nil];
         });
     } else {
         [self _enqueueGregorianDayChangedNoteAfter:date];
-        [self _enqueueLunarDayChangedNoteForDayAfter:date];
+        [self _enqueueLunarDayChangedNoteForDate:date];
     }
 }
 
@@ -46,13 +46,14 @@
         NSLog(@"posting fake gregorian NSCalendarDayChangedNotification...");
         [[NSNotificationCenter defaultCenter] postNotificationName:NSCalendarDayChangedNotification object:self];
         
-        [self _enqueueGregorianDayChangedNoteAfter:[[NSDate myNow] dateByAddingTimeInterval:60]];
+        [self _enqueueGregorianDayChangedNoteAfter:startOfMyTomorrow];
     });
 }
 
-+ (void)_enqueueLunarDayChangedNoteForDayAfter:(NSDate *)date
++ (void)_enqueueLunarDayChangedNoteForDate:(NSDate *)date
 {
     NSDate *nextSunset = [[STState state] nextSunset:YES];
+    NSLog(@"nextSunset for %@ is at %@",date,nextSunset);
     NSTimeInterval timeToNextStart = [nextSunset timeIntervalSince1970] - [NSDate myNow].timeIntervalSince1970;
     if ( timeToNextStart < 0 ) {
         NSLog(@"something is wrong, nextSunset is in the past!");
@@ -63,7 +64,7 @@
         NSLog(@"posting fake lunar NSCalendarDayChangedNotification...");
         [[NSNotificationCenter defaultCenter] postNotificationName:NSCalendarDayChangedNotification object:self];
         
-        [self _enqueueLunarDayChangedNoteForDayAfter:[[NSDate myNow] dateByAddingTimeInterval:60]];
+        [self _enqueueLunarDayChangedNoteForDate:[NSDate myNow]];
     });
 }
 
@@ -89,7 +90,7 @@ static NSDate *sNSDateMyNowStart = nil;
     
     NSDate *myNow = [NSDate myNow];
     NSLog(@"MyNow: The time is now %@ (%0.1f seconds in the %@)",myNow,sNSDateMyNowOffset,sNSDateMyNowOffset>0?@"past":@"future");
-    [self _enqueueDayChangedNotesForDayAfter:date];
+    [self _enqueueDayChangedNotesForDate:date];
 }
 
 + (NSDate *)myNow
@@ -143,6 +144,26 @@ static NSDate *sNSDateMyNowStart = nil;
     return [NSString stringWithFormat:@"%@ at %@",first,second];
 }
 
+- (NSDate *)normalizedDate
+{
+    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *dateComponents = [gregorian components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay) fromDate:self];
+    NSDate *normalizedDate = [gregorian dateFromComponents:dateComponents];
+#ifdef debugDateStuff
+    NSLog(@"%@ normalized to %@",date,normalizedDate);
+#endif
+    return normalizedDate;
+}
+
+- (NSDate *)normalizedDatePlusHour:(NSInteger)hour minute:(NSInteger)minute second:(NSInteger)second
+{
+    NSDate *normalizedDate = [STCalendar date:[self normalizedDate] byAddingDays:0 hours:hour minutes:minute seconds:second];
+#ifdef debugDateStuff
+    NSLog(@"%@ normalized to %@",date,normalizedDate);
+#endif
+    return normalizedDate;
+}
+
 @end
 
 @implementation STCalendar
@@ -190,7 +211,7 @@ static NSDate *sNSDateMyNowStart = nil;
 {
     NSDate *lastSunset = [[STState state] lastSunset:YES];
     NSDate *approxNextSunset = [STCalendar date:lastSunset byAddingDays:1 hours:0 minutes:0 seconds:0];
-    NSDate *midnightAfterLastSunset = [[STState state] normalizeDate:approxNextSunset];
+    NSDate *midnightAfterLastSunset = [approxNextSunset normalizedDate];
         
     return ( [date timeIntervalSinceDate:lastSunset] >= 0 )
             && ( [date timeIntervalSinceDate:midnightAfterLastSunset] < 0 );
@@ -221,7 +242,7 @@ static NSDate *sNSDateMyNowStart = nil;
             *intercalary = NO;
     }
 
-    return [[STState state] normalizeDate:[self date:date byAddingDays:days hours:0 minutes:0 seconds:0]];
+    return [[self date:date byAddingDays:days hours:0 minutes:0 seconds:0] normalizedDate];
 }
 
 + (NSDate *)newMoonStartTimeForConjunction:(NSDate *)date :(BOOL *)intercalary
@@ -269,7 +290,7 @@ static NSDate *sNSDateMyNowStart = nil;
     return compositeString;
 }
 
-+ (NSString *)hebrewMonthForMonth:(NSInteger)month
++ (NSString *)hebrewStringMonthForMonth:(NSInteger)month
 {
     switch (month) {
         case 0:
@@ -285,7 +306,6 @@ static NSDate *sNSDateMyNowStart = nil;
         case 9:
         case 10:
         case 11:
-#warning intercalary?
         case 12:
             return [NSString stringWithFormat:@"Month %ld",month + 1];
         default:
@@ -293,6 +313,34 @@ static NSDate *sNSDateMyNowStart = nil;
     }
     
     return @"Unknown";
+}
+
++ (NSString *)moedStringForLunarDay:(NSInteger)day ofLunarMonth:(NSInteger)month
+{
+    if ( month == 0 ) {
+        if ( day == 0 ) {
+            return @"New Year";
+        } else if ( day == 12 ) {
+            return @"Lord's Supper";
+        } else if ( day == 13 ) {
+            return @"Passover";
+        } else if ( day >= 14 && day <= 20 ) {
+            return [NSString stringWithFormat:@"Unl'd Bread %ld",day - 13];
+        }
+    } else if ( month == 2 ) {
+        if ( day == 9 )
+            return @"Pentecost";
+    } else if ( month == 6 ) {
+        if ( day == 0 )
+            return @"Trumpets";
+        else if ( day == 9 )
+            return @"Atonement";
+        else if ( day >= 14 && day <= 20 ) {
+            return @"Tabernacles";
+        }
+    }
+    
+    return nil;
 }
 
 @end

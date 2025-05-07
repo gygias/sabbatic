@@ -86,7 +86,7 @@ static STState *sState = nil;
     return [fracillum doubleValue] / 100.;
 }
 
-- (NSDate *)_conjunctionPriorToDate:(NSDate *)date
+- (NSDate *)conjunctionPriorToDate:(NSDate *)date
 {
     __block NSDate *last = nil;
     NSArray *phases = [self _lunarPhasesFromUSNavyForYear:-1];
@@ -110,7 +110,7 @@ static STState *sState = nil;
 
 - (NSDate *)lastConjunction
 {
-    return [self _conjunctionPriorToDate:[NSDate myNow]];
+    return [self conjunctionPriorToDate:[NSDate myNow]];
 }
 
 - (NSDate *)nextConjunction
@@ -239,16 +239,17 @@ static STState *sState = nil;
 
 - (NSDate *)lastNewMoonStart
 {
+    NSDate *now = [NSDate myNow];
     NSDate *last = [self lastConjunction];
     NSDate *next = [self nextConjunction];
-    if ( [next timeIntervalSinceDate:[NSDate myNow]] > STSecondsPerLunarDay )
-        last = [self _conjunctionPriorToDate:last];
+    if ( [next timeIntervalSinceDate:now] > STSecondsPerLunarDay )
+        last = [self conjunctionPriorToDate:last];
     NSDate *day = [STCalendar newMoonDayForConjunction:last :NULL];
     NSDate *sunsetPreviousDay = [self lastSunsetForDate:day momentAfter:YES];
     
     // called after conjunction but before new moon start
-    if ( [[NSDate myNow] timeIntervalSinceDate:sunsetPreviousDay] < 0 ) {
-        NSDate *lastLast = [self _conjunctionPriorToDate:last];
+    if ( [now timeIntervalSinceDate:sunsetPreviousDay] < 0 ) {
+        NSDate *lastLast = [self conjunctionPriorToDate:last];
         NSDate *lastLastDay = [STCalendar newMoonDayForConjunction:lastLast :NULL];
         sunsetPreviousDay = [self lastSunsetForDate:lastLastDay momentAfter:YES];
     }
@@ -303,7 +304,7 @@ static STState *sState = nil;
     while ( ( sunsetDate = [self lastSunsetForDate:date momentAfter:momentAfter] ) ) {
         if ( [origDate timeIntervalSinceDate:sunsetDate] >= 0 ) {
             if ( momentAfter )
-                sunsetDate = [STCalendar date:sunsetDate byAddingDays:0 hours:0 minutes:0 seconds:1];
+                sunsetDate = [sunsetDate dateByAddingTimeInterval:STMomentAfterInterval];
             return sunsetDate;
         }
         date = [STCalendar date:date byAddingDays:-1 hours:0 minutes:0 seconds:0];
@@ -317,11 +318,10 @@ static STState *sState = nil;
     NSDate *origDate = [NSDate myNow];
     NSDate *date = origDate;
     NSDate *sunsetDate = nil;
-    date = [STCalendar date:date byAddingDays:-1 hours:0 minutes:0 seconds:0];
     while ( ( sunsetDate = [self lastSunsetForDate:date momentAfter:momentAfter] ) ) {
         if ( [origDate timeIntervalSinceDate:sunsetDate] < 0 ) {
             if ( momentAfter )
-                sunsetDate = [STCalendar date:sunsetDate byAddingDays:0 hours:0 minutes:0 seconds:1];
+                sunsetDate = [sunsetDate dateByAddingTimeInterval:STMomentAfterInterval];
             return sunsetDate;
         }
         date = [STCalendar date:date byAddingDays:1 hours:0 minutes:0 seconds:0];
@@ -338,7 +338,7 @@ static STState *sState = nil;
     while ( ( sunsetDate = [self _fetchSunsetTimeOnDate:date] ) ) {
         if ( [origDate timeIntervalSinceDate:sunsetDate] >= 0 ) {
             if ( momentAfter )
-                sunsetDate = [STCalendar date:sunsetDate byAddingDays:0 hours:0 minutes:0 seconds:1];
+                sunsetDate = [sunsetDate dateByAddingTimeInterval:STMomentAfterInterval];
             return sunsetDate;
         }
         date = [STCalendar date:date byAddingDays:-1 hours:0 minutes:0 seconds:0];
@@ -355,7 +355,7 @@ static STState *sState = nil;
     while ( ( sunsetDate = [self _fetchSunsetTimeOnDate:date] ) ) {
         if ( [origDate timeIntervalSinceDate:sunsetDate] < 0 ) {
             if ( momentAfter )
-                sunsetDate = [STCalendar date:sunsetDate byAddingDays:0 hours:0 minutes:0 seconds:1];
+                sunsetDate = [sunsetDate dateByAddingTimeInterval:STMomentAfterInterval];
             return sunsetDate;
         }
         date = [STCalendar date:date byAddingDays:1 hours:0 minutes:0 seconds:0];
@@ -367,14 +367,14 @@ static STState *sState = nil;
 - (NSDate *)lastNewMoonDay
 {
     NSDate *last = [self lastConjunction];
-    NSDate *day = [self normalizeDate:[STCalendar newMoonDayForConjunction:last :NULL]];
+    NSDate *day = [[STCalendar newMoonDayForConjunction:last :NULL] normalizedDate];
     return day;
 }
 
 - (NSDate *)nextNewMoonDay
 {
     NSDate *next = [self nextConjunction];
-    return [self normalizeDate:[STCalendar newMoonDayForConjunction:next :NULL]];
+    return [[STCalendar newMoonDayForConjunction:next :NULL] normalizedDate];
 }
 
 #warning presumably this doesn't either \
@@ -443,28 +443,6 @@ static STState *sState = nil;
     }
     
     return next;
-}
-
-- (NSDate *)normalizeDate:(NSDate *)date
-{
-    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    NSDateComponents *dateComponents = [gregorian components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay) fromDate:date];    
-    NSDate *normalizedDate = [gregorian dateFromComponents:dateComponents];
-#ifdef debugDateStuff
-    NSLog(@"%@ normalized to %@",date,normalizedDate);
-#endif
-    //normalizedDate = [normalizedDate dateByAddingTimeInterval:[[NSTimeZone localTimeZone] secondsFromGMTForDate:normalizedDate]];
-    return normalizedDate;
-}
-
-- (NSDate *)normalizeDate:(NSDate *)date hour:(NSInteger)hour minute:(NSInteger)minute second:(NSInteger)second
-{
-    date = [self normalizeDate:date];
-    NSDate *normalizedDate = [STCalendar date:date byAddingDays:0 hours:hour minutes:minute seconds:second];
-#ifdef debugDateStuff
-    NSLog(@"%@ normalized to %@",date,normalizedDate);
-#endif
-    return normalizedDate;
 }
 
 
@@ -543,9 +521,9 @@ static STState *sState = nil;
     } else {
         double daysUntilSabbath = -(interval) / STSecondsPerGregorianDay;
         if ( daysUntilSabbath < 1 ) {
-            int hoursUntilSabbath = interval / 24.0;
+            int hoursUntilSabbath = -(interval) / 60.0 / 60.;
             if ( hoursUntilSabbath < 0 ) {
-                int minutesUntilSabbath = interval / 60.;
+                int minutesUntilSabbath = -(interval) / 60.;
                 if ( minutesUntilSabbath < 1 ) {
                     NSLog(@"BUG: couldn't format time to sabbath from %0.2f",interval);
                     return;
@@ -556,6 +534,9 @@ static STState *sState = nil;
                 formatValue = hoursUntilSabbath;
                 formatUnit = hoursUntilSabbath > 1 ? @"hours" : @"hour";
             }
+        } else if ( daysUntilSabbath > 3 ) {
+            NSLog(@"only notifying of sabbath within 3 days");
+            return;
         } else {
             double fraction = daysUntilSabbath - ((long)daysUntilSabbath);
             int wholeUntilSabbath = (int)daysUntilSabbath;
@@ -567,7 +548,7 @@ static STState *sState = nil;
     }
     
     content.title = [NSString stringWithFormat:@"Sabbath in %d %@!",formatValue,formatUnit];
-    content.body = [NSString stringWithFormat:@"Starts at %@.",[nextSabbath notificationPresentationString]];
+    content.body = [NSString stringWithFormat:@"Starts %@.",[nextSabbath notificationPresentationString]];
     if ( ! delay ) delay = 0.01;
     UNNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:delay repeats:NO];
     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:myId content:content trigger:trigger];
@@ -755,7 +736,7 @@ static STState *sState = nil;
             id objobj = [obj objectAtIndex:i];
             if ( [objobj isKindOfClass:[NSNull class]] ) {
                 NSLog(@"replaced [%d]NSNull",i);
-                [ret addObject:@"((null)))"];
+                [ret addObject:@"((null))"];
             } else
                 [ret addObject:[self _sanitizedJSON:objobj]];
         }
@@ -770,15 +751,14 @@ static STState *sState = nil;
 - (NSDate *)_fetchSunsetTimeOnDate:(NSDate *)date
 {
     NSInteger tzOffset = [[NSTimeZone localTimeZone] secondsFromGMTForDate:date];
-    NSDate *lookupDate = [STCalendar date:date byAddingDays:0 hours:0 minutes:0 seconds:0];
+    NSDate *lookupDate = [date normalizedDatePlusHour:0 minute:0 second:0];
     NSString *dateString = [self _yearMonthDayStringWithDate:lookupDate];
     NSDictionary *dict = [self _usnoOnedayForDateString:dateString location:[self _effectiveLocation]];
     
-    //NSLog(@"%@ lookup %@ (%@)",date,lookupDate,dateString);
     for ( NSDictionary *sunEvent in dict[@"properties"][@"data"][@"sundata"] ) {
         if ( [sunEvent[@"phen"] isEqualToString:@"Set"] ) {
             NSArray *components = [sunEvent[@"time"] componentsSeparatedByString:@":"];
-            NSDate *sunset = [self normalizeDate:lookupDate hour:[components[0] integerValue] minute:[components[1] integerValue] second:tzOffset];
+            NSDate *sunset = [lookupDate normalizedDatePlusHour:[components[0] integerValue] minute:[components[1] integerValue] second:tzOffset];
             return sunset;
         }
     }

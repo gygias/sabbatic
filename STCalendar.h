@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (BOOL)isDateInLunarToday:(NSDate *)date;
 + (BOOL)isDateInLunarYesterday:(NSDate *)date;
 
+
 + (NSDate *)newMoonDayForConjunction:(NSDate *)date :(nullable BOOL *)intercalary; // gregorian midnight on new moon day
 + (NSDate *)newMoonStartTimeForConjunction:(NSDate *)date :(nullable BOOL *)intercalary; // sunset on previous day
 
@@ -24,7 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)localGregorianDayOfTheMonthFromDate:(NSDate *)date;
 + (NSString *)localGregorianPreviousAndCurrentDayFromDate:(NSDate *)date delimiter:(NSString *)delimiter;
 
-+ (NSString *)hebrewMonthForMonth:(NSInteger)month;
++ (NSString *)hebrewStringMonthForMonth:(NSInteger)month;
++ (NSString *)moedStringForLunarDay:(NSInteger)day ofLunarMonth:(NSInteger)month;
 
 @end
 
