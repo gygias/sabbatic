@@ -18,6 +18,8 @@
 @interface ViewController ()
 @property (strong) STMoonController *moonController;
 @property (strong) STCalendarView *calendarView;
+@property (strong) UIActivityIndicatorView *progressView;
+@property BOOL currentViewLoaded;
 @end
 
 @implementation ViewController
@@ -31,35 +33,50 @@
     });
 }
 
-- (void)_replaceCurrentCalendarWithDate:(NSDate *)date
+- (void)_addCalendarView
 {
-    NSTimeInterval duration = 0;
+    [self _startProgressOnCalendarChange];
+    self.currentViewLoaded = NO;
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [self.calendarView preload];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.currentViewLoaded = YES;
+            [self.progressView stopAnimating];
+            [self.view addSubview:self.calendarView];
+        });
+    });
+}
+
+- (void)_replaceCurrentCalendarWithDate:(NSDate *)date :(BOOL)up
+{
+    NSTimeInterval duration = STCalendarAnimationDuration;
     
     STCalendarView *oldCalendar = self.calendarView;
-    CABasicAnimation *a = [CABasicAnimation animationWithKeyPath:@"opacity"];
-    a.toValue = @0;
-    a.duration = duration;
-    a.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
-    [oldCalendar.layer addAnimation:a forKey:@"opacity"];
-    oldCalendar.layer.opacity = 0;
+    
+    [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        oldCalendar.frame = CGRectMake(oldCalendar.frame.origin.x,
+                                       oldCalendar.frame.origin.y + ( up ? -1 : 1 ) * self.view.frame.size.height,
+                                       oldCalendar.frame.size.width, oldCalendar.frame.size.height);
+        oldCalendar.layer.opacity = 0;
+    } completion:^(BOOL finished) {
+        NSLog(@"old calendar animated out");
+    }];
+    
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [oldCalendar removeFromSuperview];
+        
+        self.calendarView = [[STCalendarView alloc] initWithFrame:CGRectInset([self.view frame], STCalendarViewInsetX, STCalendarViewInsetY)];
+        self.calendarView.effectiveNewMoonStart = date;
+        self.calendarView.backgroundColor = [STColorClass clearColor];
+        //self.calendarView.layer.opaque = 0.0;
+        [self _addCalendarView];
+        
+        [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+            //self.calendarView.layer.opaque = 1.0;
+        } completion:^(BOOL finished) {
+            NSLog(@"new calendar animated in");
+        }];
     });
-    
-    
-    self.calendarView = [[STCalendarView alloc] initWithFrame:CGRectInset([self.view frame], STCalendarViewInsetX, STCalendarViewInsetY)];
-    self.calendarView.effectiveNewMoonStart = date;
-    self.calendarView.backgroundColor = [STColorClass clearColor];
-    //self.calendarView.layer.opaque = 0.5;
-    [self.view addSubview:self.calendarView];
-    
-    /*[CATransaction begin];
-    [CATransaction setAnimationDuration:1];
-    [CATransaction setCompletionBlock:^{
-        NSLog(@"fade out completed");
-    }];
-    self.calendarView.layer.opacity = 0;
-    [CATransaction commit];*/
 }
 
 - (void)handleGesture:(UIGestureRecognizer *)gestureRecognizer
@@ -74,7 +91,7 @@
             NSDate *previousNewMoonStart = [STCalendar newMoonStartTimeForConjunction:lastLastConj :NULL];
             
             NSLog(@"swipe down, switching from %@ to %@",currentNewMoon,previousNewMoonStart);
-            [self _replaceCurrentCalendarWithDate:previousNewMoonStart];
+            [self _replaceCurrentCalendarWithDate:previousNewMoonStart :NO];
         } else if ( swipe.direction == UISwipeGestureRecognizerDirectionUp ) {
             
             NSDate *currentNewMoon = self.calendarView.effectiveNewMoonStart;
@@ -82,9 +99,18 @@
             NSDate *nextNewMoonStart = [STCalendar newMoonStartTimeForConjunction:nextConj :NULL];
             
             NSLog(@"swipe up, switching from %@ to %@",currentNewMoon,nextNewMoonStart);
-            [self _replaceCurrentCalendarWithDate:nextNewMoonStart];
+            [self _replaceCurrentCalendarWithDate:nextNewMoonStart :YES];
         }
     }
+}
+
+- (void)_startProgressOnCalendarChange
+{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(STCalendarAnimationDuration * 4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if ( ! self.currentViewLoaded ) {
+            [self.progressView startAnimating];
+        }
+    });
 }
 
 - (void)viewDidLoad {
@@ -96,15 +122,26 @@
     down.direction = UISwipeGestureRecognizerDirectionDown;
     self.view.gestureRecognizers = @[ up, down ];
     
+    CGRect progressFrame = CGRectMake([self.view frame].origin.x + [self.view frame].size.width / 2 - STSpinnerWidth / 2,
+                                      [self.view frame].origin.y + 4 * ( [self.view frame].size.height / 5 ) - STSpinnerWidth / 2,
+                                      STSpinnerWidth, STSpinnerHeight
+                                      );
+    
     SCNView *moonView = [[SCNView alloc] initWithFrame:[self.view frame] options:NULL];
     self.moonController = [[STMoonController alloc] initWithView:moonView];
     [self.view addSubview:moonView];
+    
+    self.progressView = [[UIActivityIndicatorView alloc] initWithFrame:progressFrame];
+    self.progressView.activityIndicatorViewStyle = UIActivityIndicatorViewStyleLarge;
+    self.progressView.color = [STColorClass whiteColor];
+    self.progressView.hidesWhenStopped = YES;
+    [self.view addSubview:self.progressView];
     
     self.calendarView = [[STCalendarView alloc] initWithFrame:CGRectInset([self.view frame], STCalendarViewInsetX, STCalendarViewInsetY)];
     self.calendarView.effectiveNewMoonStart = [[STState state] lastNewMoonStart];
     self.calendarView.backgroundColor = [STColorClass clearColor];
     //self.calendarView.layer.opaque = 0.5;
-    [self.view addSubview:self.calendarView];
+    [self _addCalendarView];
     
     [self.moonController doIntroAnimationWithCompletionHandler:^{
         NSLog(@"did intro animation");

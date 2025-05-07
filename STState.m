@@ -173,7 +173,7 @@ static STState *sState = nil;
         if ( [dict[@"phenom"] isEqualToString:@"Equinox"] && [dict[@"month"] integerValue] < 6 ) {
             NSString *aString = nil;
             NSDate *aDate = [self _dateFromUSNODictionary:obj :&aString];
-            if ( [[NSDate myNow] timeIntervalSinceDate:aDate] > 0 ) {
+            if ( [date timeIntervalSinceDate:aDate] > 0 ) {
                 springEquinoxDate = aDate;
                 springEquinoxDateString = aString;
                 *stop = YES;

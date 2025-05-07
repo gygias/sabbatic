@@ -33,6 +33,7 @@
 #define STSabbathNotificationDelay 5.0
 #define STMomentAfterInterval 0.000001
 #define STMoonRedrawInterval ( 10 * 60 )
+#define STCalendarAnimationDuration .25
 
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
 #define STRect NSRect
@@ -63,6 +64,8 @@
 #define STCalendarViewInsetY 150
 #define STLunarDayScalarX 2
 #define STLunarDayScalarY 3
+#define STSpinnerWidth 20
+#define STSpinnerHeight 20
 #endif
 
 #endif /* STDefines_h */

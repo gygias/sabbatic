@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong) NSDate *effectiveNewMoonStart;
 
+- (void)preload;
+
 @end
 
 NS_ASSUME_NONNULL_END

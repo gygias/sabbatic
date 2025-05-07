@@ -85,6 +85,26 @@ CGRect gMyInitRect;
 #endif
 }
 
+- (void)preload
+{
+#ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
+    for ( int i = 0; i < 4; i++ ) {
+#else
+    for ( int i = 1; i < 5; i++ ) {
+#endif
+        for ( int j = 0; j < 7; j++ ) {
+#ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
+            NSInteger day = 7 * ( 3 - i ) + j + 1;
+#else
+            NSInteger day = 7 * ( i - 1 ) + j + 1;
+#endif
+            NSInteger effectiveDay = day;
+            NSDate *thisDate = [STCalendar date:self.effectiveNewMoonStart byAddingDays:effectiveDay hours:1 minutes:0 seconds:0];
+            [[STState state] lastSunsetForDate:thisDate momentAfter:YES];
+        }
+    }
+}
+
 - (void)drawRect:(STRect)dirtyRect {
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
     [super drawRect:dirtyRect];
