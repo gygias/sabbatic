@@ -17,9 +17,14 @@
 #define LastNotificationRequestResultDomain @"LastNotificationRequestResultDomain"
 #define LastNotificationRequestResultCode @"LastNotificationRequestResultCode"
 //
-#define USNOLunarPhasesFormat @"com.combobulated.Sabbatic.usno.%ld"
-#define USNOSolarEventsFormat @"com.combobulated.Sabbatic.usno.solar.%ld"
-#define USNOOnedayFormat @"com.combobulated.Sabbatic.usno.oneday.%@"
+#define USNODataKey @"USNOData"
+#define USNOLunarPhasesKey @"LunarPhaseYear"
+#define USNOSolarEventsKey @"SolarEventYear"
+#define USNOOneDayKey @"OneDay"
+
+#define STMileRadius 50.
+#define STMilePerLatitude 69.
+#define STMeterPerMile 1609.344
 
 #define STSecondsPerGregorianDay 86400
 #define STSecondsPerLunarDay ( 29.53 * STSecondsPerGregorianDay )

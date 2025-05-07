@@ -634,8 +634,10 @@ static STState *sState = nil;
     NSMutableArray *retArray = [NSMutableArray array];
     
     do {
-        NSString *key = [NSString stringWithFormat:USNOLunarPhasesFormat,year];
-        NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+        NSDictionary *usnoDict = [[NSUserDefaults standardUserDefaults] objectForKey:USNODataKey];
+        NSDictionary *lunarDict = [usnoDict objectForKey:USNOLunarPhasesKey];
+        NSString *key = [NSString stringWithFormat:@"%ld",year];
+        NSDictionary *dict = [lunarDict objectForKey:key];
         
         if ( ! dict ) {
             dict = [self _fetchLunarPhasesFromUSNavyForYear:year];
@@ -645,7 +647,11 @@ static STState *sState = nil;
             } else
                 NSLog(@"fetched usno lunar phases");
             
-            [[NSUserDefaults standardUserDefaults] setObject:dict forKey:key];
+            NSMutableDictionary *usnoM = [usnoDict mutableCopy];
+            NSMutableDictionary *lunarM = [lunarDict mutableCopy];
+            [lunarM setObject:dict forKey:key];
+            [usnoM setObject:lunarM forKey:USNOLunarPhasesKey];
+            [[NSUserDefaults standardUserDefaults] setObject:usnoM forKey:USNODataKey];
         }
         
         [retArray addObjectsFromArray:[dict objectForKey:@"phasedata"]];
@@ -667,8 +673,10 @@ static STState *sState = nil;
     NSMutableArray *retArray = [NSMutableArray array];
     
     do {
-        NSString *key = [NSString stringWithFormat:USNOSolarEventsFormat,year];
-        NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+        NSDictionary *usnoDict = [[NSUserDefaults standardUserDefaults] objectForKey:USNODataKey];
+        NSDictionary *solarDict = [usnoDict objectForKey:USNOSolarEventsKey];
+        NSString *key = [NSString stringWithFormat:@"%ld",year];
+        NSDictionary *dict = [solarDict objectForKey:key];
         
         if ( ! dict ) {
             dict = [self _fetchSolarEventsFromUSNavyForYear:year];
@@ -677,8 +685,12 @@ static STState *sState = nil;
                 return nil;
             } else
                 NSLog(@"fetched usno solar events");
-            
-            [[NSUserDefaults standardUserDefaults] setObject:dict forKey:key];
+        
+            NSMutableDictionary *usnoM = [usnoDict mutableCopy];
+            NSMutableDictionary *solarM = [solarDict mutableCopy];
+            [solarM setObject:dict forKey:key];
+            [usnoM setObject:solarM forKey:USNOSolarEventsKey];
+            [[NSUserDefaults standardUserDefaults] setObject:usnoM forKey:USNODataKey];
         }
         
         [retArray addObjectsFromArray:[dict objectForKey:@"data"]];
@@ -747,7 +759,6 @@ static STState *sState = nil;
     return ret;
 }
 
-#warning detect significant location change (or user tz change) and discard all preferences
 - (NSDate *)_fetchSunsetTimeOnDate:(NSDate *)date
 {
     NSInteger tzOffset = [[NSTimeZone localTimeZone] secondsFromGMTForDate:date];
@@ -766,13 +777,49 @@ static STState *sState = nil;
     return nil;
 }
 
+- (BOOL)onedayKey:(NSString *)key isInRangeOfLocation:(CLLocation *)location
+{
+    NSArray *components = [key componentsSeparatedByString:@","];
+    if ( [components count] != 2 ) {
+        NSLog(@"bad oneday prefs key %@",key);
+        return NO;
+    }
+    
+    CLLocationDegrees lat = [components[0] doubleValue];
+    CLLocationDegrees lon = [components[1] doubleValue];
+    
+    if ( ! lat || ! lon ) {
+        NSLog(@"bad oneday prefs key %@",key);
+        return NO;
+    }
+    
+    CLLocation *prefsLoc = [[CLLocation alloc] initWithLatitude:lat longitude:lon];
+    CLLocationDistance distance = [prefsLoc distanceFromLocation:location];
+    
+    BOOL within = ( distance <= ( STMileRadius * STMeterPerMile ) );
+    
+    return within;
+}
+
 - (NSDictionary *)_usnoOnedayForDateString:(NSString *)dateString location:(CLLocation *)location
 {
-    NSString *key = [NSString stringWithFormat:USNOOnedayFormat,dateString];
-    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+    NSDictionary *usnoDict = [[NSUserDefaults standardUserDefaults] objectForKey:USNODataKey];
+    NSDictionary *onedays = [usnoDict objectForKey:USNOOneDayKey];
+    NSDictionary *locDict = nil;
+    for ( NSString *aKey in onedays ) {
+        if ( [self onedayKey:aKey isInRangeOfLocation:location] ) {
+            locDict = [onedays objectForKey:aKey];
+            break;
+        } else {
+            NSLog(@"%@ is not in range!",aKey);
+        }
+    }
+    
+    NSDictionary *dict = [locDict objectForKey:dateString];
     
     if ( ! dict ) {
-        dict = [self _fetchInfoFromUSNavy:[NSString stringWithFormat:@"https://aa.usno.navy.mil/api/rstt/oneday?date=%@&coords=%0.2f,%0.2f",dateString,location.coordinate.latitude,location.coordinate.longitude]];
+        NSString *key = [NSString stringWithFormat:@"%0.2f,%0.2f",location.coordinate.latitude,location.coordinate.longitude];
+        dict = [self _fetchInfoFromUSNavy:[NSString stringWithFormat:@"https://aa.usno.navy.mil/api/rstt/oneday?date=%@&coords=%@",dateString,key]];
         if ( ! dict ) {
             NSLog(@"very bad: failed to fetch oneday on %@ from usno!",dateString);
             return nil;
@@ -781,7 +828,11 @@ static STState *sState = nil;
         
         NSDictionary *sanitized = [self _sanitizedJSON:dict];
         NSLog(@"SANITIZED JSON: %@",sanitized);
-        [[NSUserDefaults standardUserDefaults] setObject:sanitized forKey:key];
+        NSMutableDictionary *usnoM = [usnoDict mutableCopy];
+        NSMutableDictionary *onedaysM = [onedays mutableCopy];
+        [onedaysM setObject:dict forKey:key];
+        [usnoM setObject:onedaysM forKey:USNOOneDayKey];
+        [[NSUserDefaults standardUserDefaults] setObject:usnoM forKey:USNODataKey];
     }
     
     return dict;

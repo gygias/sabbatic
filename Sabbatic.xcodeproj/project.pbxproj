@@ -48,6 +48,8 @@
 		63A2078B2D8BED810019A763 /* MoonScene.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = MoonScene.scn; sourceTree = "<group>"; };
 		63A207912D8D13D40019A763 /* Sabbatic-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sabbatic-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		63B1D12C2DC40D2400593445 /* todo */ = {isa = PBXFileReference; lastKnownFileType = text; path = todo; sourceTree = "<group>"; };
+		63B1D13F2DCB0C4000593445 /* astronomy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = astronomy.h; sourceTree = "<group>"; };
+		63B1D1402DCB0C4000593445 /* astronomy.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = astronomy.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -105,6 +107,8 @@
 		63A2075B2D8BDF360019A763 = {
 			isa = PBXGroup;
 			children = (
+				63B1D13F2DCB0C4000593445 /* astronomy.h */,
+				63B1D1402DCB0C4000593445 /* astronomy.c */,
 				639EA45B2DBC1B2900E31716 /* STDefines.h */,
 				639EA4562DBC197300E31716 /* STMoonController.h */,
 				639EA4572DBC197300E31716 /* STMoonController.m */,
