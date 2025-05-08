@@ -18,10 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isWithinAbsoluteTimeInterval:(NSTimeInterval)interval ofDate:(NSDate *)date;
 
+- (NSString *)utcYearMonthDayString;
 - (NSString *)localYearMonthDayString;
 - (NSString *)localYearMonthDayHourMinuteString;
 - (NSString *)localHourMinuteString;
-- (NSString *)yearString;
+- (NSString *)localYearString;
 
 - (NSString *)notificationPresentationString;
 

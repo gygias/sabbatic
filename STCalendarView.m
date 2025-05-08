@@ -47,21 +47,21 @@ CGRect gMyInitRect;
         there is a minute of no-mans-land would benefit from longer or "real life" draw intervals \
         (and, it draws intercalary, as if based on this month) \
         put it on fast mode and 'two todays' will walk across the calendar :-)
-    //NSDate *myNow = [STCalendar date:[[STState state] lastNewMoonStart] byAddingDays:0 hours:0 minutes:0 seconds:-5];
+    //NSDate *myNow = [STCalendar date:[DP lastNewMoonStart] byAddingDays:0 hours:0 minutes:0 seconds:-5];
     
     //NSDate *myNow = [NSDate myNow];
     //NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     //NSDate *myNow = [gregorian dateWithEra:1 year:2025 month:4 day:27 hour:19 minute:49 second:0 nanosecond:0];
     
     // yesterday 5 seconds to midnight
-    //NSDate *myNow =   [STCalendar date:[[STState state] normalizeDate:[STCalendar date:[NSDate date] byAddingDays:-1 hours:0 minutes:0 seconds:0]]
+    //NSDate *myNow =   [STCalendar date:[DP normalizeDate:[STCalendar date:[NSDate date] byAddingDays:-1 hours:0 minutes:0 seconds:0]]
     //                      byAddingDays:0 hours:23 minutes:59 seconds:55];
     
     // today at x x x
     //NSDate *myNow =   [[NSDate date] normalizedDatePlusHour:19 minute:57 second:55];
     
     // 5 secs before last sunset
-    //NSDate *myNow = [[STState state] lastSunsetForDate:[NSDate myNow] momentAfter:YES];
+    //NSDate *myNow = [DP lastSunsetForDate:[NSDate myNow] momentAfter:YES];
     //myNow = [STCalendar date:myNow byAddingDays:0 hours:0 minutes:0 seconds:-5];
     
     // plain old now
@@ -100,7 +100,7 @@ CGRect gMyInitRect;
 #endif
             NSInteger effectiveDay = day;
             NSDate *thisDate = [STCalendar date:self.effectiveNewMoonStart byAddingDays:effectiveDay hours:1 minutes:0 seconds:0];
-            [[STState state] lastSunsetForDate:thisDate momentAfter:YES];
+            [DP lastSunsetForDate:thisDate momentAfter:YES];
         }
     }
 }
@@ -115,12 +115,12 @@ CGRect gMyInitRect;
     BOOL foundToday = NO;
     NSDate *lastNewMoonStart = self.effectiveNewMoonStart;
     // may be two literal conjunctions ago, when drawing between conjunction and new moon start
-    NSDate *effectiveLastConjunction = [[STState state] conjunctionPriorToDate:lastNewMoonStart];
-    NSDate *nextConjunction = [[STState state] conjunctionPriorToDate:[STCalendar date:effectiveLastConjunction byAddingDays:30 hours:0 minutes:0 seconds:0]];
+    NSDate *effectiveLastConjunction = [DP conjunctionPriorToDate:lastNewMoonStart];
+    NSDate *nextConjunction = [DP conjunctionPriorToDate:[STCalendar date:effectiveLastConjunction byAddingDays:30 hours:0 minutes:0 seconds:0]];
     // handle time between conjunction and next new moon day
     //NSTimeInterval timeUntilNextConjunction = [aConjunction timeIntervalSinceDate:[NSDate myNow]];
     //if ( timeUntilNextConjunction > STSecondsPerLunarDay )
-    //    aConjunction = [[STState state] lastConjunction];
+    //    aConjunction = [DP lastConjunction];
     BOOL intercalary = NO;
     __unused NSDate *nextNewMoonStart = [STCalendar newMoonDayForConjunction:nextConjunction :&intercalary];
     NSLog(@"drawing %@month at myNow %@ with\n\tlastNewMoonStart %@\n\teffectiveLastConjunction %@\n\tnextNewMoonStart %@",intercalary?@"intercalary ":@"",[NSDate myNow],lastNewMoonStart,effectiveLastConjunction,nextNewMoonStart);
@@ -166,7 +166,7 @@ CGRect gMyInitRect;
     self.delimiter = @"-";
 #endif
     
-    NSInteger monthsSinceNewYear = [[STState state] lunarMonthForDate:self.effectiveNewMoonStart];
+    NSInteger monthsSinceNewYear = [DP lunarMonthForDate:self.effectiveNewMoonStart];
     NSString *hebrewMonthString = [STCalendar hebrewStringMonthForMonth:monthsSinceNewYear];
     self.bigTextSize = [hebrewMonthString sizeWithAttributes:self.bigTextAttributes];
     self.textSize = [@"foo" sizeWithAttributes:self.textAttributes];
@@ -384,7 +384,7 @@ CGRect gMyInitRect;
     
 #warning it's off by one, this is location/api dependent and needs to be fixed
     NSDate *tomorrow = [STCalendar date:date byAddingDays:1 hours:0 minutes:0 seconds:0];
-    NSDate *sunset = [[STState state] lastSunsetForDate:tomorrow momentAfter:NO];
+    NSDate *sunset = [DP lastSunsetForDate:tomorrow momentAfter:NO];
     
     if ( asToday ) {
         [self _drawTodayCircleAtPoint:CGPointMake(oneX + circleOffsetX, ldY + circleOffsetY) withLineWidth:self.lineWidth textAttributes:self.textAttributes context:context];
@@ -398,7 +398,7 @@ CGRect gMyInitRect;
     [sunsetHourMinute drawAtPoint:CGPointMake(oneX + xOffset, ssY) withAttributes:self.smallerAttributes];
 
     BOOL waning = NO;
-    double fracillum = [[STState state] moonFracillumForDate:date :&waning];
+    double fracillum = [DP moonFracillumForDate:date :&waning];
     NSString *fracillumString = [NSString stringWithFormat:@"%0.0f%%",fracillum * 100];
     [fracillumString drawAtPoint:CGPointMake(oneX + xOffset, fcY) withAttributes:self.smallerAttributes];
     

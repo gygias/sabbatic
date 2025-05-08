@@ -26,6 +26,8 @@
 #define STMilePerLatitude 69.
 #define STMeterPerMile 1609.344
 
+#define STDataProviderClass STAstronomyProvider
+
 #define STSecondsPerGregorianDay 86400
 #define STSecondsPerLunarDay ( 29.53 * STSecondsPerGregorianDay )
 #define STMinutesPerGregorianDay 1440

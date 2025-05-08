@@ -14,7 +14,7 @@
 
 + (void)enqueueRealSunsetNotifications
 {
-    NSDate *time = [[STState state] nextSunset:YES];
+    NSDate *time = [DP nextSunset:YES];
     NSTimeInterval inSecs = [time timeIntervalSinceDate:[NSDate myNow]];
     NSLog(@"enqueueing REAL sunset notification on %@ (%0.1f hours)",time,inSecs/60./60.);
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(inSecs * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -52,7 +52,7 @@
 
 + (void)_enqueueLunarDayChangedNoteForDate:(NSDate *)date
 {
-    NSDate *nextSunset = [[STState state] nextSunset:YES];
+    NSDate *nextSunset = [DP nextSunset:YES];
     NSLog(@"nextSunset for %@ is at %@",date,nextSunset);
     NSTimeInterval timeToNextStart = [nextSunset timeIntervalSince1970] - [NSDate myNow].timeIntervalSince1970;
     if ( timeToNextStart < 0 ) {
@@ -113,39 +113,43 @@ static NSDate *sNSDateMyNowStart = nil;
         && ( sinceDate >= -interval );
 }
 
-- (NSString *)_localString:(NSString *)format
+- (NSString *)_string:(NSString *)format withTimeZone:(NSTimeZone *)tz
 {
     NSDateFormatter * df = [[NSDateFormatter alloc] init];
-    NSTimeZone *tz = [NSTimeZone localTimeZone];
     [df setTimeZone:tz];
     [df setDateFormat:format];
     return [df stringFromDate:self];
 }
 
+- (NSString *)utcYearMonthDayString
+{
+    return [self _string:@"yyyy-MM-dd" withTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+}
+
 - (NSString *)localYearMonthDayString
 {
-    return [self _localString:@"yyyy-MM-dd"];
+    return [self _string:@"yyyy-MM-dd" withTimeZone:[NSTimeZone localTimeZone]];
 }
 
 - (NSString *)localYearMonthDayHourMinuteString
 {
-    return [self _localString:@"EEE MMM dd HH:mm:ss yyyy"];
+    return [self _string:@"EEE MMM dd HH:mm:ss yyyy" withTimeZone:[NSTimeZone localTimeZone]];
 }
 
 - (NSString *)localHourMinuteString
 {
-    return [self _localString:@"HH:mm"];
+    return [self _string:@"HH:mm" withTimeZone:[NSTimeZone localTimeZone]];
 }
 
-- (NSString *)yearString
+- (NSString *)localYearString
 {
-    return [self _localString:@"yyyy"];
+    return [self _string:@"yyyy" withTimeZone:[NSTimeZone localTimeZone]];
 }
 
 - (NSString *)notificationPresentationString
 {
-    NSString *first = [self _localString:@"EEEE"];
-    NSString *second = [self _localString:@"HH:mm"];
+    NSString *first = [self _string:@"EEEE" withTimeZone:[NSTimeZone localTimeZone]];
+    NSString *second = [self _string:@"HH:mm" withTimeZone:[NSTimeZone localTimeZone]];
     return [NSString stringWithFormat:@"%@ at %@",first,second];
 }
 
@@ -176,8 +180,8 @@ static NSDate *sNSDateMyNowStart = nil;
 // as a convention, we take the second after sunset to be the first belonging to the new day
 + (BOOL)isDateInLunarToday:(NSDate *)date
 {
-    NSDate *lastSunset = [[STState state] lastSunset:YES];
-    NSDate *nextSunset = [[STState state] nextSunset:NO];
+    NSDate *lastSunset = [DP lastSunset:YES];
+    NSDate *nextSunset = [DP nextSunset:NO];
     
     BOOL lunarToday = ( [date timeIntervalSinceDate:lastSunset] >= 0 )
         && ( [date timeIntervalSinceDate:nextSunset] <= 0 );
@@ -190,9 +194,9 @@ static NSDate *sNSDateMyNowStart = nil;
 
 + (BOOL)isDateInLunarYesterday:(NSDate *)date
 {
-    NSDate *lastSunset = [[STState state] lastSunset:NO];
+    NSDate *lastSunset = [DP lastSunset:NO];
     NSDate *lunarDayBeforeYesterday = [STCalendar date:lastSunset byAddingDays:-1 hours:-1 minutes:0 seconds:0];
-    NSDate *lastLastSunset = [[STState state] lastSunsetForDate:lunarDayBeforeYesterday momentAfter:YES];
+    NSDate *lastLastSunset = [DP lastSunsetForDate:lunarDayBeforeYesterday momentAfter:YES];
     
     return ( [date timeIntervalSinceDate:lastLastSunset] >= 0 )
             && ( [date timeIntervalSinceDate:lastSunset] <= 0 );
@@ -214,7 +218,7 @@ static NSDate *sNSDateMyNowStart = nil;
 
 + (BOOL)isDateBetweenSunsetAndGregorianMidnight:(NSDate *)date
 {
-    NSDate *lastSunset = [[STState state] lastSunset:YES];
+    NSDate *lastSunset = [DP lastSunset:YES];
     NSDate *approxNextSunset = [STCalendar date:lastSunset byAddingDays:1 hours:0 minutes:0 seconds:0];
     NSDate *midnightAfterLastSunset = [approxNextSunset normalizedDate];
         
@@ -254,7 +258,7 @@ static NSDate *sNSDateMyNowStart = nil;
 {
     NSDate *newMoonDay = [self newMoonDayForConjunction:date :intercalary];
     //NSDate *previousDay = [STCalendar date:newMoonDay byAddingDays:-1 hours:0 minutes:0 seconds:0];
-    return [[STState state] lastSunsetForDate:newMoonDay momentAfter:YES];
+    return [DP lastSunsetForDate:newMoonDay momentAfter:YES];
 }
 
 + (NSDate *)date:(NSDate *)date byAddingDays:(NSInteger)days hours:(NSInteger)hours minutes:(NSInteger)minutes seconds:(NSInteger)seconds

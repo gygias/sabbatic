@@ -203,7 +203,7 @@ typedef enum
     }
     
     BOOL waning = NO;
-    double fracillum = [[STState state] currentMoonFracillum:&waning];
+    double fracillum = [DP currentMoonFracillum:&waning];
     NSLog(@"Now I would like to animate to %0.2f %@",fracillum,waning?@"waning":@"waxing");
     
     if ( self.currentPhase == 0 && fracillum == 0 ) {

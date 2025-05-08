@@ -86,8 +86,8 @@
         if ( swipe.direction == UISwipeGestureRecognizerDirectionDown ) {
             
             NSDate *currentNewMoon = self.calendarView.effectiveNewMoonStart;
-            NSDate *lastConj = [[STState state] conjunctionPriorToDate:currentNewMoon];
-            NSDate *lastLastConj = [[STState state] conjunctionPriorToDate:lastConj];
+            NSDate *lastConj = [DP conjunctionPriorToDate:currentNewMoon];
+            NSDate *lastLastConj = [DP conjunctionPriorToDate:lastConj];
             NSDate *previousNewMoonStart = [STCalendar newMoonStartTimeForConjunction:lastLastConj :NULL];
             
             NSLog(@"swipe down, switching from %@ to %@",currentNewMoon,previousNewMoonStart);
@@ -95,7 +95,7 @@
         } else if ( swipe.direction == UISwipeGestureRecognizerDirectionUp ) {
             
             NSDate *currentNewMoon = self.calendarView.effectiveNewMoonStart;
-            NSDate *nextConj = [[STState state] conjunctionAfterDate:currentNewMoon];
+            NSDate *nextConj = [DP conjunctionAfterDate:currentNewMoon];
             NSDate *nextNewMoonStart = [STCalendar newMoonStartTimeForConjunction:nextConj :NULL];
             
             NSLog(@"swipe up, switching from %@ to %@",currentNewMoon,nextNewMoonStart);
@@ -115,6 +115,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [[STState state] setDataProvider:[[STDataProviderClass alloc] init]];
     
     UISwipeGestureRecognizer *up = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
     up.direction = UISwipeGestureRecognizerDirectionUp;
@@ -138,7 +140,7 @@
     [self.view addSubview:self.progressView];
     
     self.calendarView = [[STCalendarView alloc] initWithFrame:CGRectInset([self.view frame], STCalendarViewInsetX, STCalendarViewInsetY)];
-    self.calendarView.effectiveNewMoonStart = [[STState state] lastNewMoonStart];
+    self.calendarView.effectiveNewMoonStart = [DP lastNewMoonStart];
     self.calendarView.backgroundColor = [STColorClass clearColor];
     //self.calendarView.layer.opaque = 0.5;
     [self _addCalendarView];

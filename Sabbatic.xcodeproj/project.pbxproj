@@ -7,10 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		630C89852DCC6877002D4AC3 /* STAstronomyProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 630C89842DCC6877002D4AC3 /* STAstronomyProvider.m */; };
+		630C89862DCC6877002D4AC3 /* STAstronomyProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 630C89842DCC6877002D4AC3 /* STAstronomyProvider.m */; };
+		630C89892DCC6A6F002D4AC3 /* astronomy.c in Sources */ = {isa = PBXBuildFile; fileRef = 63B1D1402DCB0C4000593445 /* astronomy.c */; };
+		630C898A2DCC6A74002D4AC3 /* astronomy.c in Sources */ = {isa = PBXBuildFile; fileRef = 63B1D1402DCB0C4000593445 /* astronomy.c */; };
 		634BF7E32DB09C20007BD17F /* STState.m in Sources */ = {isa = PBXBuildFile; fileRef = 634BF7E22DB09C20007BD17F /* STState.m */; };
 		634BF7E42DB09C20007BD17F /* STState.m in Sources */ = {isa = PBXBuildFile; fileRef = 634BF7E22DB09C20007BD17F /* STState.m */; };
 		634BF7EB2DB9E811007BD17F /* NSDate+MyNow.m in Sources */ = {isa = PBXBuildFile; fileRef = 634BF7EA2DB9E811007BD17F /* NSDate+MyNow.m */; };
 		634BF7EC2DB9E811007BD17F /* NSDate+MyNow.m in Sources */ = {isa = PBXBuildFile; fileRef = 634BF7EA2DB9E811007BD17F /* NSDate+MyNow.m */; };
+		63552E3D2DCC5C1800614BBB /* STUSNODataProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 63552E3C2DCC5C1800614BBB /* STUSNODataProvider.m */; };
+		63552E3E2DCC5C1800614BBB /* STUSNODataProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 63552E3C2DCC5C1800614BBB /* STUSNODataProvider.m */; };
+		63552E402DCC5D6000614BBB /* STDataProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 63552E3F2DCC5D6000614BBB /* STDataProvider.m */; };
+		63552E412DCC5D6000614BBB /* STDataProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 63552E3F2DCC5D6000614BBB /* STDataProvider.m */; };
 		639EA4582DBC197300E31716 /* STMoonController.m in Sources */ = {isa = PBXBuildFile; fileRef = 639EA4572DBC197300E31716 /* STMoonController.m */; };
 		639EA4592DBC197300E31716 /* STMoonController.m in Sources */ = {isa = PBXBuildFile; fileRef = 639EA4572DBC197300E31716 /* STMoonController.m */; };
 		63A2077A2D8BE04A0019A763 /* STCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A207792D8BE04A0019A763 /* STCalendarView.m */; };
@@ -21,20 +29,24 @@
 		63A207AC2D8D15CA0019A763 /* moon.dae in Resources */ = {isa = PBXBuildFile; fileRef = 63A207852D8BE5AB0019A763 /* moon.dae */; };
 		63A207AD2D8D15CA0019A763 /* moon.scn in Resources */ = {isa = PBXBuildFile; fileRef = 63A207872D8BEA100019A763 /* moon.scn */; };
 		63A207AE2D8D15CA0019A763 /* MoonScene.scn in Resources */ = {isa = PBXBuildFile; fileRef = 63A2078B2D8BED810019A763 /* MoonScene.scn */; };
-		63A207B32D8D15DE0019A763 /* STCalendar.h in Sources */ = {isa = PBXBuildFile; fileRef = 63A2077E2D8BE0F10019A763 /* STCalendar.h */; };
 		63A207B42D8D15DE0019A763 /* STCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A2077F2D8BE0F10019A763 /* STCalendar.m */; };
-		63A207B52D8D15DE0019A763 /* STCalendarView.h in Sources */ = {isa = PBXBuildFile; fileRef = 63A207782D8BE04A0019A763 /* STCalendarView.h */; };
 		63A207B62D8D15DE0019A763 /* STCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A207792D8BE04A0019A763 /* STCalendarView.m */; };
 		63B1D12D2DC40D2700593445 /* todo in Resources */ = {isa = PBXBuildFile; fileRef = 63B1D12C2DC40D2400593445 /* todo */; };
 		63B1D12E2DC40D2700593445 /* todo in Resources */ = {isa = PBXBuildFile; fileRef = 63B1D12C2DC40D2400593445 /* todo */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		630C89832DCC6877002D4AC3 /* STAstronomyProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STAstronomyProvider.h; sourceTree = "<group>"; };
+		630C89842DCC6877002D4AC3 /* STAstronomyProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STAstronomyProvider.m; sourceTree = "<group>"; };
 		634BF7E22DB09C20007BD17F /* STState.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STState.m; sourceTree = "<group>"; };
 		634BF7E52DB09C30007BD17F /* STState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STState.h; sourceTree = "<group>"; };
 		634BF7E72DB1ED97007BD17F /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		634BF7E92DB9E811007BD17F /* NSDate+MyNow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSDate+MyNow.h"; sourceTree = "<group>"; };
 		634BF7EA2DB9E811007BD17F /* NSDate+MyNow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSDate+MyNow.m"; sourceTree = "<group>"; };
+		63552E3A2DCC5BDC00614BBB /* STDataProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STDataProvider.h; sourceTree = "<group>"; };
+		63552E3B2DCC5C1800614BBB /* STUSNODataProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STUSNODataProvider.h; sourceTree = "<group>"; };
+		63552E3C2DCC5C1800614BBB /* STUSNODataProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STUSNODataProvider.m; sourceTree = "<group>"; };
+		63552E3F2DCC5D6000614BBB /* STDataProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STDataProvider.m; sourceTree = "<group>"; };
 		639EA4562DBC197300E31716 /* STMoonController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STMoonController.h; sourceTree = "<group>"; };
 		639EA4572DBC197300E31716 /* STMoonController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STMoonController.m; sourceTree = "<group>"; };
 		639EA45B2DBC1B2900E31716 /* STDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STDefines.h; sourceTree = "<group>"; };
@@ -109,6 +121,12 @@
 			children = (
 				63B1D13F2DCB0C4000593445 /* astronomy.h */,
 				63B1D1402DCB0C4000593445 /* astronomy.c */,
+				630C89832DCC6877002D4AC3 /* STAstronomyProvider.h */,
+				630C89842DCC6877002D4AC3 /* STAstronomyProvider.m */,
+				63552E3B2DCC5C1800614BBB /* STUSNODataProvider.h */,
+				63552E3C2DCC5C1800614BBB /* STUSNODataProvider.m */,
+				63552E3A2DCC5BDC00614BBB /* STDataProvider.h */,
+				63552E3F2DCC5D6000614BBB /* STDataProvider.m */,
 				639EA45B2DBC1B2900E31716 /* STDefines.h */,
 				639EA4562DBC197300E31716 /* STMoonController.h */,
 				639EA4572DBC197300E31716 /* STMoonController.m */,
@@ -254,11 +272,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63552E3E2DCC5C1800614BBB /* STUSNODataProvider.m in Sources */,
 				634BF7E32DB09C20007BD17F /* STState.m in Sources */,
 				63A207802D8BE0F10019A763 /* STCalendar.m in Sources */,
+				63552E402DCC5D6000614BBB /* STDataProvider.m in Sources */,
+				630C89862DCC6877002D4AC3 /* STAstronomyProvider.m in Sources */,
 				634BF7EB2DB9E811007BD17F /* NSDate+MyNow.m in Sources */,
 				63A2077A2D8BE04A0019A763 /* STCalendarView.m in Sources */,
 				639EA4592DBC197300E31716 /* STMoonController.m in Sources */,
+				630C89892DCC6A6F002D4AC3 /* astronomy.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -266,13 +288,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63A207B32D8D15DE0019A763 /* STCalendar.h in Sources */,
 				639EA4582DBC197300E31716 /* STMoonController.m in Sources */,
+				63552E412DCC5D6000614BBB /* STDataProvider.m in Sources */,
 				63A207B42D8D15DE0019A763 /* STCalendar.m in Sources */,
 				634BF7EC2DB9E811007BD17F /* NSDate+MyNow.m in Sources */,
+				63552E3D2DCC5C1800614BBB /* STUSNODataProvider.m in Sources */,
+				630C89852DCC6877002D4AC3 /* STAstronomyProvider.m in Sources */,
 				634BF7E42DB09C20007BD17F /* STState.m in Sources */,
-				63A207B52D8D15DE0019A763 /* STCalendarView.h in Sources */,
 				63A207B62D8D15DE0019A763 /* STCalendarView.m in Sources */,
+				630C898A2DCC6A74002D4AC3 /* astronomy.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

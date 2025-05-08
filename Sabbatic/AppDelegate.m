@@ -34,14 +34,15 @@
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    // Insert code here to initialize your application
+    
+    [[STState state] setDataProvider:[[STDataProviderClass alloc] init]];
         
     SCNView *moonView = [[SCNView alloc] initWithFrame:CGRectInset([self.window.contentView frame], 10, 10) options:NULL];
     self.moonController = [[STMoonController alloc] initWithView:moonView];
     [self.window.contentView addSubview:moonView];
     
     self.calendarView = [[STCalendarView alloc] initWithFrame:CGRectInset([self.window.contentView frame], STCalendarViewInset, STCalendarViewInset)];
-    self.calendarView.effectiveNewMoonStart = [[STState state] lastNewMoonStart];
+    self.calendarView.effectiveNewMoonStart = [DP lastNewMoonStart];
     [self.window.contentView addSubview:self.calendarView];
     //self.calendarView.layer.opaque = 0.75;
     //self.calendarView.layer.backgroundColor = [NSColor clearColor].CGColor;
