@@ -299,11 +299,13 @@ static NSDate *sNSDateMyNowStart = nil;
     return compositeString;
 }
 
-+ (NSString *)hebrewStringMonthForMonth:(NSInteger)month
++ (NSString *)hebrewStringMonthForMonth:(NSInteger)month :(NSDate *)includeYearForDate
 {
+    NSString *base = nil;
     switch (month) {
         case 0:
-            return @"Abib";
+            base = @"Abib";
+            break;
         case 1:
         case 2:
         case 3:
@@ -316,12 +318,16 @@ static NSDate *sNSDateMyNowStart = nil;
         case 10:
         case 11:
         case 12:
-            return [NSString stringWithFormat:@"Month %ld",month + 1];
+            base = [NSString stringWithFormat:@"Month %ld",month + 1];
+            break;
         default:
-            return @"Unknown";
+            base = @"Unknown";
     }
     
-    return @"Unknown";
+    if ( includeYearForDate )
+        base = [NSString stringWithFormat:@"%@ (%@)",base,[includeYearForDate localYearString]];
+    
+    return base;
 }
 
 #define PentecostTemplate "Pentecost %d"

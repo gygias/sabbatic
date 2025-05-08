@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)localGregorianDayOfTheMonthFromDate:(NSDate *)date;
 + (NSString *)localGregorianPreviousAndCurrentDayFromDate:(NSDate *)date delimiter:(NSString *)delimiter;
 
-+ (NSString *)hebrewStringMonthForMonth:(NSInteger)month;
++ (NSString *)hebrewStringMonthForMonth:(NSInteger)month :(NSDate *)includeYearForDate;
 + (NSString *)moedStringForLunarDay:(NSInteger)day ofLunarMonth:(NSInteger)month;
 
 @end

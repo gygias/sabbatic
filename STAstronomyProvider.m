@@ -74,9 +74,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSDate *)conjunctionPriorToDate:(NSDate *)date
 {
-#warning fix this
-    NSDate *lunarMonthAgo = [date dateByAddingTimeInterval:-STSecondsPerLunarDay];
-    return [self conjunctionAfterDate:lunarMonthAgo];
+#warning fix this, note conjunctionAfterDate if passed a conjunction will return that conjunction,\
+            accounting for this in ViewController lastLast too, figure out how to set expectations
+    NSDate *lunarMonthAgo = [date dateByAddingTimeInterval:-( STSecondsPerLunarMonth + STSecondsPerGregorianDay )];
+    NSDate *aConj = [self conjunctionAfterDate:lunarMonthAgo];
+    NSDate *anotherConj = [self conjunctionAfterDate:[aConj dateByAddingTimeInterval:STSecondsPerGregorianDay]];
+    NSTimeInterval interval = [anotherConj timeIntervalSinceDate:aConj];
+    
+    if ( [date timeIntervalSinceDate:aConj] < 0 || interval < 0 ) {
+        NSLog(@"something is wrong");
+        abort();
+    }
+    
+    if ( [date timeIntervalSinceDate:anotherConj] >= 0 )
+        return anotherConj;
+    
+    return aConj;
 }
 
 - (NSDate *)conjunctionAfterDate:(NSDate *)date

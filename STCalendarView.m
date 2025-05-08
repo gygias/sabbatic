@@ -167,7 +167,7 @@ CGRect gMyInitRect;
 #endif
     
     NSInteger monthsSinceNewYear = [DP lunarMonthForDate:self.effectiveNewMoonStart];
-    NSString *hebrewMonthString = [STCalendar hebrewStringMonthForMonth:monthsSinceNewYear];
+    NSString *hebrewMonthString = [STCalendar hebrewStringMonthForMonth:monthsSinceNewYear :self.effectiveNewMoonStart];
     self.bigTextSize = [hebrewMonthString sizeWithAttributes:self.bigTextAttributes];
     self.textSize = [@"foo" sizeWithAttributes:self.textAttributes];
     self.smallTextSize = [@"foo" sizeWithAttributes:self.smallAttributes];

@@ -87,7 +87,7 @@
             
             NSDate *currentNewMoon = self.calendarView.effectiveNewMoonStart;
             NSDate *lastConj = [DP conjunctionPriorToDate:currentNewMoon];
-            NSDate *lastLastConj = [DP conjunctionPriorToDate:lastConj];
+            NSDate *lastLastConj = [DP conjunctionPriorToDate:[lastConj dateByAddingTimeInterval:-STSecondsPerGregorianDay]];
             NSDate *previousNewMoonStart = [STCalendar newMoonStartTimeForConjunction:lastLastConj :NULL];
             
             NSLog(@"swipe down, switching from %@ to %@",currentNewMoon,previousNewMoonStart);

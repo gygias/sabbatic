@@ -29,7 +29,7 @@
 #define STDataProviderClass STAstronomyProvider
 
 #define STSecondsPerGregorianDay 86400
-#define STSecondsPerLunarDay ( 29.53 * STSecondsPerGregorianDay )
+#define STSecondsPerLunarMonth ( 29.53 * STSecondsPerGregorianDay )
 #define STMinutesPerGregorianDay 1440
 #define STNotificationRequestDelay 5.0
 #define STSabbathNotificationDelay 5.0
