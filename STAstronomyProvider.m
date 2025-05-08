@@ -32,7 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDate *)dateWithAstroTime:(astro_time_t)astroTime
 {
     astro_utc_t astroUtc = Astronomy_UtcFromTime(astroTime);
-    return [[NSCalendar currentCalendar] dateWithEra:1 year:astroUtc.year month:astroUtc.month day:astroUtc.day hour:astroUtc.hour minute:astroUtc.minute second:astroUtc.second nanosecond:0];
+    NSDate *date = [[NSCalendar currentCalendar] dateWithEra:1 year:astroUtc.year month:astroUtc.month day:astroUtc.day hour:astroUtc.hour minute:astroUtc.minute second:astroUtc.second nanosecond:0];
+    return [date dateByAddingTimeInterval:[[NSTimeZone localTimeZone] secondsFromGMTForDate:date]];
 }
 
 @end
@@ -68,7 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     NSDate *aDate = [NSDate dateWithAstroTime:sunset.time];
-    aDate = [aDate dateByAddingTimeInterval:[[NSTimeZone localTimeZone] secondsFromGMTForDate:date]];
     return aDate;
 }
 
@@ -160,7 +160,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     int i = 0;
     do {
-        aDate = [self conjunctionAfterDate:[aDate dateByAddingTimeInterval:( i == 0 ) ? 0 : 60]];
+        aDate = [self conjunctionAfterDate:[aDate dateByAddingTimeInterval:( i == 0 ) ? 0 : STSecondsPerGregorianDay]];
         if ( [date timeIntervalSinceDate:aDate] < 0 )
             break;
         i++;
