@@ -87,29 +87,50 @@ CGRect gMyInitRect;
 
 - (void)preload
 {
+    if ( [DP isKindOfClass:[STUSNODataProvider class]] ) {
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
-    for ( int i = 0; i < 4; i++ ) {
+        for ( int i = 0; i < 4; i++ ) {
 #else
-    for ( int i = 1; i < 5; i++ ) {
+            for ( int i = 1; i < 5; i++ ) {
 #endif
-        for ( int j = 0; j < 7; j++ ) {
+                for ( int j = 0; j < 7; j++ ) {
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
-            NSInteger day = 7 * ( 3 - i ) + j + 1;
+                    NSInteger day = 7 * ( 3 - i ) + j + 1;
 #else
-            NSInteger day = 7 * ( i - 1 ) + j + 1;
+                    NSInteger day = 7 * ( i - 1 ) + j + 1;
 #endif
-            NSInteger effectiveDay = day;
-            NSDate *thisDate = [STCalendar date:self.effectiveNewMoonStart byAddingDays:effectiveDay hours:1 minutes:0 seconds:0];
-            [DP lastSunsetForDate:thisDate momentAfter:YES];
+                    NSInteger effectiveDay = day;
+                    NSDate *thisDate = [STCalendar date:self.effectiveNewMoonStart byAddingDays:effectiveDay hours:1 minutes:0 seconds:0];
+                    [DP lastSunsetForDate:thisDate momentAfter:YES];
+            }
         }
     }
 }
+
+
+#ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
+- (BOOL)acceptsFirstResponder {
+    return YES;
+}
+
+- (void)keyDown:(NSEvent *)event {
+    NSLog(@"keyDown: %@",event);
+    if ( event.type == NSEventTypeKeyDown ) {
+        if ( ! event.ARepeat ) {
+            if ( event.keyCode == 126 )
+                self.moveUpHandler();
+            else if ( event.keyCode == 125 )
+                self.moveDownHandler();
+        }
+    }
+}
+#endif
 
 - (void)drawRect:(STRect)dirtyRect {
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
     [super drawRect:dirtyRect];
     if ( ! CGRectEqualToRect(dirtyRect, gMyInitRect) ) {
-        dirtyRect = CGRectInset(dirtyRect, STCalendarViewInset, STCalendarViewInset);
+        dirtyRect = CGRectInset(dirtyRect, STCalendarViewInsetX, STCalendarViewInsetY);
     }
 #endif
     BOOL foundToday = NO;

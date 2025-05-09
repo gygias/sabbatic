@@ -133,7 +133,7 @@ static STState *sState = nil;
     UNNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:delay repeats:NO];
     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:myId content:content trigger:trigger];
     [center addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
-        NSLog(@"notification completed with result: %@",error);
+        NSLog(@"notification '%@ / %@' completed with result: %@",content.title,content.body,error);
     }];
     
     NSTimeInterval prefsInterval = [[NSDate date] timeIntervalSince1970];

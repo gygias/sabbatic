@@ -38,6 +38,7 @@
 #define STCalendarAnimationDuration .25
 
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
+#define STViewControllerClass NSViewController
 #define STRect NSRect
 #define STContext [NSGraphicsContext currentContext].CGContext
 #define STColorClass NSColor
@@ -48,11 +49,13 @@
 #define STSmallTextStackOffsetY 1
 #define STSmallTextOffsetY 0
 #define STCalendarLineWidth (2.)
-#define STCalendarViewInset 25
+#define STCalendarViewInsetX 10
+#define STCalendarViewInsetY 10
 #define STLunarDayOffsetX (-2)
 #define STLunarDayScalarX 4
 #define STLunarDayScalarY 6
 #else
+#define STViewControllerClass UIViewController
 #define STRect CGRect
 #define STContext UIGraphicsGetCurrentContext()
 #define STColorClass UIColor

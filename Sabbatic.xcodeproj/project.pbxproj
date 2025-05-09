@@ -31,6 +31,8 @@
 		63A207AE2D8D15CA0019A763 /* MoonScene.scn in Resources */ = {isa = PBXBuildFile; fileRef = 63A2078B2D8BED810019A763 /* MoonScene.scn */; };
 		63A207B42D8D15DE0019A763 /* STCalendar.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A2077F2D8BE0F10019A763 /* STCalendar.m */; };
 		63A207B62D8D15DE0019A763 /* STCalendarView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63A207792D8BE04A0019A763 /* STCalendarView.m */; };
+		63AAFCE42DCC9A0A00CDAE8B /* STViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63AAFCDE2DCC9A0A00CDAE8B /* STViewController.m */; };
+		63AAFCEA2DCDA01500CDAE8B /* STViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63AAFCDE2DCC9A0A00CDAE8B /* STViewController.m */; };
 		63B1D12D2DC40D2700593445 /* todo in Resources */ = {isa = PBXBuildFile; fileRef = 63B1D12C2DC40D2400593445 /* todo */; };
 		63B1D12E2DC40D2700593445 /* todo in Resources */ = {isa = PBXBuildFile; fileRef = 63B1D12C2DC40D2400593445 /* todo */; };
 /* End PBXBuildFile section */
@@ -59,6 +61,8 @@
 		63A207872D8BEA100019A763 /* moon.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = moon.scn; sourceTree = "<group>"; };
 		63A2078B2D8BED810019A763 /* MoonScene.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = MoonScene.scn; sourceTree = "<group>"; };
 		63A207912D8D13D40019A763 /* Sabbatic-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sabbatic-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		63AAFCDD2DCC9A0A00CDAE8B /* STViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STViewController.h; sourceTree = "<group>"; };
+		63AAFCDE2DCC9A0A00CDAE8B /* STViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STViewController.m; sourceTree = "<group>"; };
 		63B1D12C2DC40D2400593445 /* todo */ = {isa = PBXFileReference; lastKnownFileType = text; path = todo; sourceTree = "<group>"; };
 		63B1D13F2DCB0C4000593445 /* astronomy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = astronomy.h; sourceTree = "<group>"; };
 		63B1D1402DCB0C4000593445 /* astronomy.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = astronomy.c; sourceTree = "<group>"; };
@@ -142,6 +146,8 @@
 				63A207792D8BE04A0019A763 /* STCalendarView.m */,
 				634BF7E92DB9E811007BD17F /* NSDate+MyNow.h */,
 				634BF7EA2DB9E811007BD17F /* NSDate+MyNow.m */,
+				63AAFCDD2DCC9A0A00CDAE8B /* STViewController.h */,
+				63AAFCDE2DCC9A0A00CDAE8B /* STViewController.m */,
 				63A207662D8BDF360019A763 /* Sabbatic */,
 				63A207922D8D13D40019A763 /* Sabbatic-ios */,
 				634BF7E62DB1ED97007BD17F /* Frameworks */,
@@ -278,6 +284,7 @@
 				63552E402DCC5D6000614BBB /* STDataProvider.m in Sources */,
 				630C89862DCC6877002D4AC3 /* STAstronomyProvider.m in Sources */,
 				634BF7EB2DB9E811007BD17F /* NSDate+MyNow.m in Sources */,
+				63AAFCEA2DCDA01500CDAE8B /* STViewController.m in Sources */,
 				63A2077A2D8BE04A0019A763 /* STCalendarView.m in Sources */,
 				639EA4592DBC197300E31716 /* STMoonController.m in Sources */,
 				630C89892DCC6A6F002D4AC3 /* astronomy.c in Sources */,
@@ -295,6 +302,7 @@
 				63552E3D2DCC5C1800614BBB /* STUSNODataProvider.m in Sources */,
 				630C89852DCC6877002D4AC3 /* STAstronomyProvider.m in Sources */,
 				634BF7E42DB09C20007BD17F /* STState.m in Sources */,
+				63AAFCE42DCC9A0A00CDAE8B /* STViewController.m in Sources */,
 				63A207B62D8D15DE0019A763 /* STCalendarView.m in Sources */,
 				630C898A2DCC6A74002D4AC3 /* astronomy.c in Sources */,
 			);

@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface STCalendarView : STCalendarViewSuper
 
 @property (strong) NSDate *effectiveNewMoonStart;
+@property void (^moveUpHandler)(void);
+@property void (^moveDownHandler)(void);
 
 - (void)preload;
 

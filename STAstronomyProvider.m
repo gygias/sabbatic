@@ -95,15 +95,24 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSDate *)conjunctionAfterDate:(NSDate *)date
 {
     astro_moon_quarter_t mq = {0};
+#warning this too and in caller ViewController
     
-    for ( int i = 0; i < 4; i++ ) {
-        if ( i == 0 )
-            mq = Astronomy_SearchMoonQuarter([date astroTime]);
-        else
-            mq = Astronomy_NextMoonQuarter(mq);
-        
-        if ( mq.quarter == 0 ) {
-            return [NSDate dateWithAstroTime:mq.time];
+    NSDate *startDate = date;
+    
+    for ( int j = 0; j < 2; j++ ) {
+        for ( int i = 0; i < 4; i++ ) {
+            if ( i == 0 )
+                mq = Astronomy_SearchMoonQuarter([startDate astroTime]);
+            else
+                mq = Astronomy_NextMoonQuarter(mq);
+            
+            if ( mq.quarter == 0 ) {
+                NSDate *aDate = [NSDate dateWithAstroTime:mq.time];
+                if ( [date timeIntervalSinceDate:aDate] < 0 )
+                    return aDate;
+                else
+                    startDate = aDate;
+            }
         }
     }
     
