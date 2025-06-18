@@ -37,54 +37,6 @@ CGRect gMyInitRect;
 
 @implementation STCalendarView
 
-- (void)_initMyNowStuff
-{    
-//#define MyNow
-#define fast 0
-#ifdef MyNow
-#warning this becomes -66 seconds from nms notification. if you wait it out the transition is smooth. \
-        if you don't and try to add a minute here, there is no today until the notification fires, \
-        there is a minute of no-mans-land would benefit from longer or "real life" draw intervals \
-        (and, it draws intercalary, as if based on this month) \
-        put it on fast mode and 'two todays' will walk across the calendar :-)
-    //NSDate *myNow = [STCalendar date:[DP lastNewMoonStart] byAddingDays:0 hours:0 minutes:0 seconds:-5];
-    
-    //NSDate *myNow = [NSDate myNow];
-    //NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    //NSDate *myNow = [gregorian dateWithEra:1 year:2025 month:4 day:27 hour:19 minute:49 second:0 nanosecond:0];
-    
-    // yesterday 5 seconds to midnight
-    //NSDate *myNow =   [STCalendar date:[DP normalizeDate:[STCalendar date:[NSDate date] byAddingDays:-1 hours:0 minutes:0 seconds:0]]
-    //                      byAddingDays:0 hours:23 minutes:59 seconds:55];
-    
-    // today at x x x
-    //NSDate *myNow =   [[NSDate date] normalizedDatePlusHour:19 minute:57 second:55];
-    
-    // 5 secs before last sunset
-    //NSDate *myNow = [DP lastSunsetForDate:[NSDate myNow] momentAfter:YES];
-    //myNow = [STCalendar date:myNow byAddingDays:0 hours:0 minutes:0 seconds:-5];
-    
-    // plain old now
-    //NSDate *myNow = [NSDate myNow];
-    
-    // 15 days ago
-    //NSDate *myNow = [STCalendar date:[NSDate date] byAddingDays:-15 hours:0 minutes:0 seconds:0];
-    
-    // 30 days from now
-    //NSDate *myNow = [STCalendar date:[NSDate date] byAddingDays:30 hours:0 minutes:0 seconds:0];
-    
-    // 1 hour ago
-    //NSDate *myNow = [STCalendar date:[NSDate date] byAddingDays:0 hours:-1 minutes:0 seconds:0];
-    
-    // 12 hours from now
-    NSDate *myNow = [STCalendar date:[NSDate date] byAddingDays:0 hours:12 minutes:0 seconds:0];
-    
-    [NSDate setMyNow:myNow realSecondsPerDay:fast];
-#else
-    [NSDate enqueueRealSunsetNotifications];
-#endif
-}
-
 - (void)preload
 {
     if ( [DP isKindOfClass:[STUSNODataProvider class]] ) {
@@ -127,12 +79,7 @@ CGRect gMyInitRect;
 #endif
 
 - (void)drawRect:(STRect)dirtyRect {
-#ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
-    [super drawRect:dirtyRect];
-    if ( ! CGRectEqualToRect(dirtyRect, gMyInitRect) ) {
-        dirtyRect = CGRectInset(dirtyRect, STCalendarViewInsetX, STCalendarViewInsetY);
-    }
-#endif
+    
     BOOL foundToday = NO;
     NSDate *lastNewMoonStart = self.effectiveNewMoonStart;
     // may be two literal conjunctions ago, when drawing between conjunction and new moon start
@@ -236,7 +183,7 @@ CGRect gMyInitRect;
     oneX--;
 #endif
     
-    BOOL isLunarToday = [STCalendar isDateInLunarToday:self.effectiveNewMoonStart];
+    BOOL isLunarToday = [STCalendar isDateInLunarToday:[self.effectiveNewMoonStart dateByAddingTimeInterval:60]];
     NSDate *someTimeLater = [STCalendar date:self.effectiveNewMoonStart byAddingDays:0 hours:5 minutes:0 seconds:0];
     [self drawDayAtPoint:CGPointMake(oneX,ldY) lunarDay:1 lunarMonth:monthsSinceNewYear date:someTimeLater asToday:isLunarToday foundToday:&foundToday];
     
@@ -258,25 +205,6 @@ CGRect gMyInitRect;
         //abort();
     }
 }
-
-#ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
-- (id)initWithFrame:(NSRect)frameRect
-{
-    if ( self = [super initWithFrame:frameRect] ) {
-        gMyInitRect = frameRect;
-        [self _initMyNowStuff];
-    }
-    return self;
-}
-#else
-- (id)initWithFrame:(CGRect)frameRect
-{
-    if ( self = [super initWithFrame:frameRect] ) {
-        [self _initMyNowStuff];
-    }
-    return self;
-}
-#endif
     
 - (NSInteger)_bigFontSizeForViewWidth:(CGFloat)width
 {

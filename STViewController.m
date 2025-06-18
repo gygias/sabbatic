@@ -14,6 +14,7 @@
 #import "STDefines.h"
 #import "STState.h"
 #import "STCalendar.h"
+#import "NSDate+MyNow.h"
 
 @interface STViewController ()
 @property (strong) STMoonController *moonController;
@@ -25,6 +26,51 @@
 @end
 
 @implementation STViewController
+
++ (void)initialize
+{    
+    [[STState state] setDataProvider:[[STDataProviderClass alloc] init]];
+    
+//#define MyNow
+#define fast 0
+#ifdef MyNow
+    //NSDate *myNow = [STCalendar date:[DP lastNewMoonStart] byAddingDays:0 hours:0 minutes:0 seconds:-5];
+    
+    //NSDate *myNow = [NSDate myNow];
+    NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDate *myNow = [gregorian dateWithEra:1 year:2025 month:5 day:27 hour:20 minute:16 second:0 nanosecond:0];
+    
+    // yesterday 5 seconds to midnight
+    //NSDate *myNow =   [STCalendar date:[DP normalizeDate:[STCalendar date:[NSDate date] byAddingDays:-1 hours:0 minutes:0 seconds:0]]
+    //                      byAddingDays:0 hours:23 minutes:59 seconds:55];
+    
+    // today at x x x
+    //NSDate *myNow =   [[NSDate date] normalizedDatePlusHour:19 minute:57 second:55];
+    
+    // 5 secs before last sunset
+    //NSDate *myNow = [DP lastSunsetForDate:[NSDate myNow] momentAfter:YES];
+    //myNow = [STCalendar date:myNow byAddingDays:0 hours:0 minutes:0 seconds:-5];
+    
+    // plain old now
+    //NSDate *myNow = [NSDate myNow];
+    
+    // 15 days ago
+    //NSDate *myNow = [STCalendar date:[NSDate date] byAddingDays:-15 hours:0 minutes:0 seconds:0];
+    
+    // 30 days from now
+    //NSDate *myNow = [STCalendar date:[NSDate date] byAddingDays:30 hours:0 minutes:0 seconds:0];
+    
+    // 1 hour ago
+    //NSDate *myNow = [STCalendar date:[NSDate date] byAddingDays:0 hours:-1 minutes:0 seconds:0];
+    
+    // 12 hours from now
+    //NSDate *myNow = [STCalendar date:[NSDate date] byAddingDays:0 hours:12 minutes:0 seconds:0];
+    
+    [NSDate setMyNow:myNow realSecondsPerDay:fast];
+#else
+    [NSDate enqueueRealSunsetNotifications];
+#endif
+}
 
 - (void)_updatePhase
 {
@@ -134,7 +180,7 @@
 
 - (void)_addCalendarViewWithDate:(NSDate *)date
 {
-    self.calendarView = [[STCalendarView alloc] initWithFrame:CGRectInset([self.view frame], STCalendarViewInsetX, STCalendarViewInsetY)];
+    self.calendarView = [[STCalendarView alloc] initWithFrame:CGRectInset([self.view frame], 0, 0)];
     self.calendarView.effectiveNewMoonStart = date;
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
     self.calendarView.backgroundColor = [STColorClass clearColor];
@@ -152,9 +198,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    [[STState state] setDataProvider:[[STDataProviderClass alloc] init]];
-    
+        
     SCNView *moonView = [[SCNView alloc] initWithFrame:[self.view frame] options:NULL];
     self.moonController = [[STMoonController alloc] initWithView:moonView];
     [self.view addSubview:moonView];
@@ -188,8 +232,8 @@
         }];
     }];
     
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
-        [self.calendarView setNeedsDisplayInRect:self.calendarView.frame];
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {    
+        [self _replaceCurrentCalendarWithDate:[NSDate myNow] :NO];
         [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
             NSLog(@"animated to current phase on day change");
         }];
@@ -198,7 +242,7 @@
     }];
     [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue]  usingBlock:^(NSNotification * _Nonnull notification) {
         NSLog(@"NSSystemClockDidChangeNotification!");
-        [self.calendarView setNeedsDisplayInRect:self.calendarView.frame];
+        [self _replaceCurrentCalendarWithDate:[NSDate myNow] :NO];
         [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
             NSLog(@"animated to current phase on clock change");
         }];

@@ -1,2 +1,7 @@
 test transition to new lastNewYear case after conjunction, before sunset, like lastNewMoonDay/Start fallback properly
-make all 'momentsAfter' truly momentary
+- month 6 draws twice,
+ - and the ‘second one’ has sept 21 for new moon day, while the moon is still waning, should be 22
+- month 13 2025 draws new moon day as 28 feb, day two correctly as 2 march
+ - similar for month 12
+ 
+ in th latter half of the month, the moon animates backwards (de-waxes)

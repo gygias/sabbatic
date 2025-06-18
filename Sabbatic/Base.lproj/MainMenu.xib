@@ -693,6 +693,12 @@
             <view key="contentView" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="960" height="720"/>
                 <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view id="0x7-4M-z7O">
+                        <rect key="frame" x="0.0" y="0.0" width="940" height="700"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </view>
+                </subviews>
             </view>
             <connections>
                 <outlet property="delegate" destination="Voe-Tx-rLC" id="top-28-M4D"/>

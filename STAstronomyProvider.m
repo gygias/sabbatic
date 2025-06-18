@@ -74,8 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSDate *)conjunctionPriorToDate:(NSDate *)date
 {
-#warning fix this, note conjunctionAfterDate if passed a conjunction will return that conjunction,\
-            accounting for this in ViewController lastLast too, figure out how to set expectations
     NSDate *lunarMonthAgo = [date dateByAddingTimeInterval:-( STSecondsPerLunarMonth + STSecondsPerGregorianDay )];
     NSDate *aConj = [self conjunctionAfterDate:lunarMonthAgo];
     NSDate *anotherConj = [self conjunctionAfterDate:[aConj dateByAddingTimeInterval:STSecondsPerGregorianDay]];
@@ -86,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
         abort();
     }
     
-    if ( [date timeIntervalSinceDate:anotherConj] >= 0 )
+    if ( [date timeIntervalSinceDate:anotherConj] > 0 )
         return anotherConj;
     
     return aConj;
@@ -95,7 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSDate *)conjunctionAfterDate:(NSDate *)date
 {
     astro_moon_quarter_t mq = {0};
-#warning this too and in caller ViewController
     
     NSDate *startDate = date;
     

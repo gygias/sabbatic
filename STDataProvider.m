@@ -217,8 +217,10 @@ NS_ASSUME_NONNULL_BEGIN
     NSDate *now = [NSDate myNow];
     NSDate *last = [self lastConjunction];
     NSDate *next = [self nextConjunction];
+    
     if ( [next timeIntervalSinceDate:now] > STSecondsPerLunarMonth )
         last = [self conjunctionPriorToDate:last];
+    
     NSDate *day = [STCalendar newMoonDayForConjunction:last :NULL];
     NSDate *sunsetPreviousDay = [self lastSunsetForDate:day momentAfter:YES];
     
