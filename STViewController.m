@@ -180,7 +180,7 @@
 
 - (void)_addCalendarViewWithDate:(NSDate *)date
 {
-    self.calendarView = [[STCalendarView alloc] initWithFrame:CGRectInset([self.view frame], 0, 0)];
+    self.calendarView = [[STCalendarView alloc] initWithFrame:CGRectInset([self.view frame], STCalendarViewInsetX, STCalendarViewInsetY)];
     self.calendarView.effectiveNewMoonStart = date;
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
     self.calendarView.backgroundColor = [STColorClass clearColor];
@@ -232,7 +232,7 @@
         }];
     }];
     
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {    
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
         [self _replaceCurrentCalendarWithDate:[NSDate myNow] :NO];
         [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
             NSLog(@"animated to current phase on day change");
