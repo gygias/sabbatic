@@ -355,7 +355,7 @@ static NSDate *sNSDateMyNowStart = nil;
         if ( day == 7 )
             return [NSString stringWithFormat:@PentecostTemplate,7];
         else if ( day == 8 )
-            return [NSString stringWithFormat:@"50d to Pentecost"];
+            return [NSString stringWithFormat:@"50d to P'cost"];
     } else if ( month == 4 ) {
         if ( day == 0 )
             return @"Pentecost";

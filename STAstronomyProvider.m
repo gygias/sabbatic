@@ -108,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
                 if ( [date timeIntervalSinceDate:aDate] < 0 )
                     return aDate;
                 else
-                    startDate = aDate;
+                    startDate = [aDate dateByAddingTimeInterval:STSecondsPerGregorianDay];
             }
         }
     }
