@@ -50,6 +50,16 @@ NS_ASSUME_NONNULL_BEGIN
         abort();
     }
     
+    if ( waning ) {
+        NSDate *last = [self lastConjunction];
+        NSDate *next = [self nextConjunction];
+        NSDate *mid = [last dateByAddingTimeInterval:( [next timeIntervalSince1970] - [last timeIntervalSince1970] ) / 2];
+        if ( [date timeIntervalSinceDate:mid] >= 0 )
+            *waning = YES;
+        else
+            *waning = NO;
+    }
+    
     return illum.phase_fraction;
 }
 

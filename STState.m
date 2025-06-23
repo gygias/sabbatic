@@ -123,12 +123,12 @@ static STState *sState = nil;
             if ( fraction >= .5 )
                 wholeUntilSabbath++;
             formatValue = wholeUntilSabbath;
-            formatUnit = daysUntilSabbath > 1 ? @"days" : @"day";
+            formatUnit = wholeUntilSabbath > 1 ? @"days" : @"day";
         }
     }
     
     content.title = [NSString stringWithFormat:@"Sabbath in %d %@!",formatValue,formatUnit];
-    content.body = [NSString stringWithFormat:@"Starts %@.",[nextSabbath notificationPresentationString]];
+    content.body = [NSString stringWithFormat:@"Begins %@.",[nextSabbath notificationPresentationString]];
     if ( ! delay ) delay = 0.01;
     UNNotificationTrigger *trigger = [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:delay repeats:NO];
     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:myId content:content trigger:trigger];
