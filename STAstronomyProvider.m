@@ -188,11 +188,15 @@ NS_ASSUME_NONNULL_BEGIN
         // see motnc 2026 reckoning, spring equinox falls 2 days after conjunction
         // we're using their understanding that the closest new moon to equinox wins new year
         NSDate *nextEquinox = [self _nextSpringEquinoxForDate:date];
-        NSDate *nextEquinoxPriorConjunction = [self conjunctionPriorToDate:nextEquinox];
-        NSDate *nextPriorNewStart = [STCalendar newMoonStartTimeForConjunction:nextEquinoxPriorConjunction];
-        if ( [date timeIntervalSinceDate:nextEquinoxPriorConjunction] >= 0 ) {
-            NSLog(@"last new year for %@, %@ -> %@ -> %@",date,nextEquinox,nextEquinoxPriorConjunction,nextPriorNewStart);
-            return nextPriorNewStart;
+        NSDate *nextPriorConjunction = [self conjunctionPriorToDate:nextEquinox];
+        NSDate *nextPriorNewStart = [STCalendar newMoonStartTimeForConjunction:nextPriorConjunction];
+        if ( [date timeIntervalSinceDate:nextPriorNewStart] >= 0 ) {
+            NSDate *nextNextPriorConjunction = [self conjunctionAfterDate:nextEquinox];
+            NSDate *nextNextPriorNewStart = [STCalendar newMoonStartTimeForConjunction:nextNextPriorConjunction];
+            if ( [nextEquinox timeIntervalSinceDate:nextPriorNewStart] < [nextNextPriorNewStart timeIntervalSinceDate:nextEquinox] ) {
+                NSLog(@"last new year for %@, (%@) %@ -> %@ -> %@",date,lastEquinox,nextEquinox,nextPriorConjunction,nextPriorNewStart);
+                return nextPriorNewStart;
+            }
         }
         
         NSDate *aPriorConjunction = [self conjunctionPriorToDate:lastEquinox];
