@@ -141,15 +141,50 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
     
-    NSLog(@"couldn't find last new year for %@!",date);
+    NSLog(@"couldn't find spring equinox for %@!",date);
+    abort();
+    return nil;
+}
+
+- (NSDate *)_nextSpringEquinoxForDate:(NSDate *)date
+{
+    int searchYear = [[date localYearString] intValue];
+    
+    for ( int i = 0; i < 2; i++ ) {
+        astro_seasons_t seasons = Astronomy_Seasons(searchYear + i);
+        
+        if (seasons.status != ASTRO_SUCCESS) {
+            NSLog(@"ERROR: Astronomy_Seasons() returned %d\n", seasons.status);
+            abort();
+        }
+        
+        NSDate *equinox = [NSDate dateWithAstroTime:seasons.mar_equinox];
+        if ( [date timeIntervalSinceDate:equinox] < 0 ) {
+            return equinox;
+        }
+    }
+    
+    NSLog(@"couldn't find spring equinox for %@!",date);
     abort();
     return nil;
 }
 
 - (NSDate *)lastNewYearForDate:(NSDate *)date
 {
+    NSDate *origDate = date;
     for ( int i = 0 ; i > -2; i-- ) {
         NSDate *lastEquinox = [self _lastSpringEquinoxForDate:date];
+        
+        // see motnc 2026 reckoning, spring equinox falls 2 days after conjunction
+        // we're using their understanding that the closest new moon to equinox wins new year
+        NSDate *nextEquinox = [self _nextSpringEquinoxForDate:date];
+        NSDate *nextEquinoxPriorConjunction = [self conjunctionPriorToDate:nextEquinox];
+        NSDate *nextPriorNewStart = [STCalendar newMoonStartTimeForConjunction:nextEquinoxPriorConjunction];
+        if ( [date timeIntervalSinceDate:nextEquinoxPriorConjunction] >= 0 ) {
+            NSLog(@"last new year for %@, %@ -> %@ -> %@",date,nextEquinox,nextEquinoxPriorConjunction,nextPriorNewStart);
+            return nextPriorNewStart;
+        }
+        
         NSDate *aPriorConjunction = [self conjunctionPriorToDate:lastEquinox];
         NSDate *aNextConjunction = [self conjunctionAfterDate:lastEquinox];
         NSTimeInterval priorToEquinox = [lastEquinox timeIntervalSinceDate:aPriorConjunction];
@@ -160,14 +195,16 @@ NS_ASSUME_NONNULL_BEGIN
         }
         
         NSDate *aClosestConjunction = priorToEquinox > equinoxToNext ? aNextConjunction : aPriorConjunction;
-        NSDate *aNewYear = [STCalendar newMoonStartTimeForConjunction:aClosestConjunction :NULL];
-        if ( [date timeIntervalSinceDate:aNewYear] >= 0 )
+        NSDate *aNewYear = [STCalendar newMoonStartTimeForConjunction:aClosestConjunction];
+        if ( [date timeIntervalSinceDate:aNewYear] >= 0 ) {
+            NSLog(@"last new year for %@\n\t%@\n\tlastEquinox %@\n\tpriorC %@\n\tnextC %@",origDate,aNewYear,lastEquinox,aPriorConjunction,aNextConjunction);
             return aNewYear;
+        }
         
         date = [date dateByAddingTimeInterval:i];
     }
     
-    NSLog(@"couldn't find last new year for %@!",date);
+    NSLog(@"couldn't find last new year for %@!",origDate);
     abort();
     return nil;
 }

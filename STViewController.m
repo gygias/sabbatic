@@ -162,9 +162,9 @@
     NSDate *currentNewMoon = self.calendarView.effectiveNewMoonStart;
     NSDate *lastConj = [DP conjunctionPriorToDate:currentNewMoon];
     NSDate *lastLastConj = [DP conjunctionPriorToDate:[lastConj dateByAddingTimeInterval:-( STSecondsPerGregorianDay * 2 )]];
-    NSDate *previousNewMoonStart = [STCalendar newMoonStartTimeForConjunction:lastLastConj :NULL];
+    NSDate *previousNewMoonStart = [STCalendar newMoonStartTimeForConjunction:lastLastConj];
     
-    NSLog(@"swipe down, switching from %@ to %@",currentNewMoon,previousNewMoonStart);
+    NSLog(@"swipe down, switching from %@ to %@ (%@, %@)",currentNewMoon,previousNewMoonStart,lastConj,lastLastConj);
     [self _replaceCurrentCalendarWithDate:previousNewMoonStart :NO];
 }
 
@@ -172,16 +172,16 @@
 {
     NSDate *currentNewMoon = self.calendarView.effectiveNewMoonStart;
     NSDate *nextConj = [DP conjunctionAfterDate:[currentNewMoon dateByAddingTimeInterval:STSecondsPerGregorianDay * 2]];
-    NSDate *nextNewMoonStart = [STCalendar newMoonStartTimeForConjunction:nextConj :NULL];
+    NSDate *nextNewMoonStart = [STCalendar newMoonStartTimeForConjunction:nextConj];
     
-    NSLog(@"swipe up, switching from %@ to %@",currentNewMoon,nextNewMoonStart);
+    NSLog(@"swipe up, switching from %@ to %@ (%@)",currentNewMoon,nextNewMoonStart,nextConj);
     [self _replaceCurrentCalendarWithDate:nextNewMoonStart :YES];
 }
 
 - (void)_addCalendarViewWithDate:(NSDate *)date
 {
     self.calendarView = [[STCalendarView alloc] initWithFrame:CGRectInset([self.view frame], STCalendarViewInsetX, STCalendarViewInsetY)];
-    self.calendarView.effectiveNewMoonStart = date;
+    self.calendarView.effectiveNewMoonStart = [STCalendar lastNewMoonForDate:date];
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
     self.calendarView.backgroundColor = [STColorClass clearColor];
 #endif
@@ -250,7 +250,20 @@
         [[STState state] sendSabbathNotificationWithDelay:0];
     }];
     
+//#define PeriodicRedraw
+#ifdef PeriodicRedraw
+    [self _periodicRedraw];
+#endif
+    
     [[STState state] requestNotificationApprovalWithDelay:STNotificationRequestDelay];
+}
+
+- (void)_periodicRedraw
+{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(STPeriodicRedrawSeconds * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self _replaceCurrentCalendarWithDate:[NSDate myNow] :NO];
+        [self _periodicRedraw];
+    });
 }
 
 @end

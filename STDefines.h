@@ -36,6 +36,7 @@
 #define STMomentAfterInterval 0.000001
 #define STMoonRedrawInterval ( 10 * 60 )
 #define STCalendarAnimationDuration .25
+#define STPeriodicRedrawSeconds 1
 
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
 #define STViewControllerClass NSViewController

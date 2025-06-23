@@ -129,8 +129,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSDate *origDate = date;
     NSDate *sunsetDate = nil;
-    date = [STCalendar date:date byAddingDays:1 hours:0 minutes:0 seconds:0];
-    while ( ( sunsetDate = [self _fetchSunsetTimeOnDate:date] ) ) {
+    date = [STCalendar date:date byAddingDays:1 hours:0 minutes:10 seconds:0];
+    for ( int i = 0; i < 3; i++ ) {
+        sunsetDate = [self _fetchSunsetTimeOnDate:date];
         if ( [origDate timeIntervalSinceDate:sunsetDate] >= 0 ) {
             if ( momentAfter )
                 sunsetDate = [sunsetDate dateByAddingTimeInterval:STMomentAfterInterval];
@@ -139,6 +140,8 @@ NS_ASSUME_NONNULL_BEGIN
         date = [STCalendar date:date byAddingDays:-1 hours:0 minutes:0 seconds:0];
     }
     
+    NSLog(@"%s %@!",__PRETTY_FUNCTION__,date);
+    abort();
     return nil;
 }
 
@@ -162,14 +165,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSDate *)lastNewMoonDay
 {
     NSDate *last = [self lastConjunction];
-    NSDate *day = [[STCalendar newMoonDayForConjunction:last :NULL] normalizedDate];
+    NSDate *day = [[STCalendar newMoonDayForConjunction:last] normalizedDate];
     return day;
 }
 
 - (NSDate *)nextNewMoonDay
 {
     NSDate *next = [self nextConjunction];
-    return [[STCalendar newMoonDayForConjunction:next :NULL] normalizedDate];
+    return [[STCalendar newMoonDayForConjunction:next] normalizedDate];
 }
 
 #warning presumably this doesn't either \
@@ -221,13 +224,13 @@ NS_ASSUME_NONNULL_BEGIN
     if ( [next timeIntervalSinceDate:now] > STSecondsPerLunarMonth )
         last = [self conjunctionPriorToDate:last];
     
-    NSDate *day = [STCalendar newMoonDayForConjunction:last :NULL];
+    NSDate *day = [STCalendar newMoonDayForConjunction:last];
     NSDate *sunsetPreviousDay = [self lastSunsetForDate:day momentAfter:YES];
     
     // called after conjunction but before new moon start
     if ( [now timeIntervalSinceDate:sunsetPreviousDay] < 0 ) {
         NSDate *lastLast = [self conjunctionPriorToDate:last];
-        NSDate *lastLastDay = [STCalendar newMoonDayForConjunction:lastLast :NULL];
+        NSDate *lastLastDay = [STCalendar newMoonDayForConjunction:lastLast];
         sunsetPreviousDay = [self lastSunsetForDate:lastLastDay momentAfter:YES];
     }
     
@@ -237,7 +240,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSDate *)nextNewMoonStart
 {
     NSDate *next = [self nextConjunction];
-    NSDate *day = [STCalendar newMoonDayForConjunction:next :NULL];
+    NSDate *day = [STCalendar newMoonDayForConjunction:next];
     NSLog(@"next conjunction for determining nextNewMoonStart: %@, gregorian midnight: %@",next,day);
     NSDate *start = [STCalendar date:day byAddingDays:-1 hours:0 minutes:0 seconds:0];
     NSDate *sunsetPreviousDay = [self _fetchSunsetTimeOnDate:start];

@@ -89,9 +89,10 @@ CGRect gMyInitRect;
     //NSTimeInterval timeUntilNextConjunction = [aConjunction timeIntervalSinceDate:[NSDate myNow]];
     //if ( timeUntilNextConjunction > STSecondsPerLunarDay )
     //    aConjunction = [DP lastConjunction];
-    BOOL intercalary = NO;
-    __unused NSDate *nextNewMoonStart = [STCalendar newMoonDayForConjunction:nextConjunction :&intercalary];
-    NSLog(@"drawing %@month at myNow %@ with\n\tlastNewMoonStart %@\n\teffectiveLastConjunction %@\n\tnextNewMoonStart %@",intercalary?@"intercalary ":@"",[NSDate myNow],lastNewMoonStart,effectiveLastConjunction,nextNewMoonStart);
+    NSDate *nextNewMoonStart = [STCalendar newMoonDayForConjunction:nextConjunction];
+    NSUInteger daysSinceLast = [nextNewMoonStart daysSinceDate:lastNewMoonStart];
+    BOOL intercalary = ( daysSinceLast == 31 );
+    NSLog(@"drawing %@month at myNow %@ with\n\tlastNewMoonStart %@\n\teffectiveLastConjunction %@\n\tnextNewMoonStart %@ (%lu)",intercalary?@"intercalary ":@"",[NSDate myNow],lastNewMoonStart,effectiveLastConjunction,nextNewMoonStart,daysSinceLast);
     
     CGContextRef context = STContext;
     
@@ -184,7 +185,7 @@ CGRect gMyInitRect;
 #endif
     
     BOOL isLunarToday = [STCalendar isDateInLunarToday:[self.effectiveNewMoonStart dateByAddingTimeInterval:60]];
-    NSDate *someTimeLater = [STCalendar date:self.effectiveNewMoonStart byAddingDays:0 hours:5 minutes:0 seconds:0];
+    NSDate *someTimeLater = [STCalendar date:self.effectiveNewMoonStart byAddingDays:0 hours:12 minutes:0 seconds:0];
     [self drawDayAtPoint:CGPointMake(oneX,ldY) lunarDay:1 lunarMonth:monthsSinceNewYear date:someTimeLater asToday:isLunarToday foundToday:&foundToday];
     
     if ( intercalary ) {

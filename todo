@@ -4,4 +4,6 @@ test transition to new lastNewYear case after conjunction, before sunset, like l
 - month 13 2025 draws new moon day as 28 feb, day two correctly as 2 march
  - similar for month 12
  
- in th latter half of the month, the moon animates backwards (de-waxes)
+ in the latter half of the month, the moon animates backwards (de-waxes)
+
+month 5, 7 should be intercalary, a day is missing

@@ -173,6 +173,23 @@ static NSDate *sNSDateMyNowStart = nil;
     return normalizedDate;
 }
 
+- (NSUInteger)daysSinceDate:(NSDate *)date
+{
+    NSDate *param, *SELF;
+    
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+
+        [calendar rangeOfUnit:NSCalendarUnitDay startDate:&param
+            interval:NULL forDate:date];
+        [calendar rangeOfUnit:NSCalendarUnitDay startDate:&SELF
+            interval:NULL forDate:self];
+
+        NSDateComponents *difference = [calendar components:NSCalendarUnitDay
+            fromDate:param toDate:SELF options:0];
+
+        return [difference day];
+}
+
 @end
 
 @implementation STCalendar
@@ -226,7 +243,7 @@ static NSDate *sNSDateMyNowStart = nil;
             && ( [date timeIntervalSinceDate:midnightAfterLastSunset] < 0 );
 }
 
-+ (NSDate *)newMoonDayForConjunction:(NSDate *)date :(BOOL *)intercalary
++ (NSDate *)newMoonDayForConjunction:(NSDate *)date
 {
     // motnc 2025-6 calendar suggests matthew puts new moon day off a day
     // if the conjunction happens around 4pm or later (3:54pm the latest conjunction with
@@ -242,23 +259,23 @@ static NSDate *sNSDateMyNowStart = nil;
     unsigned int flags = NSCalendarUnitHour;
     NSInteger days = 1;
     NSDateComponents *comps = [theCalendar components:flags fromDate:date];
-    if ( comps.hour >= 16 ) {
+    if ( comps.hour >= 16 )
         days = 2;
-        if ( intercalary )
-            *intercalary = YES;
-    } else {
-        if ( intercalary )
-            *intercalary = NO;
-    }
-
+    
     return [[self date:date byAddingDays:days hours:0 minutes:0 seconds:0] normalizedDate];
 }
 
-+ (NSDate *)newMoonStartTimeForConjunction:(NSDate *)date :(BOOL *)intercalary
++ (NSDate *)newMoonStartTimeForConjunction:(NSDate *)date
 {
-    NSDate *newMoonDay = [self newMoonDayForConjunction:date :intercalary];
+    NSDate *newMoonDay = [self newMoonDayForConjunction:date];
     //NSDate *previousDay = [STCalendar date:newMoonDay byAddingDays:-1 hours:0 minutes:0 seconds:0];
     return [DP lastSunsetForDate:newMoonDay momentAfter:YES];
+}
+
++ (NSDate *)lastNewMoonForDate:(NSDate *)date
+{
+    NSDate *lastConjunction = [DP conjunctionPriorToDate:date];
+    return [STCalendar newMoonStartTimeForConjunction:lastConjunction];
 }
 
 + (NSDate *)date:(NSDate *)date byAddingDays:(NSInteger)days hours:(NSInteger)hours minutes:(NSInteger)minutes seconds:(NSInteger)seconds

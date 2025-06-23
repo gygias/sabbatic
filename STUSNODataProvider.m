@@ -294,7 +294,7 @@
             
             // find the lunar day delineation based on this conjunction time
             NSDate *aThen = [self _dateFromUSNODictionary:obj :&aThenString];
-            NSDate *day = [STCalendar newMoonDayForConjunction:aThen :NULL];
+            NSDate *day = [STCalendar newMoonDayForConjunction:aThen];
             NSDate *sunset = [DP lastSunsetForDate:day momentAfter:YES];
             if ( ! found ) {
                 if ( [lastNewYear compare:sunset] == NSOrderedAscending ) {
