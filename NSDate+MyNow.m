@@ -179,15 +179,15 @@ static NSDate *sNSDateMyNowStart = nil;
     
     NSCalendar *calendar = [NSCalendar currentCalendar];
 
-        [calendar rangeOfUnit:NSCalendarUnitDay startDate:&param
-            interval:NULL forDate:date];
-        [calendar rangeOfUnit:NSCalendarUnitDay startDate:&SELF
-            interval:NULL forDate:self];
+    [calendar rangeOfUnit:NSCalendarUnitDay startDate:&param
+        interval:NULL forDate:date];
+    [calendar rangeOfUnit:NSCalendarUnitDay startDate:&SELF
+        interval:NULL forDate:self];
 
-        NSDateComponents *difference = [calendar components:NSCalendarUnitDay
-            fromDate:param toDate:SELF options:0];
+    NSDateComponents *difference = [calendar components:NSCalendarUnitDay
+        fromDate:param toDate:SELF options:0];
 
-        return [difference day];
+    return [difference day];
 }
 
 @end
