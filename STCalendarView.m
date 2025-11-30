@@ -28,6 +28,7 @@ CGRect gMyInitRect;
 @property (strong) NSDictionary *redAttributes;
 @property (strong) NSDictionary *smallAttributes;
 @property (strong) NSDictionary *smallerAttributes;
+@property (strong) NSDictionary *smallerRedAttributes;
 @property CGSize bigTextSize;
 @property CGSize textSize;
 @property CGSize smallTextSize;
@@ -58,7 +59,6 @@ CGRect gMyInitRect;
         }
     }
 }
-
 
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
 - (BOOL)acceptsFirstResponder {
@@ -92,7 +92,7 @@ CGRect gMyInitRect;
     NSDate *nextNewMoonStart = [STCalendar newMoonDayForConjunction:nextConjunction];
     NSUInteger daysSinceLast = [nextNewMoonStart daysSinceDate:lastNewMoonStart];
     BOOL intercalary = ( daysSinceLast == 31 );
-    NSLog(@"drawing %@month at myNow %@ with\n\tlastNewMoonStart %@\n\teffectiveLastConjunction %@\n\tnextNewMoonStart %@ (%lu)",intercalary?@"intercalary ":@"",[NSDate myNow],lastNewMoonStart,effectiveLastConjunction,nextNewMoonStart,daysSinceLast);
+    NSLog(@"drawing %@month at %@ with\n\tlastNewMoonStart %@\n\teffectiveLastConjunction %@\n\tnextNewMoonStart %@ (%lu)",intercalary?@"intercalary ":@"",[NSDate myNow],lastNewMoonStart,effectiveLastConjunction,nextNewMoonStart,daysSinceLast);
     
     CGContextRef context = STContext;
     
@@ -129,6 +129,8 @@ CGRect gMyInitRect;
                                NSFontAttributeName : [STFontClass systemFontOfSize:[self _smallFontSizeForViewWidth:dirtyRect.size.width]] };
     self.smallerAttributes = @{ NSForegroundColorAttributeName : [STColorClass grayColor],
                                    NSFontAttributeName : [STFontClass systemFontOfSize:[self _smallerFontSizeForViewWidth:dirtyRect.size.width]] };
+    self.smallerRedAttributes = @{ NSForegroundColorAttributeName : [STColorClass redColor],
+                                   NSFontAttributeName : [STFontClass systemFontOfSize:[self _smallerFontSizeForViewWidth:dirtyRect.size.width]] };
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
     self.delimiter = @" - ";
 #else
@@ -136,8 +138,11 @@ CGRect gMyInitRect;
 #endif
     
     NSInteger monthsSinceNewYear = [DP lunarMonthForDate:self.effectiveNewMoonStart];
-    NSString *hebrewMonthString = [STCalendar hebrewStringMonthForMonth:monthsSinceNewYear :self.effectiveNewMoonStart];
-    self.bigTextSize = [hebrewMonthString sizeWithAttributes:self.bigTextAttributes];
+    NSDate *next = [DP conjunctionAfterDate:self.effectiveNewMoonStart];
+    next = [STCalendar newMoonStartTimeForConjunction:next];
+    NSString *hebrewMonthString = [STCalendar hebrewStringMonthForMonth:monthsSinceNewYear];
+    NSString *monthYearString = [hebrewMonthString stringByAppendingFormat:@" (%@)",[self.effectiveNewMoonStart localYearStringThruDate:next]];
+    self.bigTextSize = [monthYearString sizeWithAttributes:self.bigTextAttributes];
     self.textSize = [@"foo" sizeWithAttributes:self.textAttributes];
     self.smallTextSize = [@"foo" sizeWithAttributes:self.smallAttributes];
     self.smallerTextSize = [@"foo" sizeWithAttributes:self.smallerAttributes];
@@ -151,7 +156,7 @@ CGRect gMyInitRect;
 #else
     monthPoint = CGPointMake([self frame].size.width / 2 - self.bigTextSize.width / 2,self.dayHeight / 2 - self.bigTextSize.height / 2);
 #endif
-    [hebrewMonthString drawAtPoint:monthPoint withAttributes:self.bigTextAttributes];
+    [monthYearString drawAtPoint:monthPoint withAttributes:self.bigTextAttributes];
     
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
     for ( int i = 0; i < 4; i++ ) {
@@ -344,17 +349,21 @@ CGRect gMyInitRect;
     if ( ( lunarDay - 1 ) % 7 == 0 )
         thisAttributes = self.redAttributes;
     [lunarString drawAtPoint:CGPointMake(oneX + lunarOffsetX,ldY + lunarOffsetY) withAttributes:thisAttributes];
-    NSString *sunsetHourMinute = [NSString stringWithFormat:@"SS %@",[sunset localHourMinuteString]];
-    [sunsetHourMinute drawAtPoint:CGPointMake(oneX + xOffset, ssY) withAttributes:self.smallerAttributes];
-
-    BOOL waning = NO;
-    double fracillum = [DP moonFracillumForDate:date :&waning];
-    NSString *fracillumString = [NSString stringWithFormat:@"%0.0f%%",fracillum * 100];
-    [fracillumString drawAtPoint:CGPointMake(oneX + xOffset, fcY) withAttributes:self.smallerAttributes];
+    
+    BOOL drawSSFCOnPreparationOnly = YES;
+    if ( ! drawSSFCOnPreparationOnly || ( lunarDay == 7 || lunarDay == 14 || lunarDay == 21 || lunarDay == 28 ) ) {
+        NSString *sunsetHourMinute = [NSString stringWithFormat:@"Sunset %@",[sunset localHourMinuteString]];
+        [sunsetHourMinute drawAtPoint:CGPointMake(oneX + xOffset, ssY) withAttributes:self.smallerAttributes];
+        
+        BOOL waning = NO;
+        double fracillum = [DP moonFracillumForDate:date :&waning];
+        NSString *fracillumString = [NSString stringWithFormat:@"Moon %0.0f%%",fracillum * 100];
+        [fracillumString drawAtPoint:CGPointMake(oneX + xOffset, fcY) withAttributes:self.smallerAttributes];
+    }
     
     NSString *moedString = [STCalendar moedStringForLunarDay:lunarDay - 1 ofLunarMonth:lunarMonth];
     if ( moedString ) {
-        [moedString drawAtPoint:CGPointMake(oneX + xOffset, mdY) withAttributes:self.smallerAttributes];
+        [moedString drawAtPoint:CGPointMake(oneX + xOffset, mdY) withAttributes:self.smallerRedAttributes];
     }
     
     // draw attributed gregorian date

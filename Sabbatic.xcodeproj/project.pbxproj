@@ -495,7 +495,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B7CLPV6KGB;
+				DEVELOPMENT_TEAM = KU88J79QD7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Sabbatic-ios/Info.plist";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to determine the time of sunset.";
@@ -529,7 +529,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B7CLPV6KGB;
+				DEVELOPMENT_TEAM = KU88J79QD7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Sabbatic-ios/Info.plist";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to determine the time of sunset.";

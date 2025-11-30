@@ -19,6 +19,8 @@
 @interface STViewController ()
 @property (strong) STMoonController *moonController;
 @property (strong) STCalendarView *calendarView;
+@property (strong) STButton *optionsButton;
+//@property (strong) UIDatePicker *datePicker;
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
 @property (strong) UIActivityIndicatorView *progressView;
 #endif
@@ -196,6 +198,73 @@
     [self _addCalendarView];
 }
 
+/*- (void)jumpToDateChanged:(id)sender
+{
+    NSLog(@"jump to %@!",self.datePicker.date);
+}*/
+
+- (void)_addOptionsButton
+{
+    /*UIMenuElement *settings = [UIAction actionWithTitle:@"settings..." image:[UIImage systemImageNamed:@"gear"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+    }];
+    UIMenuElement *jumpToDate = [UIAction actionWithTitle:@"jump to date" image:[UIImage systemImageNamed:@"moon"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+        if ( ! self.datePicker ) {
+            UIDatePicker *picker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 100, 50, 50)];
+            picker.preferredDatePickerStyle = UIDatePickerStyleCompact;//UIDatePickerStyleInline;
+            picker.datePickerMode = UIDatePickerModeDate;
+            [picker addTarget:self action:@selector(jumpToDateChanged:) forControlEvents:UIControlEventValueChanged];
+            self.datePicker = picker;
+            [self.view addSubview:self.datePicker];
+        }
+    }];*/
+#ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
+    UIMenuElement *jumpToYear = [UIAction actionWithTitle:@"jump to year" image:[UIImage systemImageNamed:@"moon"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"jump to year" message:nil preferredStyle:UIAlertControllerStyleAlert];
+        [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+            [textField setText:@""];
+            [textField setKeyboardType:UIKeyboardTypeNumbersAndPunctuation];
+        }];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        }]];
+        [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            NSString *string = alert.textFields.firstObject.text;
+            NSNumberFormatter *f = [NSNumberFormatter new];
+            f.numberStyle = NSNumberFormatterDecimalStyle;
+            NSNumber *number = [f numberFromString:string];
+            
+            if ( ! number ) {
+                NSLog(@"invalid jump '%@'",string);
+                return;
+            }
+            
+            NSInteger year = [number integerValue];
+            NSLog(@"jumping to year %ld",year);
+            NSDateComponents *comps = [NSDateComponents new];
+            if ( year < 0 ) {
+                comps.era = 0;
+                comps.year = -(year) + 1;
+            } else {
+                comps.era = 1;
+                comps.year = year;
+            }
+            NSDate *date = [[NSCalendar currentCalendar] dateFromComponents:comps];
+            [self _replaceCurrentCalendarWithDate:date :[date timeIntervalSinceDate:self.calendarView.effectiveNewMoonStart] > 0];
+        }]];
+        
+        [self presentViewController:alert animated:YES completion:^{
+        }];
+    }];
+    UIMenu *menu = [UIMenu menuWithTitle:@"" image:nil identifier:nil options:0 children:[NSArray arrayWithObjects:/*settings,jumpToDate,*/jumpToYear,nil]];
+    
+    self.optionsButton = [STButton buttonWithType:UIButtonTypeSystem];
+    self.optionsButton.menu = menu;
+    self.optionsButton.showsMenuAsPrimaryAction = YES;
+    [self.optionsButton setTitle:@"..." forState:UIControlStateNormal];
+    self.optionsButton.frame = CGRectMake(5, 100, 30, 30);
+    [self.view addSubview:self.optionsButton];
+#endif
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
         
@@ -224,13 +293,15 @@
     
     [self _addCalendarViewWithDate:[DP lastNewMoonStart]];
     
-    [self.moonController doIntroAnimationWithCompletionHandler:^{
-        NSLog(@"did intro animation");
+    [self _addOptionsButton];
+    
+    //[self.moonController doIntroAnimationWithCompletionHandler:^{
+    //    NSLog(@"did intro animation");
         [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
             NSLog(@"animated to current phase on app launch");
             [self _updatePhase];
         }];
-    }];
+    //®®}];
     
     [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
         [self _replaceCurrentCalendarWithDate:[NSDate myNow] :NO];

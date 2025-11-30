@@ -123,17 +123,17 @@ static NSDate *sNSDateMyNowStart = nil;
 
 - (NSString *)utcYearMonthDayString
 {
-    return [self _string:@"yyyy-MM-dd" withTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
+    return [self _string:@"y-MM-dd" withTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
 }
 
 - (NSString *)localYearMonthDayString
 {
-    return [self _string:@"yyyy-MM-dd" withTimeZone:[NSTimeZone localTimeZone]];
+    return [self _string:@"y-MM-dd" withTimeZone:[NSTimeZone localTimeZone]];
 }
 
 - (NSString *)localYearMonthDayHourMinuteString
 {
-    return [self _string:@"EEE MMM dd HH:mm:ss yyyy" withTimeZone:[NSTimeZone localTimeZone]];
+    return [self _string:@"EEE MMM dd HH:mm:ss y" withTimeZone:[NSTimeZone localTimeZone]];
 }
 
 - (NSString *)localHourMinuteString
@@ -143,7 +143,36 @@ static NSDate *sNSDateMyNowStart = nil;
 
 - (NSString *)localYearString
 {
-    return [self _string:@"yyyy" withTimeZone:[NSTimeZone localTimeZone]];
+    return [self _string:@"y G" withTimeZone:[NSTimeZone localTimeZone]];
+}
+
+- (NSString *)localYearStringThruDate:(NSDate *)date
+{
+    NSCalendarUnit flags = NSCalendarUnitEra | NSCalendarUnitYear;
+    NSDateComponents *comp1 = [[NSCalendar currentCalendar] components:flags fromDate:self];
+    NSDateComponents *comp2 = [[NSCalendar currentCalendar] components:flags fromDate:date];
+    
+    if ( ( [comp1 year] == [comp2 year] ) && ( [comp1 era] == [comp2 era] ) )
+        return [self localYearString];
+    
+    NSString *s1 = nil;
+    
+    if ( [comp1 era] != [comp2 era] ) {
+        s1 = [self _string:@"y G" withTimeZone:[NSTimeZone localTimeZone]];
+    } else {
+        s1 = [self _string:@"y" withTimeZone:[NSTimeZone localTimeZone]];
+    }
+    
+    NSString *s2 = [date _string:@"y G" withTimeZone:[NSTimeZone localTimeZone]];
+    return [NSString stringWithFormat:@"%@-%@",s1,s2];
+}
+
+- (NSInteger)absoluteYear
+{
+    NSCalendarUnit flags = ( NSCalendarUnitEra | NSCalendarUnitYear );
+    NSDateComponents *comps = [[NSCalendar currentCalendar] components:flags fromDate:self];
+    int year = ( comps.era == 0 ) ? ( -((int)comps.year) + 1 ) : (int)comps.year;
+    return year;
 }
 
 - (NSString *)notificationPresentationString
@@ -156,7 +185,7 @@ static NSDate *sNSDateMyNowStart = nil;
 - (NSDate *)normalizedDate
 {
     NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-    NSDateComponents *dateComponents = [gregorian components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay) fromDate:self];
+    NSDateComponents *dateComponents = [gregorian components:(NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay) fromDate:self];
     NSDate *normalizedDate = [gregorian dateFromComponents:dateComponents];
 #ifdef debugDateStuff
     NSLog(@"%@ normalized to %@",date,normalizedDate);
@@ -316,7 +345,7 @@ static NSDate *sNSDateMyNowStart = nil;
     return compositeString;
 }
 
-+ (NSString *)hebrewStringMonthForMonth:(NSInteger)month :(NSDate *)includeYearForDate
++ (NSString *)hebrewStringMonthForMonth:(NSInteger)month
 {
     NSString *base = nil;
     switch (month) {
@@ -340,9 +369,6 @@ static NSDate *sNSDateMyNowStart = nil;
         default:
             base = @"Unknown";
     }
-    
-    if ( includeYearForDate )
-        base = [NSString stringWithFormat:@"%@ (%@)",base,[includeYearForDate localYearString]];
     
     return base;
 }
@@ -373,6 +399,24 @@ static NSDate *sNSDateMyNowStart = nil;
             return [NSString stringWithFormat:@PentecostTemplate,7];
         else if ( day == 8 )
             return [NSString stringWithFormat:@"50d to P'cost"];
+//#define ShowPentecostWeeks
+#ifdef ShowPentecostWeeks
+        else if ( day == 16 )
+            return [NSString stringWithFormat:@"43d to P'cost"];
+        else if ( day == 23 )
+            return [NSString stringWithFormat:@"36d to P'cost"];
+#endif
+    } else if ( month == 3 ) {
+        if ( day == 0 )
+            return [NSString stringWithFormat:@"29d to P'cost"];
+        if ( day == 7 )
+            return [NSString stringWithFormat:@"22d to P'cost"];
+        if ( day == 14 )
+            return [NSString stringWithFormat:@"15d to P'cost"];
+        if ( day == 21 )
+            return [NSString stringWithFormat:@"8d to P'cost"];
+        if ( day == 28 )
+            return [NSString stringWithFormat:@"1d to P'cost"];
     } else if ( month == 4 ) {
         if ( day == 0 )
             return @"Pentecost";

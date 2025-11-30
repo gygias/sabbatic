@@ -16,10 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 // usno only exposes fracillum for noon (or midnight, though seemingly not via api) on a particular day
 - (double)syntheticMoonPhaseCurve:(double)zeroThruOne {
-    if ( zeroThruOne < 0 || zeroThruOne > 1 ) {
-        NSLog(@"uh-oh!");
-        abort();
-    }
+    if ( zeroThruOne < 0 )
+        zeroThruOne = 0;
+    else if ( zeroThruOne > 1 )
+        zeroThruOne = 1;
+    
     double pi = 3.14159;
     double centered = 2 * pi * zeroThruOne - pi;
     double y = sin(centered + ( pi / 2 ) ) + 1;

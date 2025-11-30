@@ -20,11 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (astro_time_t)astroTime
 {
-    NSCalendarUnit flags = ( NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay
+    NSCalendarUnit flags = ( NSCalendarUnitEra | NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay
                             | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond );
     NSDateComponents *comps = [[NSCalendar currentCalendar] components:flags fromDate:self];
     
-    astro_utc_t utc = { (int)comps.year, (int)comps.month, (int)comps.day, (int)comps.hour, (int)comps.minute, comps.second };
+    int year = comps.era == 0 ? -((int)comps.year - 1) : (int)comps.year;
+    astro_utc_t utc = { year, (int)comps.month, (int)comps.day, (int)comps.hour, (int)comps.minute, comps.second };
 
     return Astronomy_TimeFromUtc(utc);
 }
@@ -32,8 +33,15 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDate *)dateWithAstroTime:(astro_time_t)astroTime
 {
     astro_utc_t astroUtc = Astronomy_UtcFromTime(astroTime);
-    NSDate *date = [[NSCalendar currentCalendar] dateWithEra:1 year:astroUtc.year month:astroUtc.month day:astroUtc.day hour:astroUtc.hour minute:astroUtc.minute second:astroUtc.second nanosecond:0];
-    return [date dateByAddingTimeInterval:[[NSTimeZone localTimeZone] secondsFromGMTForDate:date]];
+    int epoch = 1, year = astroUtc.year;
+    if ( astroUtc.year <= 0 ) {
+        epoch = 0;
+        year = -(astroUtc.year) + 1;
+    }
+    
+    NSDate *date = [[NSCalendar currentCalendar] dateWithEra:epoch year:year month:astroUtc.month day:astroUtc.day hour:astroUtc.hour minute:astroUtc.minute second:astroUtc.second nanosecond:0];
+    date = [date dateByAddingTimeInterval:[[NSTimeZone localTimeZone] secondsFromGMTForDate:date]];
+    return date;
 }
 
 @end
@@ -135,7 +143,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSDate *)_lastSpringEquinoxForDate:(NSDate *)date
 {
-    int searchYear = [[date localYearString] intValue];
+    NSCalendarUnit flags = ( NSCalendarUnitEra | NSCalendarUnitYear );
+    NSDateComponents *comps = [[NSCalendar currentCalendar] components:flags fromDate:date];
+    int searchYear = (int)comps.year;
+    if ( comps.era == 0 ) {
+        searchYear = -((int)comps.year) + 1;
+    }
     
     for ( int i = 0; i > -2; i-- ) {
         astro_seasons_t seasons = Astronomy_Seasons(searchYear + i);
@@ -158,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSDate *)_nextSpringEquinoxForDate:(NSDate *)date
 {
-    int searchYear = [[date localYearString] intValue];
+    int searchYear = (int)[date absoluteYear];
     
     for ( int i = 0; i < 2; i++ ) {
         astro_seasons_t seasons = Astronomy_Seasons(searchYear + i);

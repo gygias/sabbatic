@@ -149,7 +149,7 @@
 - (NSDate *)conjunctionPriorToDate:(NSDate *)date
 {
     __block NSDate *last = nil;
-    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:[[date localYearString] intValue] :YES];
+    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:[date absoluteYear] :YES];
     
     // search backwards to the first one in the past
     [phases enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -171,7 +171,7 @@
 - (NSDate *)conjunctionAfterDate:(NSDate *)date
 {
     __block NSDate *next = nil;
-    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:[[date localYearString] intValue] + 1 :YES];
+    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:[date absoluteYear] + 1 :YES];
     
     // search backwards to the first one in the past
     [phases enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -193,7 +193,7 @@
 - (NSDate *)nextConjunction
 {
     __block NSDate *next = nil;
-    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:[[[NSDate myNow] localYearString] intValue] :YES];
+    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:[[NSDate myNow] absoluteYear] :YES];
     
     // search forwards to the first one in the future
     [phases enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -215,7 +215,7 @@
 
 - (NSDate *)lastNewYearForDate:(NSDate *)date
 {
-    NSArray *solarEvents = [self _solarEventsFromUSNavyForYear:[[date localYearString] integerValue] :YES];
+    NSArray *solarEvents = [self _solarEventsFromUSNavyForYear:[date absoluteYear] :YES];
     __block NSDate *springEquinoxDate = nil;
     __block NSString *springEquinoxDateString = nil;
     [solarEvents enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -235,7 +235,7 @@
     __block NSString *lastString = nil;
     __block NSTimeInterval lastDelta;
     
-    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:[[date localYearString] intValue] :YES];
+    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:[date absoluteYear] :YES];
     [phases enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         
         if ( [[obj objectForKey:@"phase"] isEqualToString:@"New Moon"] ) {
@@ -282,7 +282,7 @@
 
 - (NSInteger)lunarMonthForDate:(NSDate *)date
 {
-    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:[[date localYearString] intValue] :YES];
+    NSArray *phases = [self _lunarPhasesFromUSNavyForYear:[date absoluteYear] :YES];
     __block NSInteger months = 0;
     __block BOOL found = NO;
     

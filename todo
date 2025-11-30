@@ -6,4 +6,4 @@ test transition to new lastNewYear case after conjunction, before sunset, like l
  
  in the latter half of the month, the moon animates backwards (de-waxes)
 
-month 5, 7 should be intercalary, a day is missing
+ios animates in and out the same calendar at gregorian midnight redraw

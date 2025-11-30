@@ -23,6 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)localYearMonthDayHourMinuteString;
 - (NSString *)localHourMinuteString;
 - (NSString *)localYearString;
+- (NSString *)localYearStringThruDate:(NSDate *)date;
+
+- (NSInteger)absoluteYear;
 
 - (NSString *)notificationPresentationString;
 
