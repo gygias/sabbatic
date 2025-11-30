@@ -203,6 +203,35 @@
     NSLog(@"jump to %@!",self.datePicker.date);
 }*/
 
+- (void)_jumpToYear:(NSString *)string gregorian:(BOOL)gregorian
+{
+    NSNumberFormatter *f = [NSNumberFormatter new];
+    f.numberStyle = NSNumberFormatterDecimalStyle;
+    NSNumber *number = [f numberFromString:string];
+    
+    if ( ! number ) {
+        NSLog(@"invalid jump '%@'",string);
+        return;
+    }
+    
+    NSInteger year = [number integerValue];
+    NSLog(@"jumping to year %ld",year);
+    NSDateComponents *comps = [NSDateComponents new];
+    if ( year < 0 ) {
+        comps.era = 0;
+        comps.year = -(year) + 1;
+    } else {
+        comps.era = 1;
+        comps.year = year;
+    }
+    NSDate *date = [[NSCalendar currentCalendar] dateFromComponents:comps];
+    if ( ! gregorian ) {
+        NSDate *yearFrom = [STCalendar date:date byAddingDays:365 hours:0 minutes:0 seconds:0];
+        date = [DP lastNewYearForDate:yearFrom];
+    }
+    [self _replaceCurrentCalendarWithDate:date :[date timeIntervalSinceDate:self.calendarView.effectiveNewMoonStart] > 0];
+}
+
 - (void)_addOptionsButton
 {
     /*UIMenuElement *settings = [UIAction actionWithTitle:@"settings..." image:[UIImage systemImageNamed:@"gear"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
@@ -226,29 +255,11 @@
         }];
         [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
         }]];
-        [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            NSString *string = alert.textFields.firstObject.text;
-            NSNumberFormatter *f = [NSNumberFormatter new];
-            f.numberStyle = NSNumberFormatterDecimalStyle;
-            NSNumber *number = [f numberFromString:string];
-            
-            if ( ! number ) {
-                NSLog(@"invalid jump '%@'",string);
-                return;
-            }
-            
-            NSInteger year = [number integerValue];
-            NSLog(@"jumping to year %ld",year);
-            NSDateComponents *comps = [NSDateComponents new];
-            if ( year < 0 ) {
-                comps.era = 0;
-                comps.year = -(year) + 1;
-            } else {
-                comps.era = 1;
-                comps.year = year;
-            }
-            NSDate *date = [[NSCalendar currentCalendar] dateFromComponents:comps];
-            [self _replaceCurrentCalendarWithDate:date :[date timeIntervalSinceDate:self.calendarView.effectiveNewMoonStart] > 0];
+        [alert addAction:[UIAlertAction actionWithTitle:@"January" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [self _jumpToYear:alert.textFields.firstObject.text gregorian:YES];
+        }]];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Abib" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [self _jumpToYear:alert.textFields.firstObject.text gregorian:NO];
         }]];
         
         [self presentViewController:alert animated:YES completion:^{
