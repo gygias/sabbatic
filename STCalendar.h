@@ -28,6 +28,18 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)hebrewStringMonthForMonth:(NSInteger)month;
 + (NSString *)moedStringForLunarDay:(NSInteger)day ofLunarMonth:(NSInteger)month;
 
+typedef enum
+{
+    WorkDay = 1,
+    PreparationDay = WorkDay << 1,
+    StartOfWeek = PreparationDay << 1,
+    IntercalaryDay = StartOfWeek << 1,
+    SabbathDay = IntercalaryDay << 1,
+    NewMoonDay = SabbathDay << 1
+} TypeOfDay;
+
++ (TypeOfDay)typeOfDayForDayOfMonth:(NSInteger)dom;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -37,6 +37,8 @@
 - (NSDate *)lastSunsetForDate:(NSDate *)date momentAfter:(BOOL)momentAfter;
 - (NSDate *)nextSunsetForDate:(NSDate *)date momentAfter:(BOOL)momentAfter;
 
+- (NSDate *)nextLunarCulminationForDate:(NSDate *)date;
+
 @end
 
 // for shared relevant stuff regardless of model

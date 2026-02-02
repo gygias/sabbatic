@@ -376,7 +376,7 @@ static NSDate *sNSDateMyNowStart = nil;
 #define PentecostTemplate "Pentecost %d"
 
 + (NSString *)moedStringForLunarDay:(NSInteger)day ofLunarMonth:(NSInteger)month
-{
+{    
     if ( month == 0 ) {
         if ( day == 0 ) {
             return @"New Year";
@@ -431,6 +431,30 @@ static NSDate *sNSDateMyNowStart = nil;
     }
     
     return nil;
+}
+
++ (TypeOfDay)typeOfDayForDayOfMonth:(NSInteger)dom
+{
+    TypeOfDay type = 0;
+    
+    // NOTE
+    dom++;
+    
+    if ( dom == 1 )
+        type |= NewMoonDay;
+    else if ( dom == 8 || dom == 15 || dom == 22 || dom == 29 )
+        type |= SabbathDay;
+    else
+        type |= WorkDay;
+    
+    if ( dom == 7 || dom == 14 || dom == 21 || dom == 28 )
+        type |= PreparationDay;
+    else if ( dom == 9 || dom == 16 || dom == 23 )
+        type |= StartOfWeek;
+    else if ( dom == 30 )
+        type |= IntercalaryDay;
+    
+    return type;
 }
 
 @end

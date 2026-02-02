@@ -337,6 +337,10 @@ CGRect gMyInitRect;
     CGFloat lunarOffsetY = ( lunarHeight / STLunarDayScalarY );
 #endif
     
+    // account for lunar day start on dynamic days
+    if ( lunarDay > 1 )
+        date = [STCalendar date:date byAddingDays:1 hours:0 minutes:0 seconds:0];
+    
 #warning it's off by one, this is location/api dependent and needs to be fixed
     NSDate *tomorrow = [STCalendar date:date byAddingDays:1 hours:0 minutes:0 seconds:0];
     NSDate *sunset = [DP lastSunsetForDate:tomorrow momentAfter:NO];
@@ -350,13 +354,15 @@ CGRect gMyInitRect;
         thisAttributes = self.redAttributes;
     [lunarString drawAtPoint:CGPointMake(oneX + lunarOffsetX,ldY + lunarOffsetY) withAttributes:thisAttributes];
     
-    BOOL drawSSFCOnPreparationOnly = YES;
-    if ( ! drawSSFCOnPreparationOnly || ( lunarDay == 7 || lunarDay == 14 || lunarDay == 21 || lunarDay == 28 ) ) {
+    TypeOfDay drawSSFCOnDayMask = NewMoonDay | PreparationDay | SabbathDay | StartOfWeek | IntercalaryDay;
+    if ( asToday || ( [STCalendar typeOfDayForDayOfMonth:lunarDay - 1] & drawSSFCOnDayMask ) ) {
         NSString *sunsetHourMinute = [NSString stringWithFormat:@"Sunset %@",[sunset localHourMinuteString]];
         [sunsetHourMinute drawAtPoint:CGPointMake(oneX + xOffset, ssY) withAttributes:self.smallerAttributes];
         
-        BOOL waning = NO;
-        double fracillum = [DP moonFracillumForDate:date :&waning];
+        double fracillum = [DP moonFracillumForDate:date :NULL];
+        NSDate *nextDate = [DP nextLunarCulminationForDate:date];
+        double nextFracillum = [DP moonFracillumForDate:nextDate :NULL];
+        NSLog(@"moon on %@: %0.2f, next %0.2f",date,fracillum,nextFracillum);
         NSString *fracillumString = [NSString stringWithFormat:@"Moon %0.0f%%",fracillum * 100];
         [fracillumString drawAtPoint:CGPointMake(oneX + xOffset, fcY) withAttributes:self.smallerAttributes];
     }
@@ -369,12 +375,6 @@ CGRect gMyInitRect;
     // draw attributed gregorian date
     NSString *gregorianString = nil;
     NSAttributedString *attrString = nil;
-    // account for lunar day start on dynamic days
-    NSDate *gregorianDay = nil;
-    if ( lunarDay > 1 )
-        gregorianDay = [STCalendar date:date byAddingDays:1 hours:0 minutes:0 seconds:0];
-    else
-        gregorianDay = date;
     
     if ( asToday ) {
         
@@ -384,7 +384,7 @@ CGRect gMyInitRect;
         }
         *foundToday = YES;
         
-        gregorianString = [STCalendar localGregorianPreviousAndCurrentDayFromDate:gregorianDay delimiter:self.delimiter];
+        gregorianString = [STCalendar localGregorianPreviousAndCurrentDayFromDate:date delimiter:self.delimiter];
         attrString = [[NSMutableAttributedString alloc] initWithString:gregorianString];
         NSRange delimiterRange = [gregorianString rangeOfString:self.delimiter];
         if ( delimiterRange.location != NSNotFound ) {
@@ -395,7 +395,7 @@ CGRect gMyInitRect;
             [(NSMutableAttributedString *)attrString addAttributes:betweenSunsetAndMidnight ? self.smallerAttributes : self.smallAttributes range:NSMakeRange(thisStart, [attrString length] - thisStart)];
         }
     } else {
-        gregorianString = [STCalendar localGregorianDayOfTheMonthFromDate:gregorianDay];
+        gregorianString = [STCalendar localGregorianDayOfTheMonthFromDate:date];
         attrString = [[NSAttributedString alloc] initWithString:gregorianString attributes:self.smallerAttributes];
     }
     [attrString drawAtPoint:CGPointMake(oneX + xOffset,gdY)];

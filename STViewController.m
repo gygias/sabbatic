@@ -247,7 +247,7 @@
         }
     }];*/
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
-    UIMenuElement *jumpToYear = [UIAction actionWithTitle:@"jump to year" image:[UIImage systemImageNamed:@"moon"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+    UIMenuElement *jumpToYear = [UIAction actionWithTitle:@"jump to year" image:[UIImage systemImageNamed:@"sun.max"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"jump to year" message:nil preferredStyle:UIAlertControllerStyleAlert];
         [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
             [textField setText:@""];

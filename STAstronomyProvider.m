@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     astro_search_result_t sunset;
 
-    sunset   = Astronomy_SearchRiseSet(BODY_SUN,  observer, DIRECTION_SET,  [date astroTime], 300.0);
+    sunset   = Astronomy_SearchRiseSet(BODY_SUN,  observer, DIRECTION_SET, [date astroTime], 300.0);
     if ( sunset.status != ASTRO_SUCCESS ) {
         NSLog(@"Astronomy_SearchRiseSet error %d",sunset.status);
         abort();
@@ -255,6 +255,24 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     return i;
+}
+
+- (NSDate *)nextLunarCulminationForDate:(NSDate *)date
+{
+    astro_observer_t observer;
+    observer.height = 0;
+    observer.latitude = [ST effectiveLocation].coordinate.latitude;
+    observer.longitude = [ST effectiveLocation].coordinate.longitude;
+    
+    astro_hour_angle_t evt = Astronomy_SearchHourAngleEx(BODY_MOON, observer, 0.0, [date astroTime], +1);
+    
+    if ( evt.status != ASTRO_SUCCESS ) {
+        NSLog(@"Astronomy_SearchHourAngleEx(%0.2f,%0.2f,%@) error %d!",observer.latitude,observer.longitude,date,evt.status);
+        abort();
+    }
+    
+    NSLog(@"moon culmination next %@: %@",date,[NSDate dateWithAstroTime:evt.time]);
+    return [NSDate dateWithAstroTime:evt.time];
 }
 
 @end
