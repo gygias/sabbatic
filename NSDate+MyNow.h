@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)setMyNow:(NSDate *)date realSecondsPerDay:(NSInteger)real;
 + (NSDate *)myNow;
++ (BOOL)myNowIsNow;
 
 + (void)enqueueRealSunsetNotifications;
 

@@ -52,6 +52,7 @@
 #define STCalendarLineWidth (2.)
 #define STCalendarViewInsetX 10
 #define STCalendarViewInsetY 10
+#define STVerseViewInsetX 5
 #define STLunarDayOffsetX (-2)
 #define STLunarDayScalarX 4
 #define STLunarDayScalarY 6
@@ -68,10 +69,24 @@
 #define STCalendarLineWidth (2.)
 #define STCalendarViewInsetX 0
 #define STCalendarViewInsetY 150
+#define STVerseViewInsetX 5
 #define STLunarDayScalarX 2
 #define STLunarDayScalarY 3
 #define STSpinnerWidth 20
 #define STSpinnerHeight 20
+#endif
+
+//#ifdef __APPLE__
+//#include "TargetConditionals.h"
+//#if /*defined(TARGET_OS_IPHONE) ||*/ defined(__IS_NOT_MACOS)// || defined(TARGET_IPHONE_SIMULATOR)
+//#ifdef MAC_OS_X_VERSION_MIN_REQUIRED
+//#elif TARGET_IPHONE_SIMULATORif defined(TARGET_OS_MAC) && defined(__MAC_OS_X_VERSION_MAX_ALLOWED)
+#if !__has_include(<UIKit/UIKit.h>) // this was impressively difficult to narrow down
+#import <Cocoa/Cocoa.h>
+#define STViewSuper NSView
+#else
+#import <UIKit/UIKit.h>
+#define STViewSuper UIView
 #endif
 
 #endif /* STDefines_h */

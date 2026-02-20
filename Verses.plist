@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>book</key>
+		<string>Leviticus</string>
+		<key>chapter</key>
+		<integer>23</integer>
+		<key>verse</key>
+		<integer>5</integer>
+		<key>text</key>
+		<string>In the fourteenth day of the first month at even is the Lord’s passover.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Numbers</string>
+		<key>chapter</key>
+		<integer>33</integer>
+		<key>verse</key>
+		<integer>3</integer>
+		<key>text</key>
+		<string>And they departed from Rameses in the first month, on the fifteenth day of the first month; on the morrow after the passover the children of Israel went out with an high hand in the sight of all the Egyptians. </string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Nehemiah</string>
+		<key>chapter</key>
+		<integer>13</integer>
+		<key>verse</key>
+		<integer>19</integer>
+		<key>text</key>
+		<string>And it came to pass, that when the gates of Jerusalem began to be dark before the sabbath, I commanded that the gates should be shut, and charged that they should not be opened till after the sabbath: and some of my servants set I at the gates, that there should no burden be brought in on the sabbath day. </string>
+	</dict>
+</array>
+</plist>

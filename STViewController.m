@@ -10,6 +10,7 @@
 #import <SceneKit/SceneKit.h>
 
 #import "STCalendarView.h"
+#import "STverseView.h"
 #import "STMoonController.h"
 #import "STDefines.h"
 #import "STState.h"
@@ -19,6 +20,7 @@
 @interface STViewController ()
 @property (strong) STMoonController *moonController;
 @property (strong) STCalendarView *calendarView;
+@property (strong) STVerseView *verseView;
 @property (strong) STButton *optionsButton;
 //@property (strong) UIDatePicker *datePicker;
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
@@ -198,6 +200,17 @@
     [self _addCalendarView];
 }
 
+- (void)_addVerseView
+{
+    CGFloat verseViewInsetY = self.calendarView.frame.origin.y + self.calendarView.frame.size.height;
+    self.verseView = [[STVerseView alloc] initWithFrame:CGRectMake(self.calendarView.frame.origin.x + STVerseViewInsetX,
+                                                                   self.calendarView.frame.origin.y + self.calendarView.frame.size.height,
+                                                                   self.calendarView.frame.size.width - STVerseViewInsetX,
+                                                                   self.view.frame.size.height - ( self.calendarView.frame.origin.y + self.calendarView.frame.size.height ))];
+    [self.verseView preload];
+    [self.view addSubview:self.verseView];
+}
+
 /*- (void)jumpToDateChanged:(id)sender
 {
     NSLog(@"jump to %@!",self.datePicker.date);
@@ -303,6 +316,8 @@
 #endif
     
     [self _addCalendarViewWithDate:[DP lastNewMoonStart]];
+    
+    [self _addVerseView];
     
     [self _addOptionsButton];
     

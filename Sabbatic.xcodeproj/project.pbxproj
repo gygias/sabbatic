@@ -35,6 +35,10 @@
 		63AAFCEA2DCDA01500CDAE8B /* STViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 63AAFCDE2DCC9A0A00CDAE8B /* STViewController.m */; };
 		63B1D12D2DC40D2700593445 /* todo in Resources */ = {isa = PBXBuildFile; fileRef = 63B1D12C2DC40D2400593445 /* todo */; };
 		63B1D12E2DC40D2700593445 /* todo in Resources */ = {isa = PBXBuildFile; fileRef = 63B1D12C2DC40D2400593445 /* todo */; };
+		63BC63A52F478FD4002F358C /* Verses.plist in Resources */ = {isa = PBXBuildFile; fileRef = 63BC63A42F478FD4002F358C /* Verses.plist */; };
+		63BC63A62F478FD4002F358C /* Verses.plist in Resources */ = {isa = PBXBuildFile; fileRef = 63BC63A42F478FD4002F358C /* Verses.plist */; };
+		63BC63A92F479F6B002F358C /* STVerseView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63BC63A82F479F6B002F358C /* STVerseView.m */; };
+		63BC63AA2F479F6B002F358C /* STVerseView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63BC63A82F479F6B002F358C /* STVerseView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,6 +70,9 @@
 		63B1D12C2DC40D2400593445 /* todo */ = {isa = PBXFileReference; lastKnownFileType = text; path = todo; sourceTree = "<group>"; };
 		63B1D13F2DCB0C4000593445 /* astronomy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = astronomy.h; sourceTree = "<group>"; };
 		63B1D1402DCB0C4000593445 /* astronomy.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = astronomy.c; sourceTree = "<group>"; };
+		63BC63A42F478FD4002F358C /* Verses.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Verses.plist; sourceTree = "<group>"; };
+		63BC63A72F479F6B002F358C /* STVerseView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STVerseView.h; sourceTree = "<group>"; };
+		63BC63A82F479F6B002F358C /* STVerseView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STVerseView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -123,6 +130,7 @@
 		63A2075B2D8BDF360019A763 = {
 			isa = PBXGroup;
 			children = (
+				63BC63A42F478FD4002F358C /* Verses.plist */,
 				63B1D13F2DCB0C4000593445 /* astronomy.h */,
 				63B1D1402DCB0C4000593445 /* astronomy.c */,
 				630C89832DCC6877002D4AC3 /* STAstronomyProvider.h */,
@@ -144,6 +152,8 @@
 				63A2077F2D8BE0F10019A763 /* STCalendar.m */,
 				63A207782D8BE04A0019A763 /* STCalendarView.h */,
 				63A207792D8BE04A0019A763 /* STCalendarView.m */,
+				63BC63A72F479F6B002F358C /* STVerseView.h */,
+				63BC63A82F479F6B002F358C /* STVerseView.m */,
 				634BF7E92DB9E811007BD17F /* NSDate+MyNow.h */,
 				634BF7EA2DB9E811007BD17F /* NSDate+MyNow.m */,
 				63AAFCDD2DCC9A0A00CDAE8B /* STViewController.h */,
@@ -218,7 +228,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1630;
+				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					63A207632D8BDF360019A763 = {
 						CreatedOnToolsVersion = 16.2;
@@ -257,6 +267,7 @@
 				63A2078C2D8BED810019A763 /* MoonScene.scn in Resources */,
 				63A207862D8BE5AB0019A763 /* moon.dae in Resources */,
 				63A207882D8BEA100019A763 /* moon.scn in Resources */,
+				63BC63A62F478FD4002F358C /* Verses.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -268,6 +279,7 @@
 				63A207AC2D8D15CA0019A763 /* moon.dae in Resources */,
 				63A207AD2D8D15CA0019A763 /* moon.scn in Resources */,
 				63A207AE2D8D15CA0019A763 /* MoonScene.scn in Resources */,
+				63BC63A52F478FD4002F358C /* Verses.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,6 +291,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				63552E3E2DCC5C1800614BBB /* STUSNODataProvider.m in Sources */,
+				63BC63A92F479F6B002F358C /* STVerseView.m in Sources */,
 				634BF7E32DB09C20007BD17F /* STState.m in Sources */,
 				63A207802D8BE0F10019A763 /* STCalendar.m in Sources */,
 				63552E402DCC5D6000614BBB /* STDataProvider.m in Sources */,
@@ -300,6 +313,7 @@
 				63A207B42D8D15DE0019A763 /* STCalendar.m in Sources */,
 				634BF7EC2DB9E811007BD17F /* NSDate+MyNow.m in Sources */,
 				63552E3D2DCC5C1800614BBB /* STUSNODataProvider.m in Sources */,
+				63BC63AA2F479F6B002F358C /* STVerseView.m in Sources */,
 				630C89852DCC6877002D4AC3 /* STAstronomyProvider.m in Sources */,
 				634BF7E42DB09C20007BD17F /* STState.m in Sources */,
 				63AAFCE42DCC9A0A00CDAE8B /* STViewController.m in Sources */,
@@ -370,6 +384,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 			};
 			name = Debug;
 		};
@@ -425,6 +440,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 			};
 			name = Release;
 		};
@@ -439,6 +455,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_RESOURCE_ACCESS_LOCATION = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to determine the time of sunset.";
@@ -469,6 +489,10 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_RESOURCE_ACCESS_LOCATION = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to determine the time of sunset.";
