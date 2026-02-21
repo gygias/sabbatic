@@ -204,7 +204,7 @@
 {
     self.verseView = [[STVerseView alloc] initWithFrame:CGRectMake(self.calendarView.frame.origin.x + STVerseViewInsetX,
                                                                    self.calendarView.frame.origin.y + self.calendarView.frame.size.height,
-                                                                   self.calendarView.frame.size.width - STVerseViewInsetX,
+                                                                   self.calendarView.frame.size.width - 2*STVerseViewInsetX,
                                                                    self.view.frame.size.height - ( self.calendarView.frame.origin.y + self.calendarView.frame.size.height ))];
     [self.verseView preload];
     [self.view addSubview:self.verseView];
