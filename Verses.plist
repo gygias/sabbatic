@@ -4,6 +4,232 @@
 <array>
 	<dict>
 		<key>book</key>
+		<string>Luke</string>
+		<key>chapter</key>
+		<integer>23</integer>
+		<key>verse</key>
+		<string>63-64</string>
+		<key>text</key>
+		<string>And he took it down, and wrapped it in linen, and laid it in a sepulchre that was hewn in stone, wherein never man before was laid. 
+
+And that day was the preparation, and the sabbath drew on.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Mark</string>
+		<key>chapter</key>
+		<integer>15</integer>
+		<key>verse</key>
+		<string>42-43</string>
+		<key>text</key>
+		<string>And now when the even was come, because it was the preparation, that is, the day before the sabbath,
+
+Joseph of Arimathea, an honourable counsellor, which also waited for the kingdom of God, came, and went in boldly unto Pilate, and craved the body of Jesus.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Leviticus</string>
+		<key>chapter</key>
+		<integer>23</integer>
+		<key>verse</key>
+		<string>39</string>
+		<key>text</key>
+		<string>Also in the fifteenth day of the seventh month, when ye have gathered in the fruit of the land, ye shall keep a feast unto the Lord seven days: on the first day shall be a sabbath, and on the eighth day shall be a sabbath.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Exodus</string>
+		<key>chapter</key>
+		<integer>16</integer>
+		<key>verse</key>
+		<string>1</string>
+		<key>text</key>
+		<string>And they took their journey from Elim, and all the congregation of the children of Israel came unto the wilderness of Sin, which is between Elim and Sinai, on the fifteenth day of the second month after their departing out of the land of Egypt.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Amos</string>
+		<key>chapter</key>
+		<integer>8</integer>
+		<key>verse</key>
+		<string>5</string>
+		<key>text</key>
+		<string>Saying, When will the new moon be gone, that we may sell corn? and the sabbath, that we may set forth wheat, making the ephah small, and the shekel great, and falsifying the balances by deceit?</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Ezekiel</string>
+		<key>chapter</key>
+		<integer>46</integer>
+		<key>verse</key>
+		<string>1</string>
+		<key>text</key>
+		<string>Thus saith the Lord God; The gate of the inner court that looketh toward the east shall be shut the six working days; but on the sabbath it shall be opened, and in the day of the new moon it shall be opened.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Isaiah</string>
+		<key>chapter</key>
+		<integer>66</integer>
+		<key>verse</key>
+		<string>23</string>
+		<key>text</key>
+		<string>And it shall come to pass, that from one new moon to another, and from one sabbath to another, shall all flesh come to worship before me, saith the Lord.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Ezra</string>
+		<key>chapter</key>
+		<integer>3</integer>
+		<key>verse</key>
+		<string>5</string>
+		<key>text</key>
+		<string>And afterward offered the continual burnt offering, both of the new moons, and of all the set feasts of the Lord that were consecrated, and of every one that willingly offered a freewill offering unto the Lord.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>II Chronicles</string>
+		<key>chapter</key>
+		<integer>31</integer>
+		<key>verse</key>
+		<string>3</string>
+		<key>text</key>
+		<string>He appointed also the king’s portion of his substance for the burnt offerings, to wit, for the morning and evening burnt offerings, and the burnt offerings for the sabbaths, and for the new moons, and for the set feasts, as it is written in the law of the Lord.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>II Chronicles</string>
+		<key>chapter</key>
+		<integer>8</integer>
+		<key>verse</key>
+		<string>13</string>
+		<key>text</key>
+		<string>Even after a certain rate every day, offering according to the commandment of Moses, on the sabbaths, and on the new moons, and on the solemn feasts, three times in the year, even in the feast of unleavened bread, and in the feast of weeks, and in the feast of tabernacles.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>II Chronicles</string>
+		<key>chapter</key>
+		<integer>2</integer>
+		<key>verse</key>
+		<string>4</string>
+		<key>text</key>
+		<string>Behold, I build an house to the name of the Lord my God, to dedicate it to him, and to burn before him sweet incense, and for the continual shewbread, and for the burnt offerings morning and evening, on the sabbaths, and on the new moons, and on the solemn feasts of the Lord our God. This is an ordinance for ever to Israel.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>I Chronicles</string>
+		<key>chapter</key>
+		<integer>23</integer>
+		<key>verse</key>
+		<string>31</string>
+		<key>text</key>
+		<string>And to offer all burnt sacrifices unto the Lord in the sabbaths, in the new moons, and on the set feasts, by number, according to the order commanded unto them, continually before the Lord:</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>II Kings</string>
+		<key>chapter</key>
+		<integer>4</integer>
+		<key>verse</key>
+		<string>23</string>
+		<key>text</key>
+		<string>And he said, Wherefore wilt thou go to him to day? it is neither new moon, nor sabbath. And she said, It shall be well.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Leviticus</string>
+		<key>chapter</key>
+		<integer>23</integer>
+		<key>verse</key>
+		<string>24</string>
+		<key>text</key>
+		<string>Speak unto the children of Israel, saying, In the seventh month, in the first day of the month, shall ye have a sabbath, a memorial of blowing of trumpets, an holy convocation.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Exodus</string>
+		<key>chapter</key>
+		<integer>40</integer>
+		<key>verse</key>
+		<string>17</string>
+		<key>text</key>
+		<string>And it came to pass in the first month in the second year, on the first day of the month, that the tabernacle was reared up.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Exodus</string>
+		<key>chapter</key>
+		<integer>40</integer>
+		<key>verse</key>
+		<string>2</string>
+		<key>text</key>
+		<string>On the first day of the first month shalt thou set up the tabernacle of the tent of the congregation.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Leviticus</string>
+		<key>chapter</key>
+		<integer>23</integer>
+		<key>verse</key>
+		<string>32</string>
+		<key>text</key>
+		<string>It shall be unto you a sabbath of rest, and ye shall afflict your souls: in the ninth day of the month at even, from even unto even, shall ye celebrate your sabbath.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Exodus</string>
+		<key>chapter</key>
+		<integer>12</integer>
+		<key>verse</key>
+		<string>18</string>
+		<key>text</key>
+		<string>In the first month, on the fourteenth day of the month at even, ye shall eat unleavened bread, until the one and twentieth day of the month at even.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Psalms</string>
+		<key>chapter</key>
+		<integer>81</integer>
+		<key>verse</key>
+		<string>3</string>
+		<key>text</key>
+		<string>Blow up the trumpet in the new moon, in the time appointed, on our solemn feast day.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Colossians</string>
+		<key>chapter</key>
+		<integer>2</integer>
+		<key>verse</key>
+		<string>16-17</string>
+		<key>text</key>
+		<string>Let no man therefore judge you in meat, or in drink, or in respect of an holyday, or of the new moon, or of the sabbath days:
+
+Which are a shadow of things to come; but the body is of Christ.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Joshua</string>
+		<key>chapter</key>
+		<integer>5</integer>
+		<key>verse</key>
+		<integer>10</integer>
+		<key>text</key>
+		<string>And the children of Israel encamped in Gilgal, and kept the passover on the fourteenth day of the month at even in the plains of Jericho.</string>
+	</dict>
+	<dict>
+		<key>book</key>
+		<string>Numbers</string>
+		<key>chapter</key>
+		<integer>9</integer>
+		<key>verse</key>
+		<integer>3</integer>
+		<key>text</key>
+		<string>In the fourteenth day of this month, at even, ye shall keep it in his appointed season: according to all the rites of it, and according to all the ceremonies thereof, shall ye keep it.</string>
+	</dict>
+	<dict>
+		<key>book</key>
 		<string>Leviticus</string>
 		<key>chapter</key>
 		<integer>23</integer>
@@ -20,7 +246,7 @@
 		<key>verse</key>
 		<integer>3</integer>
 		<key>text</key>
-		<string>And they departed from Rameses in the first month, on the fifteenth day of the first month; on the morrow after the passover the children of Israel went out with an high hand in the sight of all the Egyptians. </string>
+		<string>And they departed from Rameses in the first month, on the fifteenth day of the first month; on the morrow after the passover the children of Israel went out with an high hand in the sight of all the Egyptians.</string>
 	</dict>
 	<dict>
 		<key>book</key>
@@ -30,7 +256,7 @@
 		<key>verse</key>
 		<integer>19</integer>
 		<key>text</key>
-		<string>And it came to pass, that when the gates of Jerusalem began to be dark before the sabbath, I commanded that the gates should be shut, and charged that they should not be opened till after the sabbath: and some of my servants set I at the gates, that there should no burden be brought in on the sabbath day. </string>
+		<string>And it came to pass, that when the gates of Jerusalem began to be dark before the sabbath, I commanded that the gates should be shut, and charged that they should not be opened till after the sabbath: and some of my servants set I at the gates, that there should no burden be brought in on the sabbath day.</string>
 	</dict>
 </array>
 </plist>

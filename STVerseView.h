@@ -6,10 +6,11 @@
 //
 
 #import "STDefines.h"
+#import "STView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface STVerseView : STViewSuper
+@interface STVerseView : STView
 
 - (void)preload;
 

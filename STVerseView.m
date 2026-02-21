@@ -19,13 +19,18 @@ NS_ASSUME_NONNULL_BEGIN
 @property CGFloat fadeIdx;
 @end
 
+#define STVerseDisplayTime 15.0
+#define STVerseTypeTime 0.05
+#define STVerseFadeFrameTime 0.1
 #define STVerseFadeFrames 5
 
 @implementation STVerseView
 
 - (void)preload
 {
+#ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
     self.backgroundColor = [STColorClass clearColor];
+#endif
     NSString *path = [[NSBundle mainBundle] pathForResource:@"Verses" ofType:@"plist"];
     self.versesDicts = [NSArray arrayWithContentsOfFile:path];
     NSLog(@"loaded %lu verses from %@",self.versesDicts.count,path);
@@ -57,9 +62,9 @@ NS_ASSUME_NONNULL_BEGIN
     [verseString drawInRect:rect withAttributes:self.drawAttrs];
     
     if ( self.animationIdx < self.text.length ) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(STVerseTypeTime * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             self.animationIdx++;
-            [self setNeedsDisplay];
+            [self iNeedDisplay];
         });
     } else {
         CGRect textRect = [verseString boundingRectWithSize:rect.size options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading) attributes:self.drawAttrs context:NULL];
@@ -70,17 +75,17 @@ NS_ASSUME_NONNULL_BEGIN
             NSDictionary *fadeAttrs = @{ NSForegroundColorAttributeName : [[STColorClass grayColor] colorWithAlphaComponent:(self.fadeIdx / STVerseFadeFrames)],
                                          NSFontAttributeName : [STFontClass systemFontOfSize:[self _fontSizeForViewWidth:self.frame.size.width]] };
             [self.bookChapterVerse drawInRect:bookChapterVerseRect withAttributes:fadeAttrs];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(STVerseFadeFrameTime * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 self.fadeIdx++;
-                [self setNeedsDisplay];
+                [self iNeedDisplay];
             });
         } else {
             [self.bookChapterVerse drawInRect:bookChapterVerseRect withAttributes:self.drawAttrs];
             self.fadeIdx = 0;
             self.animationIdx = -1;
             
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self setNeedsDisplay];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(STVerseDisplayTime * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self iNeedDisplay];
             });
         }
     }

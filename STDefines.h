@@ -38,7 +38,8 @@
 #define STCalendarAnimationDuration .25
 #define STPeriodicRedrawSeconds 1
 
-#ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
+//#ifdef __MAC_OS_X_VERSION_MAX_ALLOWED doesn't seem to work anymore on tahoe
+#if !__has_include(<UIKit/UIKit.h>)
 #define STViewControllerClass NSViewController
 #define STRect NSRect
 #define STContext [NSGraphicsContext currentContext].CGContext
@@ -69,7 +70,7 @@
 #define STCalendarLineWidth (2.)
 #define STCalendarViewInsetX 0
 #define STCalendarViewInsetY 150
-#define STVerseViewInsetX 5
+#define STVerseViewInsetX 25
 #define STLunarDayScalarX 2
 #define STLunarDayScalarY 3
 #define STSpinnerWidth 20
@@ -79,14 +80,16 @@
 //#ifdef __APPLE__
 //#include "TargetConditionals.h"
 //#if /*defined(TARGET_OS_IPHONE) ||*/ defined(__IS_NOT_MACOS)// || defined(TARGET_IPHONE_SIMULATOR)
-//#ifdef MAC_OS_X_VERSION_MIN_REQUIRED
+//#ifdef MAC_OS_X_VERSION_MIN_REQUIRED // stopped working on tahoe (?)
 //#elif TARGET_IPHONE_SIMULATORif defined(TARGET_OS_MAC) && defined(__MAC_OS_X_VERSION_MAX_ALLOWED)
 #if !__has_include(<UIKit/UIKit.h>) // this was impressively difficult to narrow down
 #import <Cocoa/Cocoa.h>
 #define STViewSuper NSView
+#define STMacOS
 #else
 #import <UIKit/UIKit.h>
 #define STViewSuper UIView
+#undef STMacOS
 #endif
 
 #endif /* STDefines_h */

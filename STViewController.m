@@ -202,7 +202,6 @@
 
 - (void)_addVerseView
 {
-    CGFloat verseViewInsetY = self.calendarView.frame.origin.y + self.calendarView.frame.size.height;
     self.verseView = [[STVerseView alloc] initWithFrame:CGRectMake(self.calendarView.frame.origin.x + STVerseViewInsetX,
                                                                    self.calendarView.frame.origin.y + self.calendarView.frame.size.height,
                                                                    self.calendarView.frame.size.width - STVerseViewInsetX,

@@ -39,6 +39,8 @@
 		63BC63A62F478FD4002F358C /* Verses.plist in Resources */ = {isa = PBXBuildFile; fileRef = 63BC63A42F478FD4002F358C /* Verses.plist */; };
 		63BC63A92F479F6B002F358C /* STVerseView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63BC63A82F479F6B002F358C /* STVerseView.m */; };
 		63BC63AA2F479F6B002F358C /* STVerseView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63BC63A82F479F6B002F358C /* STVerseView.m */; };
+		63BC63AD2F492D8B002F358C /* STView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63BC63AC2F492D8B002F358C /* STView.m */; };
+		63BC63AE2F492D8B002F358C /* STView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63BC63AC2F492D8B002F358C /* STView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -73,6 +75,8 @@
 		63BC63A42F478FD4002F358C /* Verses.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Verses.plist; sourceTree = "<group>"; };
 		63BC63A72F479F6B002F358C /* STVerseView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STVerseView.h; sourceTree = "<group>"; };
 		63BC63A82F479F6B002F358C /* STVerseView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STVerseView.m; sourceTree = "<group>"; };
+		63BC63AB2F492D8B002F358C /* STView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STView.h; sourceTree = "<group>"; };
+		63BC63AC2F492D8B002F358C /* STView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -130,7 +134,6 @@
 		63A2075B2D8BDF360019A763 = {
 			isa = PBXGroup;
 			children = (
-				63BC63A42F478FD4002F358C /* Verses.plist */,
 				63B1D13F2DCB0C4000593445 /* astronomy.h */,
 				63B1D1402DCB0C4000593445 /* astronomy.c */,
 				630C89832DCC6877002D4AC3 /* STAstronomyProvider.h */,
@@ -152,12 +155,15 @@
 				63A2077F2D8BE0F10019A763 /* STCalendar.m */,
 				63A207782D8BE04A0019A763 /* STCalendarView.h */,
 				63A207792D8BE04A0019A763 /* STCalendarView.m */,
+				63BC63A42F478FD4002F358C /* Verses.plist */,
 				63BC63A72F479F6B002F358C /* STVerseView.h */,
 				63BC63A82F479F6B002F358C /* STVerseView.m */,
 				634BF7E92DB9E811007BD17F /* NSDate+MyNow.h */,
 				634BF7EA2DB9E811007BD17F /* NSDate+MyNow.m */,
 				63AAFCDD2DCC9A0A00CDAE8B /* STViewController.h */,
 				63AAFCDE2DCC9A0A00CDAE8B /* STViewController.m */,
+				63BC63AB2F492D8B002F358C /* STView.h */,
+				63BC63AC2F492D8B002F358C /* STView.m */,
 				63A207662D8BDF360019A763 /* Sabbatic */,
 				63A207922D8D13D40019A763 /* Sabbatic-ios */,
 				634BF7E62DB1ED97007BD17F /* Frameworks */,
@@ -301,6 +307,7 @@
 				63A2077A2D8BE04A0019A763 /* STCalendarView.m in Sources */,
 				639EA4592DBC197300E31716 /* STMoonController.m in Sources */,
 				630C89892DCC6A6F002D4AC3 /* astronomy.c in Sources */,
+				63BC63AE2F492D8B002F358C /* STView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -319,6 +326,7 @@
 				63AAFCE42DCC9A0A00CDAE8B /* STViewController.m in Sources */,
 				63A207B62D8D15DE0019A763 /* STCalendarView.m in Sources */,
 				630C898A2DCC6A74002D4AC3 /* astronomy.c in Sources */,
+				63BC63AD2F492D8B002F358C /* STView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
