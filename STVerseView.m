@@ -57,20 +57,21 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      aVerseDict[@"verse"]];
         self.animationIdx = 0;
     }
-    
-    NSString *verseString = [self.text substringToIndex:self.animationIdx];
-    [verseString drawInRect:rect withAttributes:self.drawAttrs];
-    
+
     if ( self.animationIdx < self.text.length ) {
+        NSString *verseString = [self.text substringToIndex:self.animationIdx];
+        [verseString drawInRect:rect withAttributes:self.drawAttrs];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(STVerseTypeTime * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             self.animationIdx++;
             [self iNeedDisplay];
         });
     } else {
-        CGRect textRect = [verseString boundingRectWithSize:rect.size options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading) attributes:self.drawAttrs context:NULL];
+        [self.text drawInRect:rect withAttributes:self.drawAttrs];
+
+        CGRect textRect = [self.text boundingRectWithSize:rect.size options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading) attributes:self.drawAttrs context:NULL];
         CGFloat bookChapterVerseXOffset = 25;
         CGFloat lineHeight = [self.bookChapterVerse sizeWithAttributes:self.drawAttrs].height;
-        CGRect bookChapterVerseRect = CGRectMake(rect.origin.x + bookChapterVerseXOffset, rect.origin.y + textRect.size.height + lineHeight, rect.size.width - bookChapterVerseXOffset, rect.size.height - textRect.size.height - lineHeight);
+        CGRect bookChapterVerseRect = CGRectMake(rect.origin.x + bookChapterVerseXOffset, rect.origin.y + textRect.size.height + lineHeight, rect.size.width - 2*bookChapterVerseXOffset, rect.size.height - textRect.size.height - lineHeight);
         if ( self.fadeIdx < STVerseFadeFrames ) {
             NSDictionary *fadeAttrs = @{ NSForegroundColorAttributeName : [[STColorClass grayColor] colorWithAlphaComponent:(self.fadeIdx / STVerseFadeFrames)],
                                          NSFontAttributeName : [STFontClass systemFontOfSize:[self _fontSizeForViewWidth:self.frame.size.width]] };

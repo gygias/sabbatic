@@ -174,8 +174,8 @@ CGRect gMyInitRect;
             columnX--;
 #endif
             NSInteger effectiveDay = day;
-            // +1 hour to handle shortening and lengthening days in one pass (hopefully)
-            NSDate *thisDate = [STCalendar date:lastNewMoonStart byAddingDays:effectiveDay hours:1 minutes:0 seconds:0];
+            // +2 hour to handle shortening and lengthening days, dst, in one pass (hopefully)
+            NSDate *thisDate = [STCalendar date:lastNewMoonStart byAddingDays:effectiveDay hours:2 minutes:0 seconds:0];
             BOOL isLunarToday = [STCalendar isDateInLunarToday:thisDate];
             [self drawDayAtPoint:CGPointMake(columnX,ldY) lunarDay:effectiveDay + 1 lunarMonth:monthsSinceNewYear date:thisDate asToday:isLunarToday foundToday:&foundToday];
         }
@@ -337,13 +337,12 @@ CGRect gMyInitRect;
     CGFloat lunarOffsetY = ( lunarHeight / STLunarDayScalarY );
 #endif
     
+    NSDate *sunset = [DP nextSunsetForDate:date momentAfter:NO];
+    
     // account for lunar day start on dynamic days
     if ( lunarDay > 1 )
         date = [STCalendar date:date byAddingDays:1 hours:0 minutes:0 seconds:0];
     
-#warning it's off by one, this is location/api dependent and needs to be fixed
-    NSDate *tomorrow = [STCalendar date:date byAddingDays:1 hours:0 minutes:0 seconds:0];
-    NSDate *sunset = [DP lastSunsetForDate:tomorrow momentAfter:NO];
     
     if ( asToday ) {
         [self _drawTodayCircleAtPoint:CGPointMake(oneX + circleOffsetX, ldY + circleOffsetY) withLineWidth:self.lineWidth textAttributes:self.textAttributes context:context];

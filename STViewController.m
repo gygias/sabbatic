@@ -107,11 +107,15 @@
     });
 }
 
-- (void)_replaceCurrentCalendarWithDate:(NSDate *)date :(BOOL)up
+- (void)_replaceCurrentCalendarWithDate:(NSDate *)date :(BOOL)up :(BOOL)animated
 {
     STCalendarView *oldCalendar = self.calendarView;
-    
+
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
+    if ( ! animated ) {
+        [self _replaceCurrentCalendarFinally:date];
+        return;
+    }
     NSTimeInterval duration = STCalendarAnimationDuration;
     [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         oldCalendar.frame = CGRectMake(oldCalendar.frame.origin.x,
@@ -123,8 +127,7 @@
     }];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [oldCalendar removeFromSuperview];
-        [self _addCalendarViewWithDate:date];
+        [self _replaceCurrentCalendarFinally:date];
         
         [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             //self.calendarView.layer.opaque = 1.0;
@@ -133,9 +136,15 @@
         }];
     });
 #else
-    [oldCalendar removeFromSuperview];
-    [self _addCalendarViewWithDate:date];    
+    [self _replaceCurrentCalendarFinally:date];
 #endif
+}
+
+- (void)_replaceCurrentCalendarFinally:(NSDate *)date
+{
+    STCalendarView *oldCalendar = self.calendarView;
+    [oldCalendar removeFromSuperview];
+    [self _addCalendarViewWithDate:date];
 }
 
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
@@ -169,7 +178,7 @@
     NSDate *previousNewMoonStart = [STCalendar newMoonStartTimeForConjunction:lastLastConj];
     
     NSLog(@"swipe down, switching from %@ to %@ (%@, %@)",currentNewMoon,previousNewMoonStart,lastConj,lastLastConj);
-    [self _replaceCurrentCalendarWithDate:previousNewMoonStart :NO];
+    [self _replaceCurrentCalendarWithDate:previousNewMoonStart :NO :YES];
 }
 
 - (void)_moveDown
@@ -179,7 +188,7 @@
     NSDate *nextNewMoonStart = [STCalendar newMoonStartTimeForConjunction:nextConj];
     
     NSLog(@"swipe up, switching from %@ to %@ (%@)",currentNewMoon,nextNewMoonStart,nextConj);
-    [self _replaceCurrentCalendarWithDate:nextNewMoonStart :YES];
+    [self _replaceCurrentCalendarWithDate:nextNewMoonStart :YES :YES];
 }
 
 - (void)_addCalendarViewWithDate:(NSDate *)date
@@ -241,7 +250,7 @@
         NSDate *yearFrom = [STCalendar date:date byAddingDays:365 hours:0 minutes:0 seconds:0];
         date = [DP lastNewYearForDate:yearFrom];
     }
-    [self _replaceCurrentCalendarWithDate:date :[date timeIntervalSinceDate:self.calendarView.effectiveNewMoonStart] > 0];
+    [self _replaceCurrentCalendarWithDate:date :[date timeIntervalSinceDate:self.calendarView.effectiveNewMoonStart] > 0 :YES];
 }
 
 - (void)_addOptionsButton
@@ -329,7 +338,7 @@
     //®®}];
     
     [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
-        [self _replaceCurrentCalendarWithDate:[NSDate myNow] :NO];
+        [self _replaceCurrentCalendarWithDate:[NSDate myNow] :NO :NO];
         [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
             NSLog(@"animated to current phase on day change");
         }];
@@ -338,7 +347,7 @@
     }];
     [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue]  usingBlock:^(NSNotification * _Nonnull notification) {
         NSLog(@"NSSystemClockDidChangeNotification!");
-        [self _replaceCurrentCalendarWithDate:[NSDate myNow] :NO];
+        [self _replaceCurrentCalendarWithDate:[NSDate myNow] :NO :NO];
         [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
             NSLog(@"animated to current phase on clock change");
         }];
@@ -357,7 +366,7 @@
 - (void)_periodicRedraw
 {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(STPeriodicRedrawSeconds * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self _replaceCurrentCalendarWithDate:[NSDate myNow] :NO];
+        [self _replaceCurrentCalendarWithDate:[NSDate myNow] :NO :NO];
         [self _periodicRedraw];
     });
 }
