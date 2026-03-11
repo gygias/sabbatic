@@ -170,7 +170,7 @@ typedef enum
     } else
         return;
     
-    NSLog(@"animating phase %ld to %0.2f [%0.2fx,%0.2fy,%0.2fz] camera [%0.2fx,%0.2fy,%0.2fz]",self.currentPhase,fraction,byVector.x,byVector.y,byVector.z,camVector.x,camVector.y,camVector.z);
+    //NSLog(@"animating phase %ld to %0.2f [%0.2fx,%0.2fy,%0.2fz] camera [%0.2fx,%0.2fy,%0.2fz]",self.currentPhase,fraction,byVector.x,byVector.y,byVector.z,camVector.x,camVector.y,camVector.z);
     
     [SCNTransaction begin];
     [SCNTransaction setAnimationDuration:3];

@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
     double centered = 2 * pi * zeroThruOne - pi;
     double y = sin(centered + ( pi / 2 ) ) + 1;
     double synthetic = y / 2;
-    NSLog(@"%0.2f: sin(%0.2f + ( %0.2f / 2 )) => %0.2f",zeroThruOne,centered,pi,synthetic);
+    //NSLog(@"%0.2f: sin(%0.2f + ( %0.2f / 2 )) => %0.2f",zeroThruOne,centered,pi,synthetic);
     return synthetic;
 }
 
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     double usno = [self moonFracillumForDate:now :waning];
     double synthetic = [self syntheticMoonPhaseCurve:monthCompleted];
-    NSLog(@"%0.2f vs %0.2f",synthetic,usno);
+    //NSLog(@"%0.2f vs %0.2f",synthetic,usno);
     
     return synthetic;
 }

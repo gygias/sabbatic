@@ -141,6 +141,20 @@ NS_ASSUME_NONNULL_BEGIN
     return [self conjunctionAfterDate:[NSDate myNow]];
 }
 
+- (NSArray *)seasonalEventsForYear:(NSInteger)year
+{
+    astro_seasons_t seasons = Astronomy_Seasons((int)year);
+    if ( seasons.status != ASTRO_SUCCESS ) {
+        NSLog(@"ERROR: Astronomy_Seasons() returned %d\n", seasons.status);
+        abort();
+    }
+    
+    return @[ [NSDate dateWithAstroTime:seasons.mar_equinox],
+              [NSDate dateWithAstroTime:seasons.jun_solstice],
+              [NSDate dateWithAstroTime:seasons.sep_equinox],
+              [NSDate dateWithAstroTime:seasons.dec_solstice] ];
+}
+
 - (NSDate *)_lastSpringEquinoxForDate:(NSDate *)date
 {
     NSCalendarUnit flags = ( NSCalendarUnitEra | NSCalendarUnitYear );
@@ -271,7 +285,7 @@ NS_ASSUME_NONNULL_BEGIN
         abort();
     }
     
-    NSLog(@"moon culmination next %@: %@",date,[NSDate dateWithAstroTime:evt.time]);
+    //NSLog(@"moon culmination next %@: %@",date,[NSDate dateWithAstroTime:evt.time]);
     return [NSDate dateWithAstroTime:evt.time];
 }
 

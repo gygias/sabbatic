@@ -435,4 +435,10 @@
     return obj;
 }
 
+- (NSArray *)seasonalEventsForYear:(NSInteger)year
+{
+    NSLog(@"%s not implemented",__PRETTY_FUNCTION__);
+    abort();
+}
+
 @end

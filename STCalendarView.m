@@ -34,6 +34,7 @@ CGRect gMyInitRect;
 @property CGSize smallTextSize;
 @property CGSize smallerTextSize;
 @property (strong) NSString *delimiter;
+@property (strong) NSArray *seasonalEvents;
 @end
 
 @implementation STCalendarView
@@ -146,6 +147,7 @@ CGRect gMyInitRect;
     self.textSize = [@"foo" sizeWithAttributes:self.textAttributes];
     self.smallTextSize = [@"foo" sizeWithAttributes:self.smallAttributes];
     self.smallerTextSize = [@"foo" sizeWithAttributes:self.smallerAttributes];
+    self.seasonalEvents = [DP seasonalEventsForYear:[[self.effectiveNewMoonStart localYearString] integerValue]];
     //CGFloat singleDigitDateXOffset = [@"0" sizeWithAttributes:self.textAttributes].width / 2;
     //CGSize smallSize = [@"foo" sizeWithAttributes:smallAttributes];
     
@@ -331,6 +333,7 @@ CGRect gMyInitRect;
     CGFloat ssY = gdY - self.smallerTextSize.height - STSmallTextOffsetY;
     CGFloat fcY = ssY - self.smallerTextSize.height - STSmallTextOffsetY;
     CGFloat mdY = fcY - self.smallerTextSize.height - STSmallTextOffsetY;
+    CGFloat seY = mdY - self.smallerTextSize.height - STSmallTextOffsetY;
     CGFloat circleOffsetX = self.lineWidth * 2;
     CGFloat circleOffsetY = self.lineWidth;
     CGFloat lunarOffsetX = [lunarString length] == 1 ? lunarWidth + STLunarDayScalarX : lunarWidth / STLunarDayScalarX;
@@ -342,8 +345,7 @@ CGRect gMyInitRect;
     // account for lunar day start on dynamic days
     if ( lunarDay > 1 )
         date = [STCalendar date:date byAddingDays:1 hours:0 minutes:0 seconds:0];
-    
-    
+        
     if ( asToday ) {
         [self _drawTodayCircleAtPoint:CGPointMake(oneX + circleOffsetX, ldY + circleOffsetY) withLineWidth:self.lineWidth textAttributes:self.textAttributes context:context];
     }
@@ -360,8 +362,8 @@ CGRect gMyInitRect;
         
         double fracillum = [DP moonFracillumForDate:date :NULL];
         NSDate *nextDate = [DP nextLunarCulminationForDate:date];
-        double nextFracillum = [DP moonFracillumForDate:nextDate :NULL];
-        NSLog(@"moon on %@: %0.2f, next %0.2f",date,fracillum,nextFracillum);
+        //double nextFracillum = [DP moonFracillumForDate:nextDate :NULL];
+        //NSLog(@"moon on %@: %0.2f, next %0.2f",date,fracillum,nextFracillum);
         NSString *fracillumString = [NSString stringWithFormat:@"Moon %0.0f%%",fracillum * 100];
         [fracillumString drawAtPoint:CGPointMake(oneX + xOffset, fcY) withAttributes:self.smallerAttributes];
     }
@@ -369,6 +371,32 @@ CGRect gMyInitRect;
     NSString *moedString = [STCalendar moedStringForLunarDay:lunarDay - 1 ofLunarMonth:lunarMonth];
     if ( moedString ) {
         [moedString drawAtPoint:CGPointMake(oneX + xOffset, mdY) withAttributes:self.smallerRedAttributes];
+    }
+    
+    for ( int i = 0; i < 4; i++ ) {
+        NSDate *seasonalEvent = self.seasonalEvents[i];
+        if ( [[DP lastSunsetForDate:date momentAfter:YES] compare:seasonalEvent] == NSOrderedAscending
+            && [[DP nextSunsetForDate:date momentAfter:NO] compare:seasonalEvent] == NSOrderedDescending ) {
+            NSString *string = nil;
+            switch(i) {
+                case 0:
+                    string = @"S.Equinox";
+                    break;
+                case 1:
+                    string = @"S.Solstice";
+                    break;
+                case 2:
+                    string = @"F.Equinox";
+                    break;
+                case 3:
+                    string = @"W.Solstice";
+                    break;
+                default:
+                    string = @"???";
+                    break;
+            }
+            [string drawAtPoint:CGPointMake(oneX + xOffset, seY) withAttributes:self.smallerAttributes];
+        }
     }
     
     // draw attributed gregorian date

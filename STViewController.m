@@ -332,7 +332,7 @@
     //[self.moonController doIntroAnimationWithCompletionHandler:^{
     //    NSLog(@"did intro animation");
         [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
-            NSLog(@"animated to current phase on app launch");
+            //NSLog(@"animated to current phase on app launch");
             [self _updatePhase];
         }];
     //®®}];

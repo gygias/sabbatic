@@ -39,6 +39,8 @@
 
 - (NSDate *)nextLunarCulminationForDate:(NSDate *)date;
 
+- (NSArray *)seasonalEventsForYear:(NSInteger)year;
+
 @end
 
 // for shared relevant stuff regardless of model
