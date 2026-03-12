@@ -361,7 +361,7 @@ CGRect gMyInitRect;
         [sunsetHourMinute drawAtPoint:CGPointMake(oneX + xOffset, ssY) withAttributes:self.smallerAttributes];
         
         double fracillum = [DP moonFracillumForDate:date :NULL];
-        NSDate *nextDate = [DP nextLunarCulminationForDate:date];
+        //NSDate *nextDate = [DP nextLunarCulminationForDate:date];
         //double nextFracillum = [DP moonFracillumForDate:nextDate :NULL];
         //NSLog(@"moon on %@: %0.2f, next %0.2f",date,fracillum,nextFracillum);
         NSString *fracillumString = [NSString stringWithFormat:@"Moon %0.0f%%",fracillum * 100];

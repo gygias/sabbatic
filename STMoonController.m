@@ -67,7 +67,7 @@ typedef enum
         
         [self.moonView.scene.rootNode addChildNode:self.lightNode];
         
-        SCNCamera *camera = self.moonView.scene.rootNode.camera;
+        //SCNCamera *camera = self.moonView.scene.rootNode.camera;
         self.originalCameraPosition = SCNVector3Make(self.moonView.pointOfView.position.x, self.moonView.pointOfView.position.y, self.moonView.pointOfView.position.z);
         NSLog(@"original camera position [%0.1fx,%0.1fy,%0.1fz]",self.originalCameraPosition.x,self.originalCameraPosition.y,self.originalCameraPosition.z);
         

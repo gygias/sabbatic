@@ -20,8 +20,8 @@
     BOOL lunarToday = ( [date timeIntervalSinceDate:lastSunset] >= 0 )
         && ( [date timeIntervalSinceDate:nextSunset] <= 0 );
     
-    if ( lunarToday )
-        NSLog(@"LUNAR TODAY is %@ < <%@> < %@",lastSunset,date,nextSunset);
+    //if ( lunarToday )
+    //    NSLog(@"LUNAR TODAY is %@ < <%@> < %@",lastSunset,date,nextSunset);
     
     return lunarToday;
 }

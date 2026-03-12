@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     double monthCompleted = timeSinceLast / STSecondsPerLunarMonth;
     
-    double usno = [self moonFracillumForDate:now :waning];
+    //double usno = [self moonFracillumForDate:now :waning];
     double synthetic = [self syntheticMoonPhaseCurve:monthCompleted];
     //NSLog(@"%0.2f vs %0.2f",synthetic,usno);
     
@@ -286,6 +286,18 @@ NS_ASSUME_NONNULL_BEGIN
     NSLog(@"STDataProvider does not provide shared implementation for %s!",__FUNCTION__);
     abort();
 }
+
+- (NSDate *)nextLunarCulminationForDate:(NSDate *)date {
+    NSLog(@"STDataProvider does not provide shared implementation for %s!",__FUNCTION__);
+    abort();
+}
+
+
+- (NSArray *)seasonalEventsForYear:(NSInteger)year {
+    NSLog(@"STDataProvider does not provide shared implementation for %s!",__FUNCTION__);
+    abort();
+}
+
 
 - (NSDate *)_fetchSunsetTimeOnDate:(NSDate *)date {
     NSLog(@"STDataProvider does not provide shared implementation for %s!",__FUNCTION__);

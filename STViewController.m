@@ -23,6 +23,7 @@
 @property (strong) STVerseView *verseView;
 @property (strong) STButton *optionsButton;
 //@property (strong) UIDatePicker *datePicker;
+@property BOOL nowAndThen;
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
 @property (strong) UIActivityIndicatorView *progressView;
 #endif
@@ -224,7 +225,7 @@
     NSLog(@"jump to %@!",self.datePicker.date);
 }*/
 
-- (void)_jumpToYear:(NSString *)string gregorian:(BOOL)gregorian
+- (void)_jumpToYear:(NSString *)string month:(int)month gregorian:(BOOL)gregorian
 {
     NSNumberFormatter *f = [NSNumberFormatter new];
     f.numberStyle = NSNumberFormatterDecimalStyle;
@@ -249,8 +250,23 @@
     if ( ! gregorian ) {
         NSDate *yearFrom = [STCalendar date:date byAddingDays:365 hours:0 minutes:0 seconds:0];
         date = [DP lastNewYearForDate:yearFrom];
+        
+        while ( month-- ) {
+            date = [STCalendar newMoonDayForConjunction:[DP conjunctionAfterDate:[STCalendar date:date byAddingDays:1 hours:0 minutes:0 seconds:0]]];
+        }
     }
-    [self _replaceCurrentCalendarWithDate:date :[date timeIntervalSinceDate:self.calendarView.effectiveNewMoonStart] > 0 :YES];
+    self.nowAndThen = NO;
+    BOOL up = [date timeIntervalSinceDate:self.calendarView.effectiveNewMoonStart] > 0;
+    [self _replaceCurrentCalendarWithDate:date :up :YES];
+}
+
+- (void)_jumpToNow
+{
+    if ( ! self.nowAndThen ) {
+        self.nowAndThen = YES;
+        BOOL up = [[NSDate myNow] timeIntervalSinceDate:self.calendarView.effectiveNewMoonStart] > 0;
+        [self _replaceCurrentCalendarWithDate:[NSDate myNow] :up :YES];
+    }
 }
 
 - (void)_addOptionsButton
@@ -277,16 +293,22 @@
         [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
         }]];
         [alert addAction:[UIAlertAction actionWithTitle:@"January" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [self _jumpToYear:alert.textFields.firstObject.text gregorian:YES];
+            [self _jumpToYear:alert.textFields.firstObject.text month:0 gregorian:YES];
         }]];
         [alert addAction:[UIAlertAction actionWithTitle:@"Abib" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [self _jumpToYear:alert.textFields.firstObject.text gregorian:NO];
+            [self _jumpToYear:alert.textFields.firstObject.text month:0 gregorian:NO];
+        }]];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Tishrei" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [self _jumpToYear:alert.textFields.firstObject.text month:6 gregorian:NO];
         }]];
         
         [self presentViewController:alert animated:YES completion:^{
         }];
     }];
-    UIMenu *menu = [UIMenu menuWithTitle:@"" image:nil identifier:nil options:0 children:[NSArray arrayWithObjects:/*settings,jumpToDate,*/jumpToYear,nil]];
+    UIMenuElement *jumpToNow = [UIAction actionWithTitle:@"jump to now" image:[UIImage systemImageNamed:@"sun"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+        [self _jumpToNow];
+    }];
+    UIMenu *menu = [UIMenu menuWithTitle:@"" image:nil identifier:nil options:0 children:[NSArray arrayWithObjects:/*settings,jumpToDate,*/jumpToYear,jumpToNow,nil]];
     
     self.optionsButton = [STButton buttonWithType:UIButtonTypeSystem];
     self.optionsButton.menu = menu;
@@ -328,6 +350,7 @@
     [self _addVerseView];
     
     [self _addOptionsButton];
+    self.nowAndThen = YES;
     
     //[self.moonController doIntroAnimationWithCompletionHandler:^{
     //    NSLog(@"did intro animation");
