@@ -15,19 +15,29 @@
 #define STState_h
 
 #define ST [STState state]
-#define DP [[STState state] dataProvider]
+#define DP [ST dataProvider]
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface STState : NSObject <CLLocationManagerDelegate>
 {
-    CLLocation *_location;
     id<STDataProvider> _dataProvider;
 }
 
-+ (id)state;
++ (STState *)state;
+- (void)save;
 
+@property BOOL locationPreferenceGathered;
+@property BOOL useManualLocation;
+@property double manualLatitude;
+@property double manualLongitude;
+@property double lastLSLatitude;
+@property double lastLSLongitude;
+
+- (void)requestLocationAuthorization:(void (^)(BOOL))callback;
 - (CLLocation *)effectiveLocation;
+- (void)_clearLocationPreferences;
+
 - (void)requestNotificationApprovalWithDelay:(NSTimeInterval)delay;
 - (void)sendSabbathNotificationWithDelay:(NSTimeInterval)delay;
 

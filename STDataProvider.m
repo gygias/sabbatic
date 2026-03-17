@@ -130,6 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSDate *origDate = date;
     NSDate *sunsetDate = nil;
+    
     date = [STCalendar date:date byAddingDays:1 hours:0 minutes:10 seconds:0];
     for ( int i = 0; i < 3; i++ ) {
         sunsetDate = [self _fetchSunsetTimeOnDate:date];

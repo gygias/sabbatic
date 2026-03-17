@@ -89,7 +89,7 @@ static NSDate *sNSDateMyNowStart = nil;
     }
     
     NSDate *myNow = [NSDate myNow];
-    NSLog(@"MyNow: The time is now %@ (%0.1f seconds in the %@)",myNow,sNSDateMyNowOffset,sNSDateMyNowOffset>0?@"past":@"future");
+    NSLog(@"MyNow: The time is now %@ (%0.1f seconds in the %@)",myNow,sNSDateMyNowOffset<0?-sNSDateMyNowOffset:sNSDateMyNowOffset,sNSDateMyNowOffset>0?@"past":@"future");
     [self _enqueueDayChangedNotesForDate:date];
 }
 

@@ -9,6 +9,14 @@
 #define STDefines_h
 
 // preferences
+#define LocationPreferenceGathered @"LocationPreferenceGathered"
+#define UseManualLocation @"UseManualLocation"
+#define ManualLatitude @"ManualLatitude"
+#define ManualLongitude @"ManualLongitude"
+#define LastLSLatitude @"LastLSLatitude"
+#define LastLSLongitude @"LastLSLongitude"
+#define LastLocationServicesRequested @"LastLocationServicesRequested"
+#define LastLocationServicesStatus @"LastLocationServicesStatus"
 #define LastGeneralNoteDate @"LastGeneralNoteDate"
 #define LastUrgentNoteDate @"LastUrgentNoteDate"
 //

@@ -238,7 +238,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSDate *aClosestConjunction = priorToEquinox > equinoxToNext ? aNextConjunction : aPriorConjunction;
         NSDate *aNewYear = [STCalendar newMoonStartTimeForConjunction:aClosestConjunction];
         if ( [date timeIntervalSinceDate:aNewYear] >= 0 ) {
-            NSLog(@"last new year for %@\n\t%@\n\tlastEquinox %@\n\tpriorC %@\n\tnextC %@",origDate,aNewYear,lastEquinox,aPriorConjunction,aNextConjunction);
+            NSLog(@"last new year for %@\n\t%@\n\tlastEquinox %@\n\tpriorConj %@\n\tnextConj %@",origDate,aNewYear,lastEquinox,aPriorConjunction,aNextConjunction);
             return aNewYear;
         }
         

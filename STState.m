@@ -15,6 +15,13 @@
 
 static STState *sState = nil;
 
+@interface STState ()
+@property CLLocationManager *locationManager;
+@property NSDate *lastLocationServicesRequested;
+@property NSInteger lastLocationServicesStatus;
+@property (copy) void (^locationAuthCallback)(BOOL);
+@end
+
 @implementation STState
 
 + (id)state
@@ -24,6 +31,43 @@ static STState *sState = nil;
         sState = [STState new];
     });
     return sState;
+}
+
+- (id)init
+{
+    if ( self = [super init] ) {
+        NSUserDefaults *df = [NSUserDefaults standardUserDefaults];
+        self.locationPreferenceGathered = [df boolForKey:LocationPreferenceGathered];
+        self.useManualLocation = [df boolForKey:UseManualLocation];
+        self.manualLatitude = [df doubleForKey:ManualLatitude];
+        self.manualLongitude = [df doubleForKey:ManualLongitude];
+        self.lastLSLatitude = [df doubleForKey:LastLSLatitude];
+        self.lastLSLongitude = [df doubleForKey:LastLSLongitude];
+        self.lastLocationServicesRequested = [NSDate dateWithTimeIntervalSince1970:[df doubleForKey:LastLocationServicesRequested]];
+        self.lastLocationServicesStatus = [df integerForKey:LastLocationServicesStatus];
+        
+        if ( self.manualLatitude < -66 || self.manualLatitude > 66 ) {
+            NSLog(@"clearing location prefs on manual latitude within ant/arctic circles: %0.2f",self.manualLatitude);
+            [self _clearLocationPreferences];
+        }
+    }
+    
+    return self;
+}
+
+- (void)save
+{
+    NSUserDefaults *df = [NSUserDefaults standardUserDefaults];
+    [df setBool:self.locationPreferenceGathered forKey:LocationPreferenceGathered];
+    [df setBool:self.useManualLocation forKey:UseManualLocation];
+    [df setDouble:self.manualLatitude forKey:ManualLatitude];
+    [df setDouble:self.manualLongitude forKey:ManualLongitude];
+    [df setDouble:self.lastLSLatitude forKey:LastLSLatitude];
+    [df setDouble:self.lastLSLongitude forKey:LastLSLongitude];
+    [df setDouble:[self.lastLocationServicesRequested timeIntervalSince1970] forKey:LastLocationServicesRequested];
+    [df setInteger:self.lastLocationServicesStatus forKey:LastLocationServicesStatus];
+    
+    [df synchronize];
 }
 
 - (BOOL)_shouldSendNoteBasedOnTimeKey:(NSString *)key andMinimumInterval:(NSTimeInterval)notMoreFrequentThan
@@ -176,31 +220,138 @@ static STState *sState = nil;
     }
 }
 
-- (void)requestLocationAuthorization
+- (void)requestLocationAuthorization:(void (^)(BOOL))callback
 {
-    CLLocationManager *manager = [CLLocationManager new];
-    manager.delegate = self;
-    [manager requestWhenInUseAuthorization];
+    if ( ! self.locationManager )
+        self.locationManager = [CLLocationManager new];
+    
+    NSLog(@"manager auth status: %d",self.locationManager.authorizationStatus);
+    
+    // kCLAuthorizationStatusRestricted ls can't be used, user cannot change
+#warning this should factor into alert construction
+    // kCLAuthorizationStatusDenied user denied this application, or ls is disabled
+    if ( self.locationManager.authorizationStatus == kCLAuthorizationStatusDenied || self.locationManager.authorizationStatus == kCLAuthorizationStatusRestricted ) {
+        NSLog(@"location services DENIED!");
+        callback(NO);
+        return;
+    }
+    
+    else if ( self.locationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways || self.locationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse
+#ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
+        || self.locationManager.authorizationStatus == kCLAuthorizationStatusAuthorized
+#endif
+        ) {
+        NSLog(@"short-circuiting loc auth request (%d, %@)",self.locationManager.authorizationStatus,self.locationManager.location);
+        ST.lastLSLatitude = [self.locationManager location].coordinate.latitude;
+        ST.lastLSLongitude = [self.locationManager location].coordinate.longitude;
+        [ST save];
+        callback(YES);
+        return;
+    }
+    
+    else if ( self.locationManager.authorizationStatus == kCLAuthorizationStatusNotDetermined ) {
+        self.locationAuthCallback = callback;
+        
+        NSUserDefaults *df = [NSUserDefaults standardUserDefaults];
+        NSLog(@"requesting location authorization, current %d last: %ld",self.locationManager.authorizationStatus,[df integerForKey:LastLocationServicesStatus]);
+        [df setDouble:[[NSDate date] timeIntervalSince1970] forKey:LastLocationServicesRequested];
+        [df synchronize];
+        
+        self.locationManager.delegate = self;
+        //-requestTemporaryFullAccuracyAuthorizationWithPurposeKey:completion:
+        [self.locationManager requestWhenInUseAuthorization];
+    }
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(nonnull NSError *)error
+{
+    NSLog(@"location manager failed with error! %@",error);
+}
+
+- (void)locationManager:(CLLocationManager *)manager
+     didUpdateLocations:(NSArray<CLLocation *> *)locations
+{
+    NSLog(@"location manager did update locations! %@",locations);
+    [self _locationCallback:manager];
 }
 
 - (void)locationManagerDidChangeAuthorization:(CLLocationManager *)manager
 {
+    NSLog(@"location manager did change authorization! %d",manager.authorizationStatus);
+    [self _locationCallback:manager];
+}
+
+- (void)_locationCallback:(CLLocationManager *)manager
+{
+    NSUserDefaults *df = [NSUserDefaults standardUserDefaults];
+    [df setInteger:manager.authorizationStatus forKey:LastLocationServicesStatus];
+    [df synchronize];
+    
+    BOOL okay = NO;
+    
     if ( manager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
         || manager.authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse
 #endif
         ) {
-        NSLog(@"location stored");
-        _location = manager.location;
+        NSLog(@"location authorized: %@",manager.location);
+        ST.lastLSLatitude = [manager location].coordinate.latitude;
+        ST.lastLSLongitude = [manager location].coordinate.longitude;
+        [ST save];
+        okay = YES;
     } else
-        NSLog(@"location not authorized: %d",manager.authorizationStatus);
+        NSLog(@"location not authorized: %d (%@)",manager.authorizationStatus,manager.location);
+    
+    if ( manager.authorizationStatus != kCLAuthorizationStatusNotDetermined ) {
+        if ( self.locationAuthCallback )
+            self.locationAuthCallback(okay);
+    }
 }
+
+static dispatch_once_t elOnce = 0;
 
 - (CLLocation *)effectiveLocation
 {
-    if ( _location )
-        return _location;
-    return [[CLLocation alloc] initWithLatitude:38.63 longitude:-90.20];
+    CLLocation *effectiveLocation = nil;
+    if ( self.useManualLocation ) {
+        effectiveLocation = [[CLLocation alloc] initWithLatitude:self.manualLatitude longitude:self.manualLongitude];
+        dispatch_once(&elOnce, ^{
+            NSLog(@"effectiveLocation (manual) %@",effectiveLocation);
+        });
+        return effectiveLocation;
+    }
+    
+    effectiveLocation = [[CLLocation alloc] initWithLatitude:ST.lastLSLatitude longitude:ST.lastLSLongitude];
+    dispatch_once(&elOnce, ^{
+        NSLog(@"effectiveLocation (ls) %@",effectiveLocation);
+    });
+    return effectiveLocation;
+    //return [[CLLocation alloc] initWithLatitude:38.63 longitude:-90.20];
+}
+
+- (void)_clearLocationPreferences
+{
+    NSUserDefaults *dp = [NSUserDefaults standardUserDefaults];
+    [dp removeObjectForKey:LocationPreferenceGathered];
+    self.locationPreferenceGathered = NO;
+    [dp removeObjectForKey:UseManualLocation];
+    self.useManualLocation = NO;
+    [dp removeObjectForKey:ManualLatitude];
+    self.manualLatitude = NAN;
+    [dp removeObjectForKey:ManualLongitude];
+    self.manualLongitude = NAN;
+    [dp removeObjectForKey:LastLSLatitude];
+    self.lastLSLatitude = NAN;
+    [dp removeObjectForKey:LastLSLongitude];
+    self.lastLSLongitude = NAN;
+    [dp removeObjectForKey:LastLocationServicesStatus];
+    self.lastLocationServicesStatus = 0;
+    [dp removeObjectForKey:LastLocationServicesRequested];
+    self.lastLocationServicesRequested = 0;
+    
+    elOnce = 0;
+    
+    [dp synchronize];
 }
 
 - (void)setDataProvider:(id<STDataProvider>)dataProvider

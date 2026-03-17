@@ -34,8 +34,12 @@
 
 + (void)initialize
 {    
-    [[STState state] setDataProvider:[[STDataProviderClass alloc] init]];
-    
+    [ST setDataProvider:[[STDataProviderClass alloc] init]];
+}
+
+// now an instance method so it can be deferred until location is determined, one way or another
+- (void)initializeNow
+{
 //#define MyNow
 #define fast 0
 #ifdef MyNow
@@ -114,7 +118,7 @@
 
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
     if ( ! animated ) {
-        [self _replaceCurrentCalendarFinally:date];
+        [self _reloadCalendarWithDate:date :NO];
         return;
     }
     NSTimeInterval duration = STCalendarAnimationDuration;
@@ -128,7 +132,7 @@
     }];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        [self _replaceCurrentCalendarFinally:date];
+        [self _reloadCalendarWithDate:date :NO];
         
         [UIView animateWithDuration:duration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             //self.calendarView.layer.opaque = 1.0;
@@ -139,13 +143,6 @@
 #else
     [self _replaceCurrentCalendarFinally:date];
 #endif
-}
-
-- (void)_replaceCurrentCalendarFinally:(NSDate *)date
-{
-    STCalendarView *oldCalendar = self.calendarView;
-    [oldCalendar removeFromSuperview];
-    [self _addCalendarViewWithDate:date];
 }
 
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
@@ -192,8 +189,11 @@
     [self _replaceCurrentCalendarWithDate:nextNewMoonStart :YES :YES];
 }
 
-- (void)_addCalendarViewWithDate:(NSDate *)date
+- (void)_reloadCalendarWithDate:(NSDate *)date :(BOOL)appLaunch
 {
+    if ( self.calendarView )
+        [self.calendarView removeFromSuperview];
+    
     self.calendarView = [[STCalendarView alloc] initWithFrame:CGRectInset([self.view frame], STCalendarViewInsetX, STCalendarViewInsetY)];
     self.calendarView.effectiveNewMoonStart = [STCalendar lastNewMoonForDate:date];
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
@@ -208,6 +208,10 @@
     };
     //self.calendarView.layer.opaque = 0.5;
     [self _addCalendarView];
+    
+    if ( appLaunch ) {
+        [self viewDidLoadFinally];
+    }
 }
 
 - (void)_addVerseView
@@ -284,7 +288,7 @@
         }
     }];*/
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
-    UIMenuElement *jumpToYear = [UIAction actionWithTitle:@"jump to year" image:[UIImage systemImageNamed:@"sun.max"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+    UIMenuElement *jumpToYear = [UIAction actionWithTitle:@"jump to year" image:[UIImage systemImageNamed:@"slider.horizontal.below.sun.max"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"jump to year" message:nil preferredStyle:UIAlertControllerStyleAlert];
         [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
             [textField setText:@""];
@@ -305,10 +309,14 @@
         [self presentViewController:alert animated:YES completion:^{
         }];
     }];
-    UIMenuElement *jumpToNow = [UIAction actionWithTitle:@"jump to now" image:[UIImage systemImageNamed:@"sun"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+    UIMenuElement *jumpToNow = [UIAction actionWithTitle:@"jump to now" image:[UIImage systemImageNamed:@"sun.max"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
         [self _jumpToNow];
     }];
-    UIMenu *menu = [UIMenu menuWithTitle:@"" image:nil identifier:nil options:0 children:[NSArray arrayWithObjects:/*settings,jumpToDate,*/jumpToYear,jumpToNow,nil]];
+    UIMenuElement *updateLocPref = [UIAction actionWithTitle:@"change location" image:[UIImage systemImageNamed:@"location.viewfinder"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+        [ST _clearLocationPreferences];
+        [self _gatherLocationPreference:NO];
+    }];
+    UIMenu *menu = [UIMenu menuWithTitle:@"" image:nil identifier:nil options:0 children:[NSArray arrayWithObjects:/*settings,jumpToDate,*/jumpToYear,jumpToNow,updateLocPref,nil]];
     
     self.optionsButton = [STButton buttonWithType:UIButtonTypeSystem];
     self.optionsButton.menu = menu;
@@ -321,10 +329,61 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-        
+    
+    BOOL deferCalendar = NO;
+    if ( ! ST.locationPreferenceGathered ) {
+        NSLog(@"gathering location prefs...");
+        deferCalendar = YES;
+        [self _gatherLocationPreference:YES];
+    } else
+        NSLog(@"location prefs known and are %@ %@",ST.useManualLocation?@"manual":@"ls-based",ST.effectiveLocation);
+    
     SCNView *moonView = [[SCNView alloc] initWithFrame:[self.view frame] options:NULL];
     self.moonController = [[STMoonController alloc] initWithView:moonView];
     [self.view addSubview:moonView];
+    
+    //[self.moonController doIntroAnimationWithCompletionHandler:^{
+    //    NSLog(@"did intro animation");
+        [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
+            //NSLog(@"animated to current phase on app launch");
+            [self _updatePhase];
+        }];
+    //®®}];
+    
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
+        [self _replaceCurrentCalendarWithDate:[NSDate myNow] :NO :NO];
+        [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
+            NSLog(@"animated to current phase on day change");
+        }];
+        
+        [ST sendSabbathNotificationWithDelay:STSecondsPerGregorianDay / 2.];
+    }];
+    [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue]  usingBlock:^(NSNotification * _Nonnull notification) {
+        NSLog(@"NSSystemClockDidChangeNotification!");
+        [self _replaceCurrentCalendarWithDate:[NSDate myNow] :NO :NO];
+        [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
+            NSLog(@"animated to current phase on clock change");
+        }];
+        
+        [ST sendSabbathNotificationWithDelay:0];
+    }];
+    
+//#define PeriodicRedraw
+#ifdef PeriodicRedraw
+    [self _periodicRedraw];
+#endif
+    
+#warning will this conflict with location alerts now?
+    [ST requestNotificationApprovalWithDelay:STNotificationRequestDelay];
+    
+    if ( ! deferCalendar ) {
+        [self _reloadCalendarWithDate:[DP lastNewMoonStart] :YES];
+    }
+}
+
+- (void)viewDidLoadFinally
+{
+    [self initializeNow];
     
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
     UISwipeGestureRecognizer *up = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
@@ -344,46 +403,81 @@
     self.progressView.hidesWhenStopped = YES;
     [self.view addSubview:self.progressView];
 #endif
-    
-    [self _addCalendarViewWithDate:[DP lastNewMoonStart]];
-    
+        
     [self _addVerseView];
     
     [self _addOptionsButton];
     self.nowAndThen = YES;
-    
-    //[self.moonController doIntroAnimationWithCompletionHandler:^{
-    //    NSLog(@"did intro animation");
-        [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
-            //NSLog(@"animated to current phase on app launch");
-            [self _updatePhase];
+}
+
+- (void)_gatherLocationPreference:(BOOL)appLaunch
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Location Preference" message:@"Sabbatic uses your location to display sunset times. You can use Location Services, or enter an approximate location manually." preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Enter Location" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+            [self _enterLocation:appLaunch];
+        }]];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Use Location Services" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            [ST requestLocationAuthorization:^(BOOL okay) {
+                NSLog(@"loc auth result: %d",okay);
+                if ( okay ) {
+                    ST.locationPreferenceGathered = YES;
+                    ST.useManualLocation = NO;
+                    [ST save];
+                    [self _reloadCalendarWithDate:[DP lastNewMoonStart] :appLaunch];
+                } else
+                    [self _gatherLocationPreference:appLaunch];
+            }];
+        }]];
+        [self presentViewController:alert animated:YES completion:^{
         }];
-    //®®}];
-    
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSCalendarDayChangedNotification object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification * _Nonnull notification) {
-        [self _replaceCurrentCalendarWithDate:[NSDate myNow] :NO :NO];
-        [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
-            NSLog(@"animated to current phase on day change");
-        }];
+    });
+}
+
+- (void)_enterLocation:(BOOL)appLaunch
+{
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Enter location" message:@"e.g. 38.62, -90.2" preferredStyle:UIAlertControllerStyleAlert];
+    [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        [textField setText:@""];
+        [textField setPlaceholder:@"latitude"];
+        [textField setKeyboardType:UIKeyboardTypeNumbersAndPunctuation];
+     }];
+    [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
+        [textField setText:@""];
+        [textField setPlaceholder:@"longitude"];
+        [textField setKeyboardType:UIKeyboardTypeNumbersAndPunctuation];
+     }];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        [self _gatherLocationPreference:appLaunch];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        ST.useManualLocation = YES;
+        double lat = [alert.textFields.firstObject.text doubleValue];
+        double lon = [alert.textFields.lastObject.text doubleValue];
         
-        [[STState state] sendSabbathNotificationWithDelay:STSecondsPerGregorianDay / 2.];
-    }];
-    [[NSNotificationCenter defaultCenter] addObserverForName:NSSystemClockDidChangeNotification object:nil queue:[NSOperationQueue mainQueue]  usingBlock:^(NSNotification * _Nonnull notification) {
-        NSLog(@"NSSystemClockDidChangeNotification!");
-        [self _replaceCurrentCalendarWithDate:[NSDate myNow] :NO :NO];
-        [self.moonController animateToCurrentPhaseWithCompletionHandler:^{
-            NSLog(@"animated to current phase on clock change");
-        }];
+        // text changed is by notification afaik, losing scope here, so for now doing this lazily
+        // would like okay to enable instead
+        if ( lat == 0 && lon == 0 ) {
+            [self _enterLocation:appLaunch];
+            return;
+        } if ( lat < -66 || lat > 66 ) {
+            [self _enterLocation:appLaunch];
+            return;
+        } else if ( lon < -180 || lat > 180 ) {
+            [self _enterLocation:appLaunch];
+            return;
+        }
         
-        [[STState state] sendSabbathNotificationWithDelay:0];
+        ST.manualLatitude = lat;
+        ST.manualLongitude = lon;
+        ST.locationPreferenceGathered = YES;
+        [ST save];
+        NSLog(@"entered manual location (%0.2f,%0.2f)",ST.manualLatitude,ST.manualLongitude);
+        
+        [self _reloadCalendarWithDate:[DP lastNewMoonStart] :appLaunch];
+    }]];
+    [self presentViewController:alert animated:YES completion:^{
     }];
-    
-//#define PeriodicRedraw
-#ifdef PeriodicRedraw
-    [self _periodicRedraw];
-#endif
-    
-    [[STState state] requestNotificationApprovalWithDelay:STNotificationRequestDelay];
 }
 
 - (void)_periodicRedraw
