@@ -281,6 +281,8 @@ static STState *sState = nil;
     [self _locationCallback:manager];
 }
 
+static dispatch_once_t elOnce = 0;
+
 - (void)_locationCallback:(CLLocationManager *)manager
 {
     NSUserDefaults *df = [NSUserDefaults standardUserDefaults];
@@ -288,6 +290,7 @@ static STState *sState = nil;
     [df synchronize];
     
     BOOL okay = NO;
+    elOnce = 0;
     
     if ( manager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
@@ -307,8 +310,6 @@ static STState *sState = nil;
             self.locationAuthCallback(okay);
     }
 }
-
-static dispatch_once_t elOnce = 0;
 
 - (CLLocation *)effectiveLocation
 {

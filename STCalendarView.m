@@ -192,7 +192,7 @@ CGRect gMyInitRect;
 #endif
     
     BOOL isLunarToday = [STCalendar isDateInLunarToday:[self.effectiveNewMoonStart dateByAddingTimeInterval:60]];
-    NSDate *someTimeLater = [STCalendar date:self.effectiveNewMoonStart byAddingDays:0 hours:12 minutes:0 seconds:0];
+    NSDate *someTimeLater = [STCalendar date:self.effectiveNewMoonStart byAddingDays:1 hours:2 minutes:0 seconds:0];
     [self drawDayAtPoint:CGPointMake(oneX,ldY) lunarDay:1 lunarMonth:monthsSinceNewYear date:someTimeLater asToday:isLunarToday foundToday:&foundToday];
     
     if ( intercalary ) {
@@ -203,7 +203,7 @@ CGRect gMyInitRect;
 #else
         CGFloat ldY = self.calendarBoxOriginY + ( 5 * self.dayHeight );
 #endif
-        NSDate *thisDate = [STCalendar date:lastNewMoonStart byAddingDays:effectiveDay hours:1 minutes:0 seconds:0];
+        NSDate *thisDate = [STCalendar date:lastNewMoonStart byAddingDays:effectiveDay hours:2 minutes:0 seconds:0]; // +2 for dst transition
         BOOL isLunarToday = [STCalendar isDateInLunarToday:thisDate];
         [self drawDayAtPoint:CGPointMake(oneX,ldY) lunarDay:effectiveDay + 1 lunarMonth:monthsSinceNewYear date:thisDate asToday:isLunarToday foundToday:&foundToday];
     }
@@ -375,8 +375,11 @@ CGRect gMyInitRect;
     
     for ( int i = 0; i < 4; i++ ) {
         NSDate *seasonalEvent = self.seasonalEvents[i];
-        if ( [[DP lastSunsetForDate:date momentAfter:YES] compare:seasonalEvent] == NSOrderedAscending
-            && [[DP nextSunsetForDate:date momentAfter:NO] compare:seasonalEvent] == NSOrderedDescending ) {
+        NSDate *prevMidnight = [[NSCalendar currentCalendar] startOfDayForDate:date];
+        NSDate *nextMidnight = [[NSCalendar currentCalendar] startOfDayForDate:[date normalizedDatePlusHour:25 minute:0 second:0]];
+        
+        if ( [prevMidnight compare:seasonalEvent] == NSOrderedAscending
+            && [nextMidnight compare:seasonalEvent] == NSOrderedDescending ) {
             NSString *string = nil;
             switch(i) {
                 case 0:
