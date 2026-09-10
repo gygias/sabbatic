@@ -247,7 +247,7 @@ CGRect gMyInitRect;
     for ( int i = 0; i < 8; i++ ) {
         CGFloat columnX = self.calendarBoxOriginX + ( i * self.dayWidth );
         if ( i == 7 )
-            columnX -= 2 * ( self.calendarBoxOriginX - self.dirtyRect.origin.x);
+            columnX -= 2 * ( self.calendarBoxOriginX - self.dirtyRect.origin.x );
         
         CGFloat endY;
         if ( intercalary && ( i == 0 || i == 1 ) ) {
@@ -323,6 +323,7 @@ CGRect gMyInitRect;
     CGFloat ssY = gdY + self.smallerTextSize.height + STSmallTextOffsetY;
     CGFloat fcY = ssY + self.smallerTextSize.height + STSmallTextOffsetY;
     CGFloat mdY = fcY + self.smallerTextSize.height + STSmallTextOffsetY;
+    CGFloat seY = mdY + self.smallerTextSize.height + STSmallTextOffsetY;
     ldY += self.dayHeight - self.textSize.height;
     CGFloat circleOffsetX = self.lineWidth;
     CGFloat circleOffsetY = - ( self.lineWidth );

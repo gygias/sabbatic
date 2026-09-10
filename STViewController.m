@@ -143,7 +143,7 @@
         }];
     });
 #else
-    [self _replaceCurrentCalendarFinally:date];
+    [self _reloadCalendarWithDate:date :NO];
 #endif
 }
 
@@ -424,6 +424,7 @@
 
 - (void)_gatherLocationPreference:(BOOL)appLaunch
 {
+#ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
     dispatch_async(dispatch_get_main_queue(), ^{
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Location Preference" message:@"Sabbatic uses your location to display sunset times. You can use Location Services, or enter an approximate location manually." preferredStyle:UIAlertControllerStyleAlert];
         [alert addAction:[UIAlertAction actionWithTitle:@"Enter Location" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
@@ -444,10 +445,15 @@
         [self presentViewController:alert animated:YES completion:^{
         }];
     });
+#else
+#warning todo
+    [self _reloadCalendarWithDate:[DP lastNewMoonStart] :appLaunch];
+#endif
 }
 
 - (void)_enterLocation:(BOOL)appLaunch
 {
+#ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Enter location" message:@"e.g. 38.62, -90.2" preferredStyle:UIAlertControllerStyleAlert];
     [alert addTextFieldWithConfigurationHandler:^(UITextField * _Nonnull textField) {
         [textField setText:@""];
@@ -490,6 +496,9 @@
     }]];
     [self presentViewController:alert animated:YES completion:^{
     }];
+#else
+#warning todo
+#endif
 }
 
 - (void)_periodicRedraw

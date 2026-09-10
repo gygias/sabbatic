@@ -236,8 +236,10 @@ static STState *sState = nil;
         return;
     }
     
-    else if ( self.locationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways || self.locationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse
-#ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
+    else if ( self.locationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways
+#ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
+         || self.locationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse
+#else
         || self.locationManager.authorizationStatus == kCLAuthorizationStatusAuthorized
 #endif
         ) {
