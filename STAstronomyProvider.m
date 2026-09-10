@@ -145,7 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     astro_seasons_t seasons = Astronomy_Seasons((int)year);
     if ( seasons.status != ASTRO_SUCCESS ) {
-        NSLog(@"ERROR: Astronomy_Seasons() returned %d\n", seasons.status);
+        NSLog(@"ERROR: Astronomy_Seasons() returned %d", seasons.status);
         abort();
     }
     
@@ -168,7 +168,7 @@ NS_ASSUME_NONNULL_BEGIN
         astro_seasons_t seasons = Astronomy_Seasons(searchYear + i);
         
         if (seasons.status != ASTRO_SUCCESS) {
-            NSLog(@"ERROR: Astronomy_Seasons() returned %d\n", seasons.status);
+            NSLog(@"ERROR: Astronomy_Seasons() returned %d", seasons.status);
             abort();
         }
         
@@ -191,7 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
         astro_seasons_t seasons = Astronomy_Seasons(searchYear + i);
         
         if (seasons.status != ASTRO_SUCCESS) {
-            NSLog(@"ERROR: Astronomy_Seasons() returned %d\n", seasons.status);
+            NSLog(@"ERROR: Astronomy_Seasons() returned %d", seasons.status);
             abort();
         }
         

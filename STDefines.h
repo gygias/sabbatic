@@ -62,6 +62,8 @@
 #define STCalendarViewInsetX 10
 #define STCalendarViewInsetY 10
 #define STVerseViewInsetX 5
+#define STGreetingViewInsetX 5
+#define STGreetingViewHeight 50
 #define STLunarDayOffsetX (-2)
 #define STLunarDayScalarX 4
 #define STLunarDayScalarY 6
@@ -79,6 +81,8 @@
 #define STCalendarViewInsetX 0
 #define STCalendarViewInsetY 150
 #define STVerseViewInsetX 25
+#define STGreetingViewInsetX 25
+#define STGreetingViewHeight 50
 #define STLunarDayScalarX 2
 #define STLunarDayScalarY 3
 #define STSpinnerWidth 20

@@ -41,6 +41,8 @@
 		63BC63AA2F479F6B002F358C /* STVerseView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63BC63A82F479F6B002F358C /* STVerseView.m */; };
 		63BC63AD2F492D8B002F358C /* STView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63BC63AC2F492D8B002F358C /* STView.m */; };
 		63BC63AE2F492D8B002F358C /* STView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63BC63AC2F492D8B002F358C /* STView.m */; };
+		63E208802F6A2EA500A5221E /* STGreetingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E2087F2F6A2EA500A5221E /* STGreetingView.m */; };
+		63E208812F6A2EA500A5221E /* STGreetingView.m in Sources */ = {isa = PBXBuildFile; fileRef = 63E2087F2F6A2EA500A5221E /* STGreetingView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -77,6 +79,8 @@
 		63BC63A82F479F6B002F358C /* STVerseView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STVerseView.m; sourceTree = "<group>"; };
 		63BC63AB2F492D8B002F358C /* STView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STView.h; sourceTree = "<group>"; };
 		63BC63AC2F492D8B002F358C /* STView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STView.m; sourceTree = "<group>"; };
+		63E2087E2F6A2EA500A5221E /* STGreetingView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STGreetingView.h; sourceTree = "<group>"; };
+		63E2087F2F6A2EA500A5221E /* STGreetingView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = STGreetingView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -158,6 +162,8 @@
 				63BC63A42F478FD4002F358C /* Verses.plist */,
 				63BC63A72F479F6B002F358C /* STVerseView.h */,
 				63BC63A82F479F6B002F358C /* STVerseView.m */,
+				63E2087E2F6A2EA500A5221E /* STGreetingView.h */,
+				63E2087F2F6A2EA500A5221E /* STGreetingView.m */,
 				634BF7E92DB9E811007BD17F /* NSDate+MyNow.h */,
 				634BF7EA2DB9E811007BD17F /* NSDate+MyNow.m */,
 				63AAFCDD2DCC9A0A00CDAE8B /* STViewController.h */,
@@ -301,6 +307,7 @@
 				634BF7E32DB09C20007BD17F /* STState.m in Sources */,
 				63A207802D8BE0F10019A763 /* STCalendar.m in Sources */,
 				63552E402DCC5D6000614BBB /* STDataProvider.m in Sources */,
+				63E208802F6A2EA500A5221E /* STGreetingView.m in Sources */,
 				630C89862DCC6877002D4AC3 /* STAstronomyProvider.m in Sources */,
 				634BF7EB2DB9E811007BD17F /* NSDate+MyNow.m in Sources */,
 				63AAFCEA2DCDA01500CDAE8B /* STViewController.m in Sources */,
@@ -317,6 +324,7 @@
 			files = (
 				639EA4582DBC197300E31716 /* STMoonController.m in Sources */,
 				63552E412DCC5D6000614BBB /* STDataProvider.m in Sources */,
+				63E208812F6A2EA500A5221E /* STGreetingView.m in Sources */,
 				63A207B42D8D15DE0019A763 /* STCalendar.m in Sources */,
 				634BF7EC2DB9E811007BD17F /* NSDate+MyNow.m in Sources */,
 				63552E3D2DCC5C1800614BBB /* STUSNODataProvider.m in Sources */,

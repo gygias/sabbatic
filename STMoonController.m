@@ -69,7 +69,7 @@ typedef enum
         
         //SCNCamera *camera = self.moonView.scene.rootNode.camera;
         self.originalCameraPosition = SCNVector3Make(self.moonView.pointOfView.position.x, self.moonView.pointOfView.position.y, self.moonView.pointOfView.position.z);
-        NSLog(@"original camera position [%0.1fx,%0.1fy,%0.1fz]",self.originalCameraPosition.x,self.originalCameraPosition.y,self.originalCameraPosition.z);
+        //NSLog(@"original camera position [%0.1fx,%0.1fy,%0.1fz]",self.originalCameraPosition.x,self.originalCameraPosition.y,self.originalCameraPosition.z);
         
         //self.moonView.rendersContinuously = YES;
         //view.allowsCameraControl = YES;
@@ -113,13 +113,11 @@ typedef enum
         self.moonView.pointOfView.position = cam_3;
     }
     [SCNTransaction setCompletionBlock:^{
-        //NSLog(@"an animation to %ld completed!", idx);
         self.currentPhase = idx;
         
         if ( ! start ) {
             if ( ( self.currentAnimationType == IntroAnimation ) && ( idx == introStartIdx ) ) {
                 [self _completeAndReset];
-                //NSLog(@"intro animation ended at phase %ld",self.currentPhase);
                 return;
             }
         }
@@ -204,7 +202,7 @@ typedef enum
     
     BOOL waning = NO;
     double fracillum = [DP currentMoonFracillum:&waning];
-    NSLog(@"Now I would like to animate to %0.2f %@",fracillum,waning?@"waning":@"waxing");
+    NSLog(@"animate to %0.2f %@ from %ld",fracillum,waning?@"waning":@"waxing",self.currentPhase);
     
     if ( self.currentPhase == 0 && fracillum == 0 ) {
         NSLog(@"already at new moon");

@@ -10,7 +10,8 @@
 #import <SceneKit/SceneKit.h>
 
 #import "STCalendarView.h"
-#import "STverseView.h"
+#import "STVerseView.h"
+#import "STGreetingView.h"
 #import "STMoonController.h"
 #import "STDefines.h"
 #import "STState.h"
@@ -21,6 +22,7 @@
 @property (strong) STMoonController *moonController;
 @property (strong) STCalendarView *calendarView;
 @property (strong) STVerseView *verseView;
+@property (strong) STGreetingView *greetingView;
 @property (strong) STButton *optionsButton;
 //@property (strong) UIDatePicker *datePicker;
 @property BOOL nowAndThen;
@@ -224,6 +226,15 @@
     [self.view addSubview:self.verseView];
 }
 
+- (void)_addGreetingView
+{
+    self.greetingView = [[STGreetingView alloc] initWithFrame:CGRectMake(self.calendarView.frame.origin.x + STGreetingViewInsetX,
+                                                                         self.calendarView.frame.origin.y - STGreetingViewHeight,
+                                                                         self.calendarView.frame.size.width - 2*STGreetingViewInsetX,
+                                                                         STGreetingViewHeight)];
+    [self.view addSubview:self.greetingView];
+}
+
 /*- (void)jumpToDateChanged:(id)sender
 {
     NSLog(@"jump to %@!",self.datePicker.date);
@@ -405,6 +416,7 @@
 #endif
         
     [self _addVerseView];
+    //[self _addGreetingView];
     
     [self _addOptionsButton];
     self.nowAndThen = YES;

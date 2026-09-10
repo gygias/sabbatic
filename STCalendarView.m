@@ -432,8 +432,7 @@ CGRect gMyInitRect;
 }
 
 - (void)_drawTodayCircleAtPoint:(CGPoint)point withLineWidth:(CGFloat)lineWidth textAttributes:(NSDictionary *)textAttributes context:(CGContextRef)context
-{
-    
+{    
     CGSize dateSize = [@"00" sizeWithAttributes:textAttributes];
     CGPoint dateCenter = CGPointMake(point.x + dateSize.width / 2 + lineWidth,
                                      point.y + dateSize.height / 2);

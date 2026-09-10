@@ -169,7 +169,7 @@
         if ( day == 0 ) {
             return @"New Year";
         } else if ( day == 12 ) {
-            return @"Lord's Supper";
+            return @"Last Supper";
         } else if ( day == 13 ) {
             return @"Passover";
         } else if ( day >= 14 && day <= 20 ) {
