@@ -7,7 +7,6 @@
 
 #if !__has_include(<UIKit/UIKit.h>)
 #import <Cocoa/Cocoa.h>
-#define STButton NSButton
 #else
 #import <UIKit/UIKit.h>
 #define STButton UIButton

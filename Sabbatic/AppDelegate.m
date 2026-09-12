@@ -19,12 +19,15 @@
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    
     self.vc = [[STViewController alloc] init];
     self.vc.view = [[self.window.contentView subviews] lastObject];
     [self.vc viewDidLoad];
 }
 
+- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(id)sender
+{
+    return YES;
+}
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
     // Insert code here to tear down your application

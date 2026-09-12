@@ -17,6 +17,10 @@
 #import "STState.h"
 #import "STCalendar.h"
 #import "NSDate+MyNow.h"
+#ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
+#import "STMenuItem.h"
+#import "STButton.h"
+#endif
 
 @interface STViewController ()
 @property (strong) STMoonController *moonController;
@@ -107,11 +111,23 @@
 #endif
             [self.view addSubview:self.calendarView];
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
+            [self.view sortSubviewsUsingFunction:(NSComparisonResult (*)(id, id, void*))sortViews context:(__bridge void * _Nullable)(self)];
             [self.view.window makeFirstResponder:self.calendarView];
 #endif
             
         });
     });
+}
+
+NSComparisonResult sortViews(id one, id two, void *context) {
+    STViewController *vc = (__bridge STViewController *)context;
+
+    if ( one == vc.optionsButton ) {
+        return NSOrderedDescending;
+    } else if ( two == vc.optionsButton ) {
+        return NSOrderedAscending;
+    }
+    return NSOrderedSame;
 }
 
 - (void)_replaceCurrentCalendarWithDate:(NSDate *)date :(BOOL)up :(BOOL)animated
@@ -285,18 +301,6 @@
 
 - (void)_addOptionsButton
 {
-    /*UIMenuElement *settings = [UIAction actionWithTitle:@"settings..." image:[UIImage systemImageNamed:@"gear"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
-    }];
-    UIMenuElement *jumpToDate = [UIAction actionWithTitle:@"jump to date" image:[UIImage systemImageNamed:@"moon"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
-        if ( ! self.datePicker ) {
-            UIDatePicker *picker = [[UIDatePicker alloc] initWithFrame:CGRectMake(0, 100, 50, 50)];
-            picker.preferredDatePickerStyle = UIDatePickerStyleCompact;//UIDatePickerStyleInline;
-            picker.datePickerMode = UIDatePickerModeDate;
-            [picker addTarget:self action:@selector(jumpToDateChanged:) forControlEvents:UIControlEventValueChanged];
-            self.datePicker = picker;
-            [self.view addSubview:self.datePicker];
-        }
-    }];*/
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
     UIMenuElement *jumpToYear = [UIAction actionWithTitle:@"jump to year" image:[UIImage systemImageNamed:@"slider.horizontal.below.sun.max"] identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"jump to year" message:nil preferredStyle:UIAlertControllerStyleAlert];
@@ -304,15 +308,15 @@
             [textField setText:@""];
             [textField setKeyboardType:UIKeyboardTypeNumbersAndPunctuation];
         }];
-        [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+        [alert addAction:[UIAlertAction actionWithTitle:@"cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
         }]];
-        [alert addAction:[UIAlertAction actionWithTitle:@"January" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [alert addAction:[UIAlertAction actionWithTitle:@"january" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             [self _jumpToYear:alert.textFields.firstObject.text month:0 gregorian:YES];
         }]];
-        [alert addAction:[UIAlertAction actionWithTitle:@"Abib" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [alert addAction:[UIAlertAction actionWithTitle:@"abib" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             [self _jumpToYear:alert.textFields.firstObject.text month:0 gregorian:NO];
         }]];
-        [alert addAction:[UIAlertAction actionWithTitle:@"Tishrei" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [alert addAction:[UIAlertAction actionWithTitle:@"tishrei" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             [self _jumpToYear:alert.textFields.firstObject.text month:6 gregorian:NO];
         }]];
         
@@ -328,18 +332,67 @@
     }];
     UIMenu *menu = [UIMenu menuWithTitle:@"" image:nil identifier:nil options:0 children:[NSArray arrayWithObjects:/*settings,jumpToDate,*/jumpToYear,jumpToNow,updateLocPref,nil]];
     
-    self.optionsButton = [STButton buttonWithType:UIButtonTypeSystem];
+    self.optionsButton = [UIButton buttonWithType:UIButtonTypeSystem];
     self.optionsButton.menu = menu;
     self.optionsButton.showsMenuAsPrimaryAction = YES;
     [self.optionsButton setTitle:@"..." forState:UIControlStateNormal];
     self.optionsButton.frame = CGRectMake(5, 100, 30, 30);
     [self.view addSubview:self.optionsButton];
+#else
+    STMenuItem *jumpToYear = [STMenuItem itemWithTitle:@"jump to year" image:[NSImage imageWithSystemSymbolName:@"slider.horizontal.below.sun.max" accessibilityDescription:@""] handler:^(NSMenuItem * _Nonnull item) {
+        NSAlert *alert = [NSAlert new];
+        alert.messageText = @"jump to year";
+        //alert.informativeText = @"";
+        [alert addButtonWithTitle:@"january"];
+        [alert addButtonWithTitle:@"abib"];
+        [alert addButtonWithTitle:@"tishrei"];
+        [alert addButtonWithTitle:@"cancel"];
+        
+        NSView *inputView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 100, 25)];
+        NSTextField *yearField = [[NSTextField alloc] initWithFrame:inputView.frame];
+        yearField.placeholderString = @"year";
+        [inputView addSubview:yearField];
+        [alert setAccessoryView:inputView];
+        
+        [alert beginSheetModalForWindow:self.view.window completionHandler:^(NSModalResponse returnCode) {
+            if ( returnCode == NSAlertFirstButtonReturn ) {
+                [self _jumpToYear:yearField.stringValue month:0 gregorian:YES];
+            } else if ( returnCode == NSAlertSecondButtonReturn ) {
+                [self _jumpToYear:yearField.stringValue month:0 gregorian:NO];
+            } else if ( returnCode == NSAlertThirdButtonReturn ) {
+                [self _jumpToYear:yearField.stringValue month:6 gregorian:NO];
+            } else if ( returnCode == ( NSAlertThirdButtonReturn + 1 ) ) {
+            }
+        }];
+    }];
+    STMenuItem *jumpToNow = [STMenuItem itemWithTitle:@"jump to now" image:[NSImage imageWithSystemSymbolName:@"sun.max" accessibilityDescription:@""] handler:^(NSMenuItem * _Nonnull item) {
+        [self _jumpToNow];
+    }];
+    STMenuItem *updateLocPref = [STMenuItem itemWithTitle:@"change location" image:[NSImage imageWithSystemSymbolName:@"location.viewfinder" accessibilityDescription:@""] handler:^(NSMenuItem * _Nonnull item) {
+        [ST _clearLocationPreferences];
+        [self _gatherLocationPreference:NO];
+    }];
+    NSMenu *menu = [[NSMenu alloc] initWithTitle:@""];
+    [menu setItemArray:[NSArray arrayWithObjects:jumpToYear,jumpToNow,updateLocPref, nil]];
+    
+    self.optionsButton = [STButton buttonWithTitle:@"..." handler:^(NSButton * _Nonnull button) {
+        [menu popUpMenuPositioningItem:jumpToYear atLocation:NSMakePoint(button.frame.origin.x, button.frame.origin.y) inView:self.view];
+    }];
+    self.optionsButton.frame = CGRectMake(5, self.view.frame.size.height - 50, 30, 30);
+    // why?
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.view addSubview:self.optionsButton];
+    });
+    
 #endif
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+#if 0
+    [ST _clearLocationPreferences];
+#endif
     BOOL deferCalendar = NO;
     if ( ! ST.locationPreferenceGathered ) {
         NSLog(@"gathering location prefs...");
@@ -383,9 +436,6 @@
     [self _periodicRedraw];
 #endif
     
-#warning will this conflict with location alerts now?
-    [ST requestNotificationApprovalWithDelay:STNotificationRequestDelay];
-    
     if ( ! deferCalendar ) {
         [self _reloadCalendarWithDate:[DP lastNewMoonStart] :YES];
     }
@@ -419,6 +469,8 @@
     
     [self _addOptionsButton];
     self.nowAndThen = YES;
+    
+    [ST requestNotificationApprovalWithDelay:STNotificationRequestDelay];
 }
 
 - (void)_gatherLocationPreference:(BOOL)appLaunch
@@ -430,15 +482,12 @@
             [self _enterLocation:appLaunch];
         }]];
         [alert addAction:[UIAlertAction actionWithTitle:@"Use Location Services" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [ST requestLocationAuthorization:^(BOOL okay) {
-                [self _handleLocAuthResponse:okay :appLaunch];
-            }];
+            [self _requestLocAuth:appLaunch];
         }]];
         [self presentViewController:alert animated:YES completion:^{
         }];
     });
 #else
-#warning todo
     NSAlert *alert = [NSAlert new];
     alert.messageText = @"Location Preference";
     alert.informativeText = @"Sabbatic uses your location to display sunset times. You can use Location Services, or enter an approximate location manually.";
@@ -448,23 +497,23 @@
         if ( returnCode == NSAlertFirstButtonReturn ) {
             [self _enterLocation:appLaunch];
         } else if ( returnCode == NSAlertSecondButtonReturn ) {
-            [ST requestLocationAuthorization:^(BOOL okay) {
-                [self _handleLocAuthResponse:okay :appLaunch];
-            }];
+            [self _requestLocAuth:appLaunch];
         }
     }];
 #endif
 }
 
-- (void)_handleLocAuthResponse:(BOOL)okay :(BOOL)appLaunch {
-    NSLog(@"loc auth result: %d",okay);
-    if ( okay ) {
-        ST.locationPreferenceGathered = YES;
-        ST.useManualLocation = NO;
-        [ST save];
-        [self _reloadCalendarWithDate:[DP lastNewMoonStart] :appLaunch];
-    } else
-        [self _gatherLocationPreference:appLaunch];
+- (void)_requestLocAuth:(BOOL)appLaunch {
+    [ST requestLocationAuthorization:^(BOOL okay) {
+        NSLog(@"loc auth result: %d",okay);
+        if ( okay ) {
+            ST.locationPreferenceGathered = YES;
+            ST.useManualLocation = NO;
+            [ST save];
+            [self _reloadCalendarWithDate:[DP lastNewMoonStart] :appLaunch];
+        } else
+            [self _gatherLocationPreference:appLaunch];
+    }];
 }
 
 - (void)_enterLocation:(BOOL)appLaunch
