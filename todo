@@ -7,3 +7,5 @@ test transition to new lastNewYear case after conjunction, before sunset, like l
  in the latter half of the month, the moon animates backwards (de-waxes)
 
 ios animates in and out the same calendar at gregorian midnight redraw
+
+if LS is off or auth otherwise fails, report to user before offering manual again. manual out-of-reasonable-range also.

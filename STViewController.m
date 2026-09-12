@@ -116,9 +116,8 @@
 
 - (void)_replaceCurrentCalendarWithDate:(NSDate *)date :(BOOL)up :(BOOL)animated
 {
-    STCalendarView *oldCalendar = self.calendarView;
-
 #ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
+    STCalendarView *oldCalendar = self.calendarView;
     if ( ! animated ) {
         [self _reloadCalendarWithDate:date :NO];
         return;
@@ -432,14 +431,7 @@
         }]];
         [alert addAction:[UIAlertAction actionWithTitle:@"Use Location Services" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             [ST requestLocationAuthorization:^(BOOL okay) {
-                NSLog(@"loc auth result: %d",okay);
-                if ( okay ) {
-                    ST.locationPreferenceGathered = YES;
-                    ST.useManualLocation = NO;
-                    [ST save];
-                    [self _reloadCalendarWithDate:[DP lastNewMoonStart] :appLaunch];
-                } else
-                    [self _gatherLocationPreference:appLaunch];
+                [self _handleLocAuthResponse:okay :appLaunch];
             }];
         }]];
         [self presentViewController:alert animated:YES completion:^{
@@ -447,8 +439,32 @@
     });
 #else
 #warning todo
-    [self _reloadCalendarWithDate:[DP lastNewMoonStart] :appLaunch];
+    NSAlert *alert = [NSAlert new];
+    alert.messageText = @"Location Preference";
+    alert.informativeText = @"Sabbatic uses your location to display sunset times. You can use Location Services, or enter an approximate location manually.";
+    [alert addButtonWithTitle:@"Enter Location"];
+    [alert addButtonWithTitle:@"Use Location Services"];
+    [alert beginSheetModalForWindow:self.view.window completionHandler:^(NSModalResponse returnCode) {
+        if ( returnCode == NSAlertFirstButtonReturn ) {
+            [self _enterLocation:appLaunch];
+        } else if ( returnCode == NSAlertSecondButtonReturn ) {
+            [ST requestLocationAuthorization:^(BOOL okay) {
+                [self _handleLocAuthResponse:okay :appLaunch];
+            }];
+        }
+    }];
 #endif
+}
+
+- (void)_handleLocAuthResponse:(BOOL)okay :(BOOL)appLaunch {
+    NSLog(@"loc auth result: %d",okay);
+    if ( okay ) {
+        ST.locationPreferenceGathered = YES;
+        ST.useManualLocation = NO;
+        [ST save];
+        [self _reloadCalendarWithDate:[DP lastNewMoonStart] :appLaunch];
+    } else
+        [self _gatherLocationPreference:appLaunch];
 }
 
 - (void)_enterLocation:(BOOL)appLaunch
@@ -469,36 +485,64 @@
         [self _gatherLocationPreference:appLaunch];
     }]];
     [alert addAction:[UIAlertAction actionWithTitle:@"Okay" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        ST.useManualLocation = YES;
         double lat = [alert.textFields.firstObject.text doubleValue];
         double lon = [alert.textFields.lastObject.text doubleValue];
         
-        // text changed is by notification afaik, losing scope here, so for now doing this lazily
-        // would like okay to enable instead
-        if ( lat == 0 && lon == 0 ) {
-            [self _enterLocation:appLaunch];
-            return;
-        } if ( lat < -66 || lat > 66 ) {
-            [self _enterLocation:appLaunch];
-            return;
-        } else if ( lon < -180 || lat > 180 ) {
-            [self _enterLocation:appLaunch];
-            return;
-        }
-        
-        ST.manualLatitude = lat;
-        ST.manualLongitude = lon;
-        ST.locationPreferenceGathered = YES;
-        [ST save];
-        NSLog(@"entered manual location (%0.2f,%0.2f)",ST.manualLatitude,ST.manualLongitude);
-        
-        [self _reloadCalendarWithDate:[DP lastNewMoonStart] :appLaunch];
+        [self _validateLocationAndReload:lat :lon :appLaunch];
     }]];
     [self presentViewController:alert animated:YES completion:^{
     }];
 #else
-#warning todo
+    NSAlert *alert = [NSAlert new];
+    alert.messageText = @"Enter location";
+    alert.informativeText = @"e.g. 38.62, -90.2";
+    [alert addButtonWithTitle:@"Okay"];
+    [alert addButtonWithTitle:@"Cancel"];
+    
+    NSView *inputView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 100, 50)];
+    NSTextField *latField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 25, 100, 25)];
+    latField.placeholderString = @"latitude";
+    [inputView addSubview:latField];
+    NSTextField *lonField = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 100, 25)];
+    lonField.placeholderString = @"longitude";
+    [inputView addSubview:lonField];
+    [alert setAccessoryView:inputView];
+    
+    [alert beginSheetModalForWindow:self.view.window completionHandler:^(NSModalResponse returnCode) {
+        if ( returnCode == NSAlertFirstButtonReturn ) {
+            double lat = [latField.stringValue doubleValue];
+            double lon = [lonField.stringValue doubleValue];
+            [self _validateLocationAndReload:lat :lon :appLaunch];
+        } else if ( returnCode == NSAlertSecondButtonReturn ) {
+            [self _gatherLocationPreference:appLaunch];
+        }
+    }];
 #endif
+}
+
+- (void)_validateLocationAndReload:(double)lat :(double)lon :(BOOL)appLaunch
+{
+    // text changed is by notification afaik, losing scope here, so for now doing this lazily
+    // would like okay to enable instead
+    if ( lat == 0 && lon == 0 ) {
+        [self _enterLocation:appLaunch];
+        return;
+    } if ( lat < -66 || lat > 66 ) {
+        [self _enterLocation:appLaunch];
+        return;
+    } else if ( lon < -180 || lat > 180 ) {
+        [self _enterLocation:appLaunch];
+        return;
+    }
+    
+    ST.useManualLocation = YES;
+    ST.manualLatitude = lat;
+    ST.manualLongitude = lon;
+    ST.locationPreferenceGathered = YES;
+    [ST save];
+    NSLog(@"entered manual location (%0.2f,%0.2f)",ST.manualLatitude,ST.manualLongitude);
+    
+    [self _reloadCalendarWithDate:[DP lastNewMoonStart] :appLaunch];
 }
 
 - (void)_periodicRedraw
