@@ -14,6 +14,7 @@ typedef void (^STButtonHandler)(NSButton *button);
 @interface STButton : NSButton
 
 + (id)buttonWithTitle:(NSString *)title handler:(STButtonHandler)handler;
++ (id)buttonWithImage:(NSImage *)image handler:(STButtonHandler)handler;
 
 @end
 

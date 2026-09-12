@@ -56,6 +56,7 @@
 #define STLocalGregorianFontSize 6
 #define STSmallLocalGregorianFontSize 5
 #define STFontSizeScalar 100
+#define STVerseSizeScalar 320
 #define STSmallTextStackOffsetY 1
 #define STSmallTextOffsetY 0
 #define STCalendarLineWidth (2.)
@@ -76,6 +77,7 @@
 #define STLocalGregorianFontSize 6
 #define STSmallLocalGregorianFontSize 6
 #define STFontSizeScalar 320
+#define STVerseSizeScalar STFontSizeScalar
 #define STSmallTextOffsetY 3
 #define STCalendarLineWidth (2.)
 #define STCalendarViewInsetX 0

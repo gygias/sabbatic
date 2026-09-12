@@ -67,7 +67,6 @@ CGRect gMyInitRect;
 }
 
 - (void)keyDown:(NSEvent *)event {
-    NSLog(@"keyDown: %@",event);
     if ( event.type == NSEventTypeKeyDown ) {
         if ( ! event.ARepeat ) {
             if ( event.keyCode == 126 )

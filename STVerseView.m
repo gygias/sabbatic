@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)_fontSizeForViewWidth:(CGFloat)width
 {
-    return 10 + ( width / STFontSizeScalar );
+    return 10 + ( width / STVerseSizeScalar );
 }
 
 - (void)drawRect:(CGRect)rect
@@ -57,24 +57,33 @@ NS_ASSUME_NONNULL_BEGIN
                                                                      aVerseDict[@"verse"]];
         self.animationIdx = 0;
     }
-
+    
+    CGRect verseRect = rect;
+#warning factor this
+#ifdef __MAC_OS_X_VERSION_MAX_ALLOWED
+    verseRect = CGRectMake(rect.origin.x + 45, rect.origin.y - 25, rect.size.width - 45 - 150, rect.size.height - 25);
+#endif
     if ( self.animationIdx < self.text.length ) {
         NSString *verseString = [self.text substringToIndex:self.animationIdx];
-        [verseString drawInRect:rect withAttributes:self.drawAttrs];
+        [verseString drawInRect:verseRect withAttributes:self.drawAttrs];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(STVerseTypeTime * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             self.animationIdx++;
             [self iNeedDisplay];
         });
     } else {
-        [self.text drawInRect:rect withAttributes:self.drawAttrs];
+        [self.text drawInRect:verseRect withAttributes:self.drawAttrs];
 
-        CGRect textRect = [self.text boundingRectWithSize:rect.size options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading) attributes:self.drawAttrs context:NULL];
+        CGRect textRect = [self.text boundingRectWithSize:verseRect.size options:(NSStringDrawingUsesLineFragmentOrigin | NSStringDrawingUsesFontLeading) attributes:self.drawAttrs context:NULL];
         CGFloat bookChapterVerseXOffset = 25;
         CGFloat lineHeight = [self.bookChapterVerse sizeWithAttributes:self.drawAttrs].height;
+#ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
         CGRect bookChapterVerseRect = CGRectMake(rect.origin.x + bookChapterVerseXOffset, rect.origin.y + textRect.size.height + lineHeight, rect.size.width - 2*bookChapterVerseXOffset, rect.size.height - textRect.size.height - lineHeight);
+#else
+        CGRect bookChapterVerseRect = CGRectMake(verseRect.origin.x + bookChapterVerseXOffset, verseRect.origin.y + verseRect.size.height - textRect.size.height - 2*lineHeight, verseRect.size.width - bookChapterVerseXOffset, lineHeight);
+#endif
         if ( self.fadeIdx < STVerseFadeFrames ) {
             NSDictionary *fadeAttrs = @{ NSForegroundColorAttributeName : [[STColorClass grayColor] colorWithAlphaComponent:(self.fadeIdx / STVerseFadeFrames)],
-                                         NSFontAttributeName : [STFontClass systemFontOfSize:[self _fontSizeForViewWidth:self.frame.size.width]] };
+                                         NSFontAttributeName : [STFontClass systemFontOfSize:[self _fontSizeForViewWidth:rect.size.width]] };
             [self.bookChapterVerse drawInRect:bookChapterVerseRect withAttributes:fadeAttrs];
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(STVerseFadeFrameTime * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 self.fadeIdx++;

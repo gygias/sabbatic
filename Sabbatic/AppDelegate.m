@@ -20,7 +20,7 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     self.vc = [[STViewController alloc] init];
-    self.vc.view = [[self.window.contentView subviews] lastObject];
+    self.vc.view = self.window.contentView;
     [self.vc viewDidLoad];
 }
 

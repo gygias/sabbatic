@@ -233,12 +233,19 @@ NSComparisonResult sortViews(id one, id two, void *context) {
 
 - (void)_addVerseView
 {
+#warning factor this
+#ifndef __MAC_OS_X_VERSION_MAX_ALLOWED
     self.verseView = [[STVerseView alloc] initWithFrame:CGRectMake(self.calendarView.frame.origin.x + STVerseViewInsetX,
                                                                    self.calendarView.frame.origin.y + self.calendarView.frame.size.height,
                                                                    self.calendarView.frame.size.width - 2*STVerseViewInsetX,
                                                                    self.view.frame.size.height - ( self.calendarView.frame.origin.y + self.calendarView.frame.size.height ))];
     [self.verseView preload];
     [self.view addSubview:self.verseView];
+#else
+    self.verseView = [[STVerseView alloc] initWithFrame:CGRectInset(self.calendarView.frame,STVerseViewInsetX,STVerseViewInsetX)];
+    [self.verseView preload];
+    [self.calendarView addSubview:self.verseView];
+#endif
 }
 
 - (void)_addGreetingView
@@ -330,13 +337,14 @@ NSComparisonResult sortViews(id one, id two, void *context) {
         [ST _clearLocationPreferences];
         [self _gatherLocationPreference:NO];
     }];
-    UIMenu *menu = [UIMenu menuWithTitle:@"" image:nil identifier:nil options:0 children:[NSArray arrayWithObjects:/*settings,jumpToDate,*/jumpToYear,jumpToNow,updateLocPref,nil]];
+    UIMenu *menu = [UIMenu menuWithTitle:@"" image:nil identifier:nil options:0 children:[NSArray arrayWithObjects:jumpToYear,jumpToNow,updateLocPref,nil]];
     
     self.optionsButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    self.optionsButton.tintColor = [UIColor lightGrayColor];
     self.optionsButton.menu = menu;
     self.optionsButton.showsMenuAsPrimaryAction = YES;
-    [self.optionsButton setTitle:@"..." forState:UIControlStateNormal];
-    self.optionsButton.frame = CGRectMake(5, 100, 30, 30);
+    [self.optionsButton setImage:[UIImage systemImageNamed:@"slider.horizontal.3"] forState:UIControlStateNormal];
+    self.optionsButton.frame = CGRectMake(10, 75, 30, 30);
     [self.view addSubview:self.optionsButton];
 #else
     STMenuItem *jumpToYear = [STMenuItem itemWithTitle:@"jump to year" image:[NSImage imageWithSystemSymbolName:@"slider.horizontal.below.sun.max" accessibilityDescription:@""] handler:^(NSMenuItem * _Nonnull item) {
@@ -375,9 +383,12 @@ NSComparisonResult sortViews(id one, id two, void *context) {
     NSMenu *menu = [[NSMenu alloc] initWithTitle:@""];
     [menu setItemArray:[NSArray arrayWithObjects:jumpToYear,jumpToNow,updateLocPref, nil]];
     
-    self.optionsButton = [STButton buttonWithTitle:@"..." handler:^(NSButton * _Nonnull button) {
+    self.optionsButton = [STButton buttonWithImage:[NSImage imageWithSystemSymbolName:@"slider.horizontal.3" accessibilityDescription:@""] handler:^(NSButton * _Nonnull button) {
         [menu popUpMenuPositioningItem:jumpToYear atLocation:NSMakePoint(button.frame.origin.x, button.frame.origin.y) inView:self.view];
     }];
+    self.optionsButton.bezelStyle = NSBezelStyleCircular;
+    self.optionsButton.bezelColor = [NSColor darkGrayColor];
+    self.optionsButton.contentTintColor = [NSColor lightGrayColor];
     self.optionsButton.frame = CGRectMake(5, self.view.frame.size.height - 50, 30, 30);
     // why?
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -463,11 +474,10 @@ NSComparisonResult sortViews(id one, id two, void *context) {
     self.progressView.hidesWhenStopped = YES;
     [self.view addSubview:self.progressView];
 #endif
-        
-    [self _addVerseView];
-    //[self _addGreetingView];
     
     [self _addOptionsButton];
+    [self _addVerseView];
+    //[self _addGreetingView];
     self.nowAndThen = YES;
     
     [ST requestNotificationApprovalWithDelay:STNotificationRequestDelay];

@@ -8706,18 +8706,19 @@ static astro_status_t VisualMagnitude(
     *mag = NAN;
     switch (body)
     {
-    case BODY_MERCURY:  c0 = -0.60, c1 = +4.98, c2 = -4.88, c3 = +3.02; break;
+        case BODY_MERCURY:  c0 = -0.60; c1 = +4.98; c2 = -4.88; c3 = +3.02; break;
     case BODY_VENUS:
-        if (phase < 163.6)
-            c0 = -4.47, c1 = +1.03, c2 = +0.57, c3 = +0.13;
-        else
-            c0 = 0.98, c1 = -1.02;
+        if (phase < 163.6) {
+            c0 = -4.47; c1 = +1.03; c2 = +0.57; c3 = +0.13;
+        } else {
+            c0 = 0.98; c1 = -1.02;
+        }
         break;
-    case BODY_MARS:        c0 = -1.52, c1 = +1.60;   break;
-    case BODY_JUPITER:     c0 = -9.40, c1 = +0.50;   break;
-    case BODY_URANUS:      c0 = -7.19, c1 = +0.25;   break;
+    case BODY_MARS:        c0 = -1.52; c1 = +1.60;   break;
+    case BODY_JUPITER:     c0 = -9.40; c1 = +0.50;   break;
+    case BODY_URANUS:      c0 = -7.19; c1 = +0.25;   break;
     case BODY_NEPTUNE:     c0 = -6.87;               break;
-    case BODY_PLUTO:       c0 = -1.00, c1 = +4.00;   break;
+    case BODY_PLUTO:       c0 = -1.00; c1 = +4.00;   break;
     default: return ASTRO_INVALID_BODY;
     }
 
